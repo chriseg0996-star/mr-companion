@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MapleRoyals Companion</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">🍁 MR Companion</div>
+    <button class="nav-btn active" onclick="showPage('items', this)">Item Checker</button>
+    <button class="nav-btn" onclick="showPage('bosses', this)">Bosses</button>
+    <button class="nav-btn" onclick="showPage('leveling', this)">Leveling</button>
+    <button class="nav-btn" onclick="showPage('checklist', this)">Daily</button>
+    <button class="nav-btn" onclick="showPage('hpwash', this)">HP Wash</button>
+    <button class="nav-btn" onclick="showPage('scrolls', this)">Scrolls</button>
+    <button class="nav-btn" onclick="showPage('mesos', this)">Mesos</button>
+    <button class="nav-btn" onclick="showPage('quiz', this)">Class Quiz</button>
+    <button class="nav-btn" onclick="showPage('gear', this)">Gear</button>
+    <button class="nav-btn" onclick="showPage('jobadv', this)">Job Adv</button>
+    <button class="nav-btn" onclick="showPage('party', this)">Party</button>
+  </div>
+</nav>
+
+<div class="hero-wrap">
+  <img src="assets/images/ui/banner.png" alt="MapleRoyals — Henesys" class="hero-banner" onerror="this.closest('.hero-wrap').remove()">
+</div>
+
+<div id="page-items" class="page active">
+  <h1>Item Checker</h1>
+  <p class="subtitle">Search any item to find out if you should keep it, sell it in FM, or vendor it.</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <input type="text" id="item-search" placeholder="e.g. Zakum Helmet, Work Gloves, Steelies...">
+    <button class="btn" onclick="checkItem()">Check</button>
+  </div>
+  <div id="item-result" class="result-box"></div>
+  <hr class="divider">
+  <h2>Quick Reference</h2>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-header"><h2>Always Keep</h2><span class="badge badge-green">KEEP</span></div>
+      <div style="font-size:13px;color:var(--muted);line-height:2.2;">All scrolls · Zakum Helmet · Work Gloves lv40 · Horntail drops · Pink Bean drops · Balanced Fury · Steelies / Tobis · Onyx Apples</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Always Vendor</h2><span class="badge badge-red">VENDOR</span></div>
+      <div style="font-size:13px;color:var(--muted);line-height:2.2;">White potions · Basic consumables · No-stat mob drops · Equipment 20+ levels below yours · Basic arrows</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Godly Stat Thresholds</h2><span class="badge badge-yellow">REFERENCE</span></div>
+      <div style="font-size:13px;color:var(--muted);">
+        <div class="stat-row"><span class="stat-label">Earrings</span><span>10+ main stat</span></div>
+        <div class="stat-row"><span class="stat-label">Work Gloves</span><span>7+ ATT (10 = godly)</span></div>
+        <div class="stat-row"><span class="stat-label">Cape</span><span>3+ main stat</span></div>
+        <div class="stat-row"><span class="stat-label">Ring</span><span>5+ main stat</span></div>
+        <div class="stat-row"><span class="stat-label">Pendant</span><span>10+ main stat</span></div>
+        <div class="stat-row"><span class="stat-label">Weapon</span><span>Check library</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Useful Links</h2><span class="badge badge-blue">TOOLS</span></div>
+      <div style="font-size:13px;line-height:2.5;">
+        <a href="https://royals-library.netlify.app" target="_blank" style="color:var(--blue);display:block;">🗃️ Item Library (max stats)</a>
+        <a href="https://royals.ms/forum/forums/price-check.64/" target="_blank" style="color:var(--blue);display:block;">💰 Price Check Forum</a>
+        <a href="https://royals.ms/forum/forums/guides.57/" target="_blank" style="color:var(--blue);display:block;">📖 Official Guides</a>
+        <a href="https://royals.ms/forum/forums/class-guides.109/" target="_blank" style="color:var(--blue);display:block;">⚔️ Class Guides</a>
+        <a href="https://mime.royals.ms" target="_blank" style="color:var(--blue);display:block;">📚 Royals Wiki</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-bosses" class="page">
+  <h1>Boss Guides</h1>
+  <p class="subtitle">Click any boss for full guide, mechanics, HP requirements, and drops.</p>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterBoss('all', this)">All</button>
+    <button class="filter-btn" onclick="filterBoss('early', this)">Early</button>
+    <button class="filter-btn" onclick="filterBoss('mid', this)">Mid</button>
+    <button class="filter-btn" onclick="filterBoss('late', this)">Late</button>
+  </div>
+  <div id="boss-detail" class="boss-detail"></div>
+  <div class="boss-grid" id="boss-grid"></div>
+</div>
+
+<div id="page-leveling" class="page">
+  <h1>Leveling Guide</h1>
+  <p class="subtitle">Best training spots from level 1 to 200. Click a range to expand.</p>
+  <div id="level-list"></div>
+</div>
+
+<div id="page-checklist" class="page">
+  <h1>Daily Checklist</h1>
+  <p class="subtitle">Track your daily and weekly tasks.</p>
+  <div class="check-progress"><div class="check-progress-bar" id="check-bar" style="width:0%"></div></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <span id="check-count" style="font-size:13px;color:var(--muted);">0 / 0 complete</span>
+    <button class="btn-ghost" onclick="resetChecklist()" style="font-size:12px;padding:6px 14px;">Reset All</button>
+  </div>
+  <div id="checklist-container"></div>
+</div>
+
+<div id="page-hpwash" class="page">
+  <h1>HP Wash Calculator</h1>
+  <p class="subtitle">Calculate how much HP you gain per wash based on your INT.</p>
+  <div class="card" style="max-width:480px;">
+    <div style="margin-bottom:12px;">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px;">Total INT (with gear)</label>
+      <input type="number" id="wash-int" placeholder="e.g. 256" min="0">
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px;">Number of Washes</label>
+      <input type="number" id="wash-count" placeholder="e.g. 100" min="0">
+    </div>
+    <button class="btn" onclick="calcHPWash()" style="width:100%;">Calculate</button>
+  </div>
+  <div id="wash-result" class="result-box">
+    <div class="big-number" id="wash-hp-gain">0</div>
+    <div class="big-label">HP gained total</div>
+    <div style="font-size:13px;margin-bottom:16px;" id="wash-per-wash"></div>
+    <hr class="divider">
+    <h2>HP Targets by Boss</h2>
+    <div class="stat-row"><span class="stat-label">Zakum</span><span>7,000 HP</span></div>
+    <div class="stat-row"><span class="stat-label">Papulatus</span><span>7,000 HP</span></div>
+    <div class="stat-row"><span class="stat-label">Horntail (with HB)</span><span>15,000 HP</span></div>
+    <div class="stat-row"><span class="stat-label">Pink Bean (with HB)</span><span>25,000 HP</span></div>
+  </div>
+  <hr class="divider">
+  <div class="card" style="max-width:480px;">
+    <h2>HP per wash by INT</h2>
+    <div class="stat-row"><span class="stat-label">0 INT</span><span>+8 HP</span></div>
+    <div class="stat-row"><span class="stat-label">80 INT</span><span>+14 HP</span></div>
+    <div class="stat-row"><span class="stat-label">120 INT</span><span>+16 HP</span></div>
+    <div class="stat-row"><span class="stat-label">200 INT</span><span>+18 HP</span></div>
+    <div class="stat-row"><span class="stat-label">256 INT</span><span>+20 HP</span></div>
+  </div>
+</div>
+
+<div id="page-scrolls" class="page">
+  <h1>Scroll Tracker</h1>
+  <p class="subtitle">Log your scroll attempts and track your success rate.</p>
+  <div class="scroll-stats">
+    <div class="scroll-stat"><div class="n" id="s-total">0</div><div class="l">Total</div></div>
+    <div class="scroll-stat"><div class="n" style="color:var(--green)" id="s-success">0</div><div class="l">Success</div></div>
+    <div class="scroll-stat"><div class="n" style="color:var(--red)" id="s-fail">0</div><div class="l">Failed</div></div>
+    <div class="scroll-stat"><div class="n" style="color:var(--yellow)" id="s-rate">0%</div><div class="l">Rate</div></div>
+  </div>
+  <div class="card" style="max-width:480px;margin-bottom:16px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Item</label>
+        <input type="text" id="scroll-item" placeholder="e.g. Work Gloves">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Scroll Type</label>
+        <select id="scroll-type">
+          <option>10% ATT</option><option>60% STR</option><option>60% DEX</option>
+          <option>60% INT</option><option>60% LUK</option><option>70% DEF</option>
+          <option>100%</option><option>Chaos</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button class="btn" onclick="logScroll(true)">✓ Success</button>
+      <button class="btn-ghost" onclick="logScroll(false)" style="color:var(--red);border-color:var(--red);">✗ Failed</button>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+      <h2 style="margin:0;">Log</h2>
+      <button class="btn-ghost" onclick="clearScrolls()" style="font-size:12px;padding:5px 12px;">Clear</button>
+    </div>
+    <div class="scroll-log" id="scroll-log"><p style="color:var(--muted);font-size:13px;">No attempts logged yet.</p></div>
+  </div>
+</div>
+
+<div id="page-mesos" class="page">
+  <h1>Meso Tracker</h1>
+  <p class="subtitle">Log your meso income and expenses per session.</p>
+  <div class="scroll-stats" style="grid-template-columns:repeat(3,1fr);">
+    <div class="scroll-stat"><div class="n" style="color:var(--green);font-size:18px;" id="m-total">0</div><div class="l">Net Mesos</div></div>
+    <div class="scroll-stat"><div class="n" style="color:var(--green);font-size:18px;" id="m-in">0</div><div class="l">Income</div></div>
+    <div class="scroll-stat"><div class="n" style="color:var(--red);font-size:18px;" id="m-out">0</div><div class="l">Expenses</div></div>
+  </div>
+  <div class="card" style="max-width:480px;margin-bottom:16px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Amount (mesos)</label>
+        <input type="number" id="meso-amount" placeholder="e.g. 5000000">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Source</label>
+        <input type="text" id="meso-source" placeholder="e.g. Galloperas farm">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button class="btn" onclick="logMeso(true)">+ Income</button>
+      <button class="btn-ghost" onclick="logMeso(false)" style="color:var(--red);border-color:var(--red);">− Expense</button>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+      <h2 style="margin:0;">Log</h2>
+      <button class="btn-ghost" onclick="clearMesos()" style="font-size:12px;padding:5px 12px;">Clear</button>
+    </div>
+    <div class="meso-log" id="meso-log"><p style="color:var(--muted);font-size:13px;">No entries yet.</p></div>
+  </div>
+</div>
+
+<div id="page-quiz" class="page">
+  <h1>Class Picker Quiz</h1>
+  <p class="subtitle">Answer a few questions to find your ideal MapleRoyals class.</p>
+  <div id="quiz-container"></div>
+  <div class="quiz-result" id="quiz-result">
+    <img id="quiz-class-icon" class="class-icon" src="" alt="" onerror="this.style.display='none'">
+    <div class="quiz-class-name" id="quiz-class"></div>
+    <p id="quiz-why" style="color:var(--muted);margin-bottom:20px;"></p>
+    <div id="quiz-tags" style="margin-bottom:20px;"></div>
+    <button class="btn-ghost" onclick="resetQuiz()">Retake Quiz</button>
+  </div>
+</div>
+
+<div id="page-gear" class="page">
+  <h1>Gear Progression</h1>
+  <p class="subtitle">What to aim for and when.</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;font-size:12px;">
+    <span><span class="gear-priority p1">P1</span> Must have</span>
+    <span><span class="gear-priority p2">P2</span> Strong upgrade</span>
+    <span><span class="gear-priority p3">P3</span> Nice to have</span>
+  </div>
+  <div id="gear-timeline"></div>
+</div>
+
+<div id="page-jobadv" class="page">
+  <h1>Job Advancement Guide</h1>
+  <p class="subtitle">Where to go and what to do for every job advancement.</p>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterJob('warrior', this)">Warrior</button>
+    <button class="filter-btn" onclick="filterJob('thief', this)">Thief</button>
+    <button class="filter-btn" onclick="filterJob('archer', this)">Archer</button>
+    <button class="filter-btn" onclick="filterJob('mage', this)">Mage</button>
+    <button class="filter-btn" onclick="filterJob('pirate', this)">Pirate</button>
+  </div>
+  <div id="job-container"></div>
+</div>
+
+<div id="page-party" class="page">
+  <h1>Party Builder</h1>
+  <p class="subtitle">Build your ideal bossing party and get composition recommendations.</p>
+  <div class="party-grid" id="party-slots"></div>
+  <div style="display:flex;gap:8px;margin-bottom:20px;">
+    <select id="party-class-select" style="flex:1;">
+      <option value="">Select class...</option>
+      <option>Dark Knight</option><option>Hero</option><option>Paladin</option>
+      <option>Night Lord</option><option>Shadower</option>
+      <option>Bowmaster</option><option>Marksman</option>
+      <option>Bishop</option><option>Ice/Lightning Mage</option><option>Fire/Poison Mage</option>
+      <option>Corsair</option><option>Buccaneer</option>
+    </select>
+    <button class="btn" onclick="addToParty()">Add</button>
+    <button class="btn-ghost" onclick="clearParty()">Clear</button>
+  </div>
+  <div class="party-rec" id="party-rec"><p style="color:var(--muted);font-size:13px;margin:0;">Add classes to get party analysis.</p></div>
+  <hr class="divider">
+  <h2>Ideal Boss Party Compositions</h2>
+  <div class="grid2">
+    <div class="card"><div class="card-header"><span style="font-weight:600;">Horntail</span><span class="badge badge-blue">6 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop (mandatory) · Dark Knight (mandatory) · Night Lord x2 · Bowmaster · Any DPS</span></div>
+    <div class="card"><div class="card-header"><span style="font-weight:600;">Zakum</span><span class="badge badge-green">6 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop recommended · Dark Knight · Any DPS x4. Flexible comp.</span></div>
+    <div class="card"><div class="card-header"><span style="font-weight:600;">Pink Bean</span><span class="badge badge-purple">6 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop (mandatory) · Dark Knight (mandatory) · Night Lord · Bowmaster · High-funded DPS x2</span></div>
+    <div class="card"><div class="card-header"><span style="font-weight:600;">Papulatus</span><span class="badge badge-yellow">6 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop recommended · Any DPS. Very flexible at appropriate level.</span></div>
+  </div>
+</div>
+
+<script src="data/gameData.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

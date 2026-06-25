@@ -65,8 +65,9 @@ const PREQUESTS = [
     duration: '2–4 hours',
     location: 'Kerning City → Neo Tokyo',
     bossId: null,
+    forumGuide: 'https://royals.ms/forum/threads/guide-to-neo-tokyo.146864/',
     mapImage: 'assets/images/maps/neo-tokyo.png',
-    summary: 'Unlock Neo Tokyo training maps — best solo EXP from 120 onward.',
+    summary: 'Unlock Neo Tokyo training maps — best solo EXP from 120 onward. Also gates NT boss expeditions (Toad, Vergamot, Dunas).',
     requirements: ['Level 120+', 'Completed in Kerning City', 'Strong enough for NT mobs'],
     steps: [
       { id: 'nt1', text: 'Go to Kerning City', locationHint: 'Victoria Island — Kerning', detail: 'Neo Tokyo prequest starts in Kerning — talk to the quest NPCs there.' },
@@ -75,12 +76,16 @@ const PREQUESTS = [
       { id: 'nt4', text: 'Finish the storyline quests', detail: 'Several chapters — work through them in order.' },
       { id: 'nt5', text: 'Gain access to Neo Tokyo maps', mapImage: 'assets/images/maps/neo-tokyo.png', detail: 'Once complete, NT maps unlock for training.' },
       { id: 'nt6', text: 'Train in NT until 140+ then start Pink Bean prequest', detail: 'Best EXP in game at this range.' },
+      { id: 'nt7', text: 'Optional — Castellan Toad (130+)', detail: 'Separate questline in Akihabara after NT unlock. Party of 3, one run per day.' },
+      { id: 'nt8', text: 'Optional — Vergamot expedition (145)', detail: 'Ponicher quests in NT. Good mesos between PB and Dunas.' },
+      { id: 'nt9', text: 'Optional — Dunas expedition (152)', detail: 'Akihabara Command Room. Hardest standard NT boss — see Bosses tab.' },
     ],
     tips: [
       'Do HT prequest first if you hit 120 — then NT for leveling.',
       'NT mobs hit hard — bring potions and decent gear.',
       'Great mesos while leveling here.',
       'Supplement with daily Horntail runs.',
+      'NT bosses (Toad → Vergamot → Dunas) are daily income after PB — see forum guide for jq details.',
     ],
   },
   {

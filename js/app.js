@@ -876,14 +876,25 @@ function renderPopularPrices() {
 
 function renderScrollPrices() {
   const el = document.getElementById('scroll-prices');
-  if (!el || typeof PRICE_DB === 'undefined' || typeof SCROLL_PRICE_KEYS === 'undefined') return;
-  el.innerHTML = SCROLL_PRICE_KEYS.filter(k => PRICE_DB[k]).map(k => {
+  if (!el || typeof PRICE_DB === 'undefined') return;
+  const keys = Object.keys(PRICE_DB)
+    .filter(k => PRICE_DB[k].category === 'scroll')
+    .sort((a, b) => a.localeCompare(b));
+  el.innerHTML = keys.map(k => {
     const p = PRICE_DB[k];
     return `<button type="button" class="price-card price-card--scroll" onclick="checkItem('${k.replace(/'/g, "\\'")}')">
       <span class="price-card-name">${k}</span>
       <span class="price-card-value">${p.price}</span>
     </button>`;
   }).join('');
+}
+
+function updateItemsPageMeta() {
+  const el = document.querySelector('#page-items .subtitle');
+  if (!el || typeof ITEM_DB === 'undefined') return;
+  const itemCount = Object.keys(ITEM_DB).length;
+  const priceCount = typeof PRICE_DB !== 'undefined' ? Object.keys(PRICE_DB).length : 0;
+  el.textContent = `Dropped something and not sure what to do? Search ${itemCount} items — keep, sell in FM, or vendor. ${priceCount} FM prices from Sylafia's guide.`;
 }
 
 function renderQuickRefChips() {
@@ -1301,6 +1312,7 @@ function showBoss(id, skipHash) {
     <div class="sep"></div>
     <h3>Tips</h3>
     <ul class="drop-list">${b.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+    ${b.forumGuide ? `<p style="margin-top:12px;"><a href="${b.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Neo Tokyo forum guide ↗</a></p>` : ''}
   `;
   detail.classList.add('show');
   detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2368,6 +2380,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPartyBuilder();
   renderPopularPrices();
   renderScrollPrices();
+  updateItemsPageMeta();
   renderQuickRefChips();
   initLevelProfile();
   initItemAutocomplete();

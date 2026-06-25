@@ -30,3 +30,39 @@ Object.assign(ITEM_DB, {
   'squid ink': { verdict: 'vendor', reason: 'Common Aqua Road drop. Vendor unless questing.', tags: ['mob drop', 'etc'] },
   'pure water': { verdict: 'vendor', reason: 'Common etc drop. Vendor to NPC.', tags: ['mob drop', 'etc'] },
 });
+
+/** Merge Sylafia PRICE_DB entries not already in ITEM_DB with sensible defaults. */
+function hydrateItemDbFromPrices() {
+  if (typeof PRICE_DB === 'undefined') return;
+  for (const [key, meta] of Object.entries(PRICE_DB)) {
+    if (ITEM_DB[key]) continue;
+    const cat = meta.category || '';
+    let verdict = 'fm';
+    let reason = 'Listed in Sylafia\'s FM guide — check price before vending.';
+    let tags = [cat || 'fm'];
+    if (cat === 'scroll' || /\bscroll\b/.test(key) || / for /.test(key)) {
+      verdict = 'keep';
+      reason = 'Scrolls are valuable — never vendor to NPC. Use, sell in FM, or white scroll.';
+      tags = ['scroll'];
+    } else if (cat === 'use-item' || /^(genesis|blizzard|hurricane|meteor|brandish|rush|snipe)/.test(key)) {
+      verdict = 'keep';
+      reason = 'Skill/mastery book — check FM value; many are expensive.';
+      tags = ['mastery book', 'skill'];
+    } else if (cat === 'gear') {
+      verdict = 'fm';
+      reason = 'Gear with FM listing — compare to your current equipment before selling.';
+      tags = ['gear'];
+    } else if (cat === 'consumable') {
+      verdict = 'fm';
+      reason = 'Consumable with FM demand — check Sylafia price.';
+      tags = ['consumable'];
+    } else if (cat === 'etc') {
+      verdict = 'fm';
+      reason = 'Etc item with FM value — check before vending.';
+      tags = ['etc'];
+    }
+    ITEM_DB[key] = { verdict, reason, tags };
+  }
+}
+
+if (typeof PRICE_DB !== 'undefined') hydrateItemDbFromPrices();

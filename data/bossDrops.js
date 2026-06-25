@@ -58,6 +58,23 @@ const BOSS_DROP_TABLES = {
     { item: 'Equipment', rate: 'Uncommon', note: 'Check FM' },
     { item: 'Ores', rate: 'Common', note: 'Vendor ores' },
   ],
+  toad: [
+    { item: 'Scrolls', rate: 'Common', note: 'Never vendor scrolls' },
+    { item: 'Equipment drops', rate: 'Uncommon', note: 'Check FM before selling' },
+    { item: 'Mesos', rate: 'Guaranteed', note: 'Good NT boss income' },
+  ],
+  vergamot: [
+    { item: 'Scrolls', rate: 'Common', note: 'ATT/DEF and glove scrolls' },
+    { item: 'Equipment drops', rate: 'Uncommon', note: 'Check FM' },
+    { item: 'Ores & etc', rate: 'Common', note: 'Vendor ores, keep scrolls' },
+    { item: 'Mesos', rate: 'Guaranteed', note: 'Solid late-game income' },
+  ],
+  dunas: [
+    { item: 'High-tier scrolls', rate: 'Common', note: 'Never vendor scrolls' },
+    { item: 'Equipment drops', rate: 'Uncommon', note: 'Endgame gear — check FM' },
+    { item: 'Ores & etc', rate: 'Common', note: 'Vendor ores' },
+    { item: 'Mesos', rate: 'Guaranteed', note: 'Strong daily meso source' },
+  ],
 };
 
 const LEVEL_MILESTONES = [
@@ -77,4 +94,6 @@ const LEVEL_MILESTONES = [
   { level: 110, icon: '🐟', title: 'Pianus (area boss)', detail: 'No prequest — sweep Aqua Road channels. Drops mastery books.', page: 'bosses', boss: 'pianus' },
   { level: 120, icon: '🐉', title: 'Horntail + Neo Tokyo', detail: 'HT prequest first, then NT for training.', page: 'prequests', prequest: 'horntail' },
   { level: 140, icon: '👑', title: 'Pink Bean', detail: 'Start Temple of Time prequest immediately.', page: 'prequests', prequest: 'pinkbean' },
+  { level: 145, icon: '🤖', title: 'Vergamot (NT boss)', detail: 'Neo Tokyo expedition after PB — daily mesos.', page: 'bosses', boss: 'vergamot' },
+  { level: 152, icon: '👾', title: 'Dunas (NT boss)', detail: 'Hardest standard NT boss — party of 3.', page: 'bosses', boss: 'dunas' },
 ];

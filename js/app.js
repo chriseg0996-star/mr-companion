@@ -11,6 +11,27 @@ const PAGE_TITLES = {
   hpwash: 'HP Wash', scrolls: 'Scrolls', mesos: 'Mesos', party: 'Party',
 };
 
+const NAV_PRIMARY = ['home', 'leveling', 'bosses', 'items'];
+
+const NAV_DRAWER_SECTIONS = [
+  {
+    label: 'Guides',
+    items: [
+      { id: 'home', icon: '🏠' }, { id: 'leveling', icon: '📈' }, { id: 'pqs', icon: '👥' },
+      { id: 'bosses', icon: '💀' }, { id: 'prequests', icon: '📜' }, { id: 'items', icon: '🎒' },
+      { id: 'classes', icon: '⚔️' }, { id: 'jobadv', icon: '🎖️' },
+    ],
+  },
+  {
+    label: 'Tools',
+    items: [
+      { id: 'quiz', icon: '🎯' }, { id: 'gear', icon: '🛡️' }, { id: 'checklist', icon: '✅' },
+      { id: 'tools', icon: '🧰' }, { id: 'glossary', icon: '👾' }, { id: 'hpwash', icon: '❤️' },
+      { id: 'scrolls', icon: '📜' }, { id: 'mesos', icon: '💰' }, { id: 'party', icon: '👫' },
+    ],
+  },
+];
+
 const QUIZ_CLASS_IDS = {
   'Dark Knight': 'dark-knight', Hero: 'hero', Paladin: 'paladin',
   Bishop: 'bishop', 'Fire/Poison Arch Mage': 'fp-arch-mage', 'Ice/Lightning Arch Mage': 'il-arch-mage',
@@ -48,16 +69,106 @@ function initRouteFromHash() {
 
 function showPage(id, btn, skipHash) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
-  if (btn) btn.classList.add('active');
-  else {
-    const match = document.querySelector(`.nav-btn[data-page="${id}"]`);
-    if (match) match.classList.add('active');
-  }
+  updateNavActive(id, btn);
+  closeNavDrawer();
+  closeNavDropdowns();
   document.title = (PAGE_TITLES[id] || 'Guide') + ' — MR Companion';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (!skipHash) setRoute(id);
+}
+
+function navGo(id) {
+  showPage(id);
+}
+
+function updateNavActive(id, btn) {
+  document.querySelectorAll('.nav-btn[data-page], .nav-dropdown-item[data-page], .nav-drawer-item[data-page]').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === id);
+  });
+  document.querySelectorAll('.nav-bottom-btn').forEach(b => {
+    if (b.dataset.page === 'menu') {
+      b.classList.toggle('active', !NAV_PRIMARY.includes(id));
+    } else {
+      b.classList.toggle('active', b.dataset.page === id);
+    }
+  });
+  document.querySelectorAll('.nav-dropdown').forEach(dd => {
+    const pages = (dd.dataset.navPages || '').split(',');
+    dd.classList.toggle('is-active', pages.includes(id));
+  });
+  if (!btn) {
+    btn = document.querySelector(`.nav-btn[data-page="${id}"]`)
+      || document.querySelector(`.nav-bottom-btn[data-page="${id}"]`);
+  }
+}
+
+function initNav() {
+  renderNavDrawer();
+  document.querySelectorAll('.nav-dropdown-toggle').forEach(toggle => {
+    toggle.addEventListener('click', e => {
+      e.stopPropagation();
+      const dd = toggle.closest('.nav-dropdown');
+      const open = dd.classList.contains('open');
+      closeNavDropdowns();
+      if (!open) {
+        dd.classList.add('open');
+        toggle.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+  document.addEventListener('click', closeNavDropdowns);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeNavDrawer(); closeNavDropdowns(); }
+  });
+  const initial = parseHash()?.page || 'home';
+  updateNavActive(initial);
+}
+
+function renderNavDrawer() {
+  const el = document.getElementById('nav-drawer-body');
+  if (!el) return;
+  el.innerHTML = NAV_DRAWER_SECTIONS.map(section => `
+    <div class="nav-drawer-section">
+      <div class="nav-drawer-label">${section.label}</div>
+      ${section.items.map(item => `
+        <button type="button" class="nav-drawer-item" data-page="${item.id}" onclick="navGo('${item.id}')">
+          <span class="nav-drawer-icon">${item.icon}</span>
+          <span>${PAGE_TITLES[item.id] || item.id}</span>
+        </button>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function toggleNavDrawer() {
+  const drawer = document.getElementById('nav-drawer');
+  const backdrop = document.getElementById('nav-backdrop');
+  const menuBtn = document.querySelector('.nav-menu-btn');
+  if (!drawer) return;
+  const open = drawer.classList.toggle('open');
+  drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+  if (backdrop) backdrop.hidden = !open;
+  if (menuBtn) menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  document.body.classList.toggle('nav-drawer-open', open);
+}
+
+function closeNavDrawer() {
+  const drawer = document.getElementById('nav-drawer');
+  const backdrop = document.getElementById('nav-backdrop');
+  const menuBtn = document.querySelector('.nav-menu-btn');
+  if (drawer) {
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+  }
+  if (backdrop) backdrop.hidden = true;
+  if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('nav-drawer-open');
+}
+
+function closeNavDropdowns() {
+  document.querySelectorAll('.nav-dropdown.open').forEach(dd => dd.classList.remove('open'));
+  document.querySelectorAll('.nav-dropdown-toggle').forEach(t => t.setAttribute('aria-expanded', 'false'));
 }
 
 // ══════════════════════════════════════════════
@@ -2153,6 +2264,7 @@ function initGlobalSearch() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initNav();
   renderHome();
   initProfile();
   initPWA();

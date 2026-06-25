@@ -16,25 +16,72 @@
 </head>
 <body>
 
-<nav>
-  <div class="nav-inner">
-    <div class="nav-logo"><span class="nav-logo-mark">🍁</span> MR Companion</div>
-    <button type="button" class="nav-search-btn" onclick="openSearch()" title="Search (Ctrl+K)">⌕</button>
-    <span class="nav-group-label">Guides</span>
-    <button class="nav-btn active" data-page="home" onclick="showPage('home', this)">Start</button>
-    <button class="nav-btn" data-page="leveling" onclick="showPage('leveling', this)">Leveling</button>
-    <button class="nav-btn" data-page="pqs" onclick="showPage('pqs', this)">PQs</button>
-    <button class="nav-btn" data-page="bosses" onclick="showPage('bosses', this)">Bosses</button>
-    <button class="nav-btn" data-page="prequests" onclick="showPage('prequests', this)">Prequests</button>
-    <button class="nav-btn" data-page="items" onclick="showPage('items', this)">Items</button>
-    <button class="nav-btn" data-page="classes" onclick="showPage('classes', this)">Classes</button>
-    <button class="nav-btn" data-page="jobadv" onclick="showPage('jobadv', this)">Jobs</button>
-    <span class="nav-group-label">Tools</span>
-    <button class="nav-btn" data-page="quiz" onclick="showPage('quiz', this)">Class Quiz</button>
-    <button class="nav-btn" data-page="gear" onclick="showPage('gear', this)">Gear</button>
-    <button class="nav-btn" data-page="checklist" onclick="showPage('checklist', this)">Daily</button>
-    <button class="nav-btn nav-more" data-page="tools" onclick="showPage('tools', this)">More</button>
+<nav class="site-nav">
+  <div class="nav-top">
+    <button type="button" class="nav-logo" onclick="showPage('home')">
+      <span class="nav-logo-mark">🍁</span>
+      <span class="nav-logo-text">MR Companion</span>
+    </button>
+
+    <div class="nav-desktop" role="navigation" aria-label="Main">
+      <button type="button" class="nav-btn" data-page="home" onclick="showPage('home', this)">Start</button>
+      <button type="button" class="nav-btn" data-page="leveling" onclick="showPage('leveling', this)">Leveling</button>
+      <button type="button" class="nav-btn" data-page="bosses" onclick="showPage('bosses', this)">Bosses</button>
+      <button type="button" class="nav-btn" data-page="items" onclick="showPage('items', this)">Items</button>
+
+      <div class="nav-dropdown" data-nav-pages="pqs,prequests,classes,jobadv">
+        <button type="button" class="nav-btn nav-dropdown-toggle" aria-expanded="false">Guides <span class="nav-chevron">▾</span></button>
+        <div class="nav-dropdown-menu">
+          <button type="button" class="nav-dropdown-item" data-page="pqs" onclick="navGo('pqs')">Party Quests</button>
+          <button type="button" class="nav-dropdown-item" data-page="prequests" onclick="navGo('prequests')">Prequests</button>
+          <button type="button" class="nav-dropdown-item" data-page="classes" onclick="navGo('classes')">Classes</button>
+          <button type="button" class="nav-dropdown-item" data-page="jobadv" onclick="navGo('jobadv')">Jobs</button>
+        </div>
+      </div>
+
+      <div class="nav-dropdown" data-nav-pages="quiz,gear,checklist,tools,glossary,hpwash,scrolls,mesos,party">
+        <button type="button" class="nav-btn nav-dropdown-toggle" aria-expanded="false">Tools <span class="nav-chevron">▾</span></button>
+        <div class="nav-dropdown-menu">
+          <button type="button" class="nav-dropdown-item" data-page="quiz" onclick="navGo('quiz')">Class Quiz</button>
+          <button type="button" class="nav-dropdown-item" data-page="gear" onclick="navGo('gear')">Gear</button>
+          <button type="button" class="nav-dropdown-item" data-page="checklist" onclick="navGo('checklist')">Daily</button>
+          <button type="button" class="nav-dropdown-item" data-page="tools" onclick="navGo('tools')">More Tools</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <button type="button" class="nav-search-btn" onclick="openSearch()" title="Search (/ or Ctrl+K)" aria-label="Search">⌕</button>
+      <button type="button" class="nav-menu-btn" onclick="toggleNavDrawer()" aria-label="Open menu" aria-expanded="false">☰</button>
+    </div>
   </div>
+</nav>
+
+<aside class="nav-drawer" id="nav-drawer" aria-hidden="true">
+  <div class="nav-drawer-head">
+    <strong>Menu</strong>
+    <button type="button" class="nav-drawer-close" onclick="closeNavDrawer()" aria-label="Close menu">✕</button>
+  </div>
+  <div class="nav-drawer-body" id="nav-drawer-body"></div>
+</aside>
+<div class="nav-backdrop" id="nav-backdrop" hidden onclick="closeNavDrawer()"></div>
+
+<nav class="nav-bottom" aria-label="Quick navigation">
+  <button type="button" class="nav-bottom-btn active" data-page="home" onclick="showPage('home', this)">
+    <span class="nav-bottom-icon" aria-hidden="true">🏠</span><span>Start</span>
+  </button>
+  <button type="button" class="nav-bottom-btn" data-page="leveling" onclick="showPage('leveling', this)">
+    <span class="nav-bottom-icon" aria-hidden="true">📈</span><span>Level</span>
+  </button>
+  <button type="button" class="nav-bottom-btn" data-page="bosses" onclick="showPage('bosses', this)">
+    <span class="nav-bottom-icon" aria-hidden="true">💀</span><span>Bosses</span>
+  </button>
+  <button type="button" class="nav-bottom-btn" data-page="items" onclick="showPage('items', this)">
+    <span class="nav-bottom-icon" aria-hidden="true">🎒</span><span>Items</span>
+  </button>
+  <button type="button" class="nav-bottom-btn" data-page="menu" onclick="toggleNavDrawer()">
+    <span class="nav-bottom-icon" aria-hidden="true">☰</span><span>Menu</span>
+  </button>
 </nav>
 
 <div class="hero-wrap">

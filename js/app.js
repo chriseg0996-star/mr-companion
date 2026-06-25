@@ -37,6 +37,55 @@ const DEFAULT_CLASS_LINKS = [
   { label: 'Royals Wiki', url: 'https://mime.royals.ms' },
 ];
 
+function getClassLinks(id) {
+  const c = CLASS_GUIDES[id];
+  if (c?.links?.length) return c.links;
+  const q = CLASS_FORUM_SEARCH?.[id];
+  return [
+    { label: 'Class Guides Forum', url: q ? `${CLASS_FORUM_URL}search/?q=${q}` : CLASS_FORUM_URL },
+    { label: 'Royals Wiki', url: CLASS_WIKI_URL },
+  ];
+}
+
+function renderSkillTable(id) {
+  const table = CLASS_SKILL_TABLES?.[id];
+  if (!table?.length) return '';
+  const priorityClass = p => {
+    const u = (p || '').toUpperCase();
+    if (u.includes('FIRST') || u === 'MAX') return 'skill-pri-max';
+    if (u.includes('HIGH')) return 'skill-pri-high';
+    if (u.includes('LOW')) return 'skill-pri-low';
+    return 'skill-pri-med';
+  };
+  return `
+    <div class="sep"></div>
+    <h3>Skill Priority Table</h3>
+    <p class="section-hint" style="margin:0 0 12px;">What to max first at each job advancement.</p>
+    <div class="skill-table-wrap">
+      <table class="skill-table">
+        <thead><tr><th>Job</th><th>Skill</th><th>Priority</th><th>Notes</th></tr></thead>
+        <tbody>
+          ${table.map(row => row.skills.map((s, i) => `
+            <tr>
+              ${i === 0 ? `<td class="skill-table-job" rowspan="${row.skills.length}">${row.job}</td>` : ''}
+              <td>${s.name}</td>
+              <td><span class="skill-pri ${priorityClass(s.priority)}">${s.priority}</span></td>
+              <td class="skill-table-note">${s.note}</td>
+            </tr>
+          `).join('')).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function initPWA() {
+  if (!('serviceWorker' in navigator)) return;
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
 function getProfile() {
   return {
     level: parseInt(localStorage.getItem('mr-level')) || 0,
@@ -1175,6 +1224,7 @@ function showClass(id) {
         </div>
       `).join('')}
     </div>
+    ${renderSkillTable(id)}
     <div class="sep"></div>
     <h3>Leveling</h3>
     <p style="font-size:13px;color:var(--muted);">${c.leveling}</p>
@@ -1188,13 +1238,11 @@ function showClass(id) {
       <button class="btn btn-sm" onclick="showPage('jobadv')">Job Advancements →</button>
       <button class="btn btn-sm btn-ghost" onclick="showPage('gear')">Gear Roadmap →</button>
     </div>
-    ${(c.links || DEFAULT_CLASS_LINKS).length ? `
-      <div class="sep"></div>
-      <h3>Official Resources</h3>
-      <div style="font-size:13px;line-height:2.2;">
-        ${(c.links || DEFAULT_CLASS_LINKS).map(l => `<a href="${l.url}" target="_blank" rel="noopener" style="color:var(--blue);display:block;">${l.label} →</a>`).join('')}
-      </div>
-    ` : ''}
+    <div class="sep"></div>
+    <h3>Official Resources</h3>
+    <div style="font-size:13px;line-height:2.2;">
+      ${getClassLinks(id).map(l => `<a href="${l.url}" target="_blank" rel="noopener" style="color:var(--blue);display:block;">${l.label} →</a>`).join('')}
+    </div>
   `;
   detail.classList.add('show');
   detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1397,6 +1445,7 @@ function initGlobalSearch() {
 document.addEventListener('DOMContentLoaded', () => {
   renderHome();
   initProfile();
+  initPWA();
   initGlobalSearch();
   renderTools();
   renderPQs();

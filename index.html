@@ -10,12 +10,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#ff8c69">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
 
 <nav>
   <div class="nav-inner">
     <div class="nav-logo"><span class="nav-logo-mark">🍁</span> MR Companion</div>
+    <button type="button" class="nav-search-btn" onclick="openSearch()" title="Search (Ctrl+K)">⌕</button>
     <span class="nav-group-label">Guides</span>
     <button class="nav-btn active" data-page="home" onclick="showPage('home', this)">Start</button>
     <button class="nav-btn" data-page="leveling" onclick="showPage('leveling', this)">Leveling</button>
@@ -404,6 +408,7 @@
 <script src="data/jobData.js"></script>
 <script src="data/prequestData.js"></script>
 <script src="data/classGuides.js"></script>
+<script src="data/classSkillTables.js"></script>
 <script src="data/mobGlossary.js"></script>
 <script src="data/priceData.js"></script>
 <script src="js/app.js"></script>

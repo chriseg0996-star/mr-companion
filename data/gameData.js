@@ -162,7 +162,7 @@ const WORLD_MAP = [
 
 const LEVELS = [
   { range: '1 – 10', label: 'Maple Island', theme: 'island', icon: '🏝️', spots: [
-    { name: 'Tutorial Quests', type: 'solo', mapStyle: 'beach', mobs: ['Snails', 'Blue Snails', 'Shrooms'], detail: 'Complete all tutorial quests on Maple Island — talk to every NPC with a quest icon. Enough EXP to hit 10 without grinding. Take the boat from South Perry to Lith Harbor when done.' }
+    { name: 'Tutorial Quests', type: 'solo', mapStyle: 'beach', mapImage: 'assets/images/maps/maple-island.png', mobs: ['Snails', 'Blue Snails', 'Shrooms'], detail: 'Complete all tutorial quests on Maple Island — talk to every NPC with a quest icon. Enough EXP to hit 10 without grinding. Take the boat from South Perry to Lith Harbor when done.' }
   ]},
   { range: '10 – 20', label: 'Henesys Area', theme: 'victoria', icon: '🌳', spots: [
     { name: 'Pig Beach', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/pig-beach.png', mobs: ['Pigs', 'Ribbon Pigs'], detail: 'East of Henesys. Easy grind, good for beginners learning your class skills.' },
@@ -175,7 +175,7 @@ const LEVELS = [
   { range: '30 – 50', label: 'Ludibrium', theme: 'ludibrium', icon: '🎠', spots: [
     { name: 'Ludibrium PQ (LPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/ludibrium-pq.png', mobs: ['PQ monsters'], detail: 'Level 35–50. Party of 4. Best EXP and equipment rewards at this range. Run until 50.' },
     { name: 'Carnival PQ (CPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/ludibrium-pq.png', mobs: ['PQ monsters'], detail: 'Level 30–50. 2v2 competitive PQ. Good EXP, drops Onyx Apples.' },
-    { name: 'Amoria PQ (APQ)', type: 'party', mapStyle: 'pq', mobs: ['PQ monsters'], detail: 'Level 40+. Requires in-game marriage. Best EXP per hour at 40–50 if you have a partner.' }
+    { name: 'Amoria PQ (APQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/pink-bean-temple.png', mobs: ['PQ monsters'], detail: 'Level 40+. Requires in-game marriage. Best EXP per hour at 40–50 if you have a partner.' }
   ]},
   { range: '50 – 70', label: 'Orbis / El Nath', theme: 'orbis', icon: '☁️', spots: [
     { name: 'Orbis PQ (OPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/gallopera.png', mobs: ['PQ monsters'], detail: 'Level 51–70. Party of 4. Best EXP at this range. Run until 70.' },

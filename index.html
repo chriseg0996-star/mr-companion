@@ -146,15 +146,20 @@
   <p class="section-hint">Tap an item to search. Prices from <a href="https://docs.google.com/spreadsheets/d/1B3sxmpaW7RGrQAAxAyeR-xS4mdKCTTs_DzgV0qo2p_8/edit" target="_blank" rel="noopener">Sylafia's Price Guide</a> — always double-check before selling.</p>
   <div id="popular-prices" class="price-grid"></div>
   <hr class="divider">
+  <h2>Scroll FM Prices</h2>
+  <p class="section-hint">Common scroll prices — tap to check keep/vendor advice.</p>
+  <div id="scroll-prices" class="price-grid"></div>
+  <hr class="divider">
   <h2>Quick Reference</h2>
   <div class="grid2">
     <div class="card">
       <div class="card-header"><h2>Always Keep</h2><span class="badge badge-green">KEEP</span></div>
-      <div style="font-size:13px;color:var(--muted);line-height:2.2;">All scrolls · Zakum Helmet · Work Gloves lv40 · Horntail drops · Pink Bean drops · Balanced Fury · Steelies / Tobis · Onyx Apples</div>
+      <div id="quick-keep-chips" class="quick-ref-chips"></div>
+      <p class="section-hint" style="margin-top:10px;margin-bottom:0;">Tap any item to check verdict + FM price.</p>
     </div>
     <div class="card">
       <div class="card-header"><h2>Always Vendor</h2><span class="badge badge-red">VENDOR</span></div>
-      <div style="font-size:13px;color:var(--muted);line-height:2.2;">White potions · Basic consumables · No-stat mob drops · Equipment 20+ levels below yours · Basic arrows</div>
+      <div style="font-size:13px;color:var(--muted);line-height:2.2;">White potions · Basic consumables · No-stat mob drops · Equipment 20+ levels below yours · Basic arrows · Common ores (mithril, orihalcon)</div>
     </div>
     <div class="card">
       <div class="card-header"><h2>Godly Stat Thresholds</h2><span class="badge badge-yellow">REFERENCE</span></div>
@@ -421,6 +426,7 @@
 <script src="data/classGear.js"></script>
 <script src="data/mobGlossary.js"></script>
 <script src="data/priceData.js"></script>
+<script src="data/scrollPrices.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

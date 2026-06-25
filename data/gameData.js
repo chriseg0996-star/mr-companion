@@ -356,7 +356,7 @@ const GEAR_PHASES = [
   {
     title: 'Early Game — Level 1 to 70',
     items: [
-      { priority: 'p1', name: 'Work Gloves (lv 40)', detail: 'Scroll with ATT 60% or 10%. Best damage upgrade per meso.' },
+      { priority: 'p1', name: 'Work Gloves (lv 40)', itemKey: 'work gloves', detail: 'Scroll with ATT 60% or 10%. Best damage upgrade per meso.' },
       { priority: 'p2', name: 'Clean weapon for your level', detail: 'Check Free Market for level-appropriate weapon. Don\'t overspend.' },
       { priority: 'p3', name: 'Stat earrings', detail: 'Any earrings with your main stat (STR/DEX/INT/LUK).' },
     ]
@@ -364,8 +364,8 @@ const GEAR_PHASES = [
   {
     title: 'Mid Game — Level 70 to 120',
     items: [
-      { priority: 'p1', name: 'Zakum Helmet', detail: 'Run Zakum daily. Biggest single mid-game upgrade.' },
-      { priority: 'p1', name: 'Papu Pendant', detail: 'Run Papulatus daily at 85+. Best pendant until Horntail Necklace.' },
+      { priority: 'p1', name: 'Zakum Helmet', itemKey: 'zakum helmet', detail: 'Run Zakum daily. Biggest single mid-game upgrade.' },
+      { priority: 'p1', name: 'Papu Pendant', itemKey: 'papu pendant', detail: 'Run Papulatus daily at 85+. Best pendant until Horntail Necklace.' },
       { priority: 'p2', name: 'Level 70-80 weapon', detail: 'Scrolled if budget allows. Each slot matters.' },
       { priority: 'p3', name: 'Sauna Robe / class armor', detail: 'Clean is fine. Scroll with DEF or stat scrolls.' },
     ]
@@ -373,19 +373,19 @@ const GEAR_PHASES = [
   {
     title: 'Late Game — Level 120+',
     items: [
-      { priority: 'p1', name: 'Horntail Necklace', detail: 'Replace Papu Pendant immediately on drop.' },
-      { priority: 'p1', name: 'Horntail Rings x3', detail: 'Run Horntail daily. All 3 ring slots.' },
+      { priority: 'p1', name: 'Horntail Necklace', itemKey: 'horntail necklace', detail: 'Replace Papu Pendant immediately on drop.' },
+      { priority: 'p1', name: 'Horntail Rings x3', itemKey: 'horntail ring', detail: 'Run Horntail daily. All 3 ring slots.' },
       { priority: 'p1', name: 'Scrolled endgame weapon', detail: 'Your biggest investment. Biggest damage gain.' },
-      { priority: 'p2', name: 'Pink Adventurer Cape', detail: 'Best cape in game. Scroll with stat scrolls.' },
+      { priority: 'p2', name: 'Pink Adventurer Cape', itemKey: 'pink adventurer cape', detail: 'Best cape in game. Scroll with stat scrolls.' },
       { priority: 'p3', name: 'Stat earrings (high roll)', detail: 'Aim for 10+ main stat.' },
     ]
   },
   {
     title: 'Endgame — Pink Bean Ready',
     items: [
-      { priority: 'p1', name: 'Pink Bean Hat', detail: 'Best helmet in game. Replaces Zakum Helmet.' },
-      { priority: 'p1', name: 'Pink Bean Suit', detail: 'Best overall armor.' },
-      { priority: 'p2', name: 'Work Gloves 10 ATT', detail: 'Max possible ATT gloves.' },
+      { priority: 'p1', name: 'Pink Bean Hat', itemKey: 'pink bean hat', detail: 'Best helmet in game. Replaces Zakum Helmet.' },
+      { priority: 'p1', name: 'Pink Bean Suit', itemKey: 'pink bean suit', detail: 'Best overall armor.' },
+      { priority: 'p2', name: 'Work Gloves 10 ATT', itemKey: 'work gloves', detail: 'Max possible ATT gloves.' },
       { priority: 'p3', name: 'Full stat optimization', detail: 'Chaos scroll upgrades, perfect earrings, etc.' },
     ]
   },

@@ -1,4 +1,4 @@
-const CACHE = 'mr-companion-v3';
+const CACHE = 'mr-companion-v4';
 const PRECACHE = [
   './',
   './index.html',
@@ -13,6 +13,7 @@ const PRECACHE = [
   './data/classGear.js',
   './data/mobGlossary.js',
   './data/priceData.js',
+  './data/scrollPrices.js',
 ];
 
 self.addEventListener('install', e => {

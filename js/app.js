@@ -39,12 +39,21 @@ const DEFAULT_CLASS_LINKS = [
 
 function getClassLinks(id) {
   const c = CLASS_GUIDES[id];
-  if (c?.links?.length) return c.links;
   const q = CLASS_FORUM_SEARCH?.[id];
-  return [
-    { label: 'Class Guides Forum', url: q ? `${CLASS_FORUM_URL}search/?q=${q}` : CLASS_FORUM_URL },
-    { label: 'Royals Wiki', url: CLASS_WIKI_URL },
-  ];
+  const links = [];
+  if (q) {
+    links.push({
+      label: `${c?.name || 'Class'} — forum search`,
+      url: `${CLASS_FORUM_URL}search/?q=${q}`,
+    });
+  }
+  (c?.links || []).forEach(l => {
+    if (!links.some(x => x.url === l.url)) links.push(l);
+  });
+  if (!links.some(l => l.url === CLASS_WIKI_URL)) {
+    links.push({ label: 'Royals Wiki', url: CLASS_WIKI_URL });
+  }
+  return links.length ? links : DEFAULT_CLASS_LINKS;
 }
 
 function renderSkillTable(id) {
@@ -313,6 +322,59 @@ const POPULAR_PRICE_KEYS = [
   'ap reset', 'vip zak helm', 'vip htp', 'heartstopper', 'stormcaster', 'bwg',
 ];
 
+const QUICK_KEEP_ITEMS = [
+  'zakum helmet', 'work gloves', 'horntail necklace', 'horntail ring',
+  'papu pendant', 'pink bean hat', 'onyx apple', 'chaos scroll', 'balanced fury', 'ilbi',
+];
+
+const ITEM_QUERY_PATTERNS = [
+  [/zakum helmet/i, 'zakum helmet'],
+  [/horntail necklace/i, 'horntail necklace'],
+  [/horntail ring/i, 'horntail ring'],
+  [/papu pendant/i, 'papu pendant'],
+  [/pink bean hat/i, 'pink bean hat'],
+  [/pink bean suit/i, 'pink bean suit'],
+  [/pink adventurer cape/i, 'pink adventurer cape'],
+  [/work glove/i, 'work gloves'],
+  [/onyx apple/i, 'onyx apple'],
+  [/chaos scroll/i, 'chaos scroll'],
+  [/white scroll/i, 'white scroll'],
+  [/balanced fury/i, 'balanced fury'],
+  [/ilbi/i, 'ilbi'],
+  [/steelies?/i, 'steelies'],
+  [/tobis?/i, 'tobis'],
+  [/power elixir/i, 'power elixir'],
+  [/sauna robe/i, 'sauna robe'],
+];
+
+function resolveItemQuery(text) {
+  if (!text) return null;
+  const tl = text.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim();
+  if (ITEM_DB[tl] || (typeof PRICE_DB !== 'undefined' && PRICE_DB[tl])) return tl;
+  for (const [re, key] of ITEM_QUERY_PATTERNS) {
+    if (re.test(text)) return key;
+  }
+  return lookupItem(tl)?.key || lookupPrice(tl)?.key || null;
+}
+
+function openItemCheck(q) {
+  showPage('items');
+  setTimeout(() => checkItem(q), 50);
+}
+
+function itemLink(text, query) {
+  const q = query || resolveItemQuery(text);
+  if (!q) return text;
+  const esc = q.replace(/'/g, "\\'");
+  const price = lookupPrice(q);
+  const priceBadge = price ? `<span class="item-link-price">${price.price}</span>` : '';
+  return `<button type="button" class="item-link" onclick="event.stopPropagation();openItemCheck('${esc}')">${text}${priceBadge}</button>`;
+}
+
+function gearItemLabel(name, itemKey) {
+  return itemLink(name, itemKey || resolveItemQuery(name));
+}
+
 function lookupItem(q) {
   const ql = q.trim().toLowerCase();
   const match = Object.keys(ITEM_DB).find(k => ql.includes(k) || k.includes(ql));
@@ -395,6 +457,25 @@ function renderPopularPrices() {
       <span class="price-card-value">${p.price}</span>
     </button>`;
   }).join('');
+}
+
+function renderScrollPrices() {
+  const el = document.getElementById('scroll-prices');
+  if (!el || typeof PRICE_DB === 'undefined' || typeof SCROLL_PRICE_KEYS === 'undefined') return;
+  el.innerHTML = SCROLL_PRICE_KEYS.filter(k => PRICE_DB[k]).map(k => {
+    const p = PRICE_DB[k];
+    return `<button type="button" class="price-card price-card--scroll" onclick="checkItem('${k.replace(/'/g, "\\'")}')">
+      <span class="price-card-name">${k}</span>
+      <span class="price-card-value">${p.price}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderQuickRefChips() {
+  const keep = document.getElementById('quick-keep-chips');
+  if (keep) {
+    keep.innerHTML = QUICK_KEEP_ITEMS.map(k => itemLink(k.replace(/\b\w/g, c => c.toUpperCase()), k)).join('');
+  }
 }
 
 let itemSearchIndex = null;
@@ -690,6 +771,24 @@ function renderBosses(filter = 'all') {
   `).join('');
 }
 
+function renderBossPrequestProgress(bossId) {
+  const pq = PREQUESTS?.find(p => p.bossId === bossId);
+  if (!pq) return '';
+  const { done, total } = prequestProgress(pq.id);
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const complete = total > 0 && done === total;
+  return `
+    <div class="boss-pq-progress card" style="margin-bottom:16px;padding:14px 16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:13px;font-weight:600;">${pq.short} prequest</span>
+        <span class="badge ${complete ? 'badge-green' : 'badge-yellow'}">${done}/${total}${complete ? ' ✓' : ''}</span>
+      </div>
+      <div class="prequest-track-bar"><div style="width:${pct}%"></div></div>
+      <button type="button" class="btn btn-sm" style="margin-top:10px;" onclick="openPrequest('${pq.id}')">${complete ? 'Review prequest' : 'Continue prequest'} →</button>
+    </div>
+  `;
+}
+
 function showBoss(id) {
   const b = BOSSES.find(x => x.id === id);
   const detail = document.getElementById('boss-detail');
@@ -720,6 +819,7 @@ function showBoss(id) {
     <h3>Arena Map</h3>
     ${renderMapScene(b.mapTheme || 'cave', b.phases || [b.name], b.mapImage || null)}
     <div class="sep"></div>
+    ${renderBossPrequestProgress(b.id)}
     <h3>Prequest Walkthrough</h3>
     <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">
       <a href="#" onclick="openPrequest('${b.id}');return false;" style="color:var(--blue);">Open full step-by-step prequest guide →</a>
@@ -728,7 +828,7 @@ function showBoss(id) {
     <h3>Prequest Summary</h3>
     <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">${b.prequest}</p>
     <h3>Drops</h3>
-    <ul class="drop-list">${b.drops.map(d => `<li>${d}</li>`).join('')}</ul>
+    <ul class="drop-list">${b.drops.map(d => `<li>${itemLink(d)}</li>`).join('')}</ul>
     <div class="sep"></div>
     <h3>Tips</h3>
     <ul class="drop-list">${b.tips.map(t => `<li>${t}</li>`).join('')}</ul>
@@ -1015,10 +1115,10 @@ function renderGear() {
     <div class="gear-phase">
       <div class="gear-phase-title">${p.title}</div>
       ${p.items.map(item => `
-        <div class="gear-item">
+          <div class="gear-item">
           <span class="gear-priority ${item.priority}">${item.priority.toUpperCase()}</span>
           <div>
-            <div style="font-weight:600;margin-bottom:2px;">${item.name}</div>
+            <div style="font-weight:600;margin-bottom:2px;">${gearItemLabel(item.name, item.itemKey)}</div>
             <div style="font-size:13px;color:var(--muted);">${item.detail}</div>
           </div>
         </div>
@@ -1037,7 +1137,7 @@ function renderClassGearBlock(classId, title) {
         <div class="gear-item">
           <span class="gear-priority ${item.priority}">${item.priority.toUpperCase()}</span>
           <div>
-            <div style="font-weight:600;margin-bottom:2px;">${item.item}</div>
+            <div style="font-weight:600;margin-bottom:2px;">${gearItemLabel(item.item, item.itemKey)}</div>
             <div style="font-size:13px;color:var(--muted);">${item.note}</div>
           </div>
         </div>
@@ -1071,7 +1171,8 @@ function renderCheckableSteps(steps, prefix, rerender) {
         <div class="quest-step-check">${done ? '✓' : i + 1}</div>
         <div class="quest-step-body">
           <div class="quest-step-text">${s.text}</div>
-          ${s.drops ? `<div class="quest-step-drops">Drops: ${s.drops}</div>` : ''}
+          ${s.npc ? `<div class="quest-step-npc">🧭 <strong>${s.npc}</strong>${s.locationHint ? ` · ${s.locationHint}` : ''}</div>` : ''}
+          ${s.drops ? `<div class="quest-step-drops">Drops: ${itemLink(s.drops, resolveItemQuery(s.drops))}</div>` : ''}
           ${s.detail ? `<div class="quest-step-detail">${s.detail}</div>` : ''}
           ${s.mapImage ? `<div class="quest-step-map" onclick="event.stopPropagation()">${renderMapScene('field', mobs, s.mapImage)}</div>` : ''}
         </div>
@@ -1574,6 +1675,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderGlossary();
   renderPartySlots();
   renderPopularPrices();
+  renderScrollPrices();
+  renderQuickRefChips();
   initLevelProfile();
   initItemAutocomplete();
 });

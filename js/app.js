@@ -1173,7 +1173,8 @@ function getBossPrequest(bossId) {
 function renderBossProgression() {
   const el = document.getElementById('boss-progression');
   if (!el) return;
-  const main = BOSSES.filter(b => b.tier !== 'demi');
+  const main = BOSSES.filter(b => b.tier !== 'demi' && b.tier !== 'endgame');
+  const endgame = BOSSES.filter(b => b.tier === 'endgame');
   const demi = BOSSES.filter(b => b.tier === 'demi');
   const renderTrack = (list, startIdx = 0) => list.map((b, i) => `
         <div class="flow-step boss-node" onclick="showBoss('${b.id}')">
@@ -1185,15 +1186,19 @@ function renderBossProgression() {
       `).join('');
   el.innerHTML = `
     <div class="flow-track flow-bosses">${renderTrack(main)}</div>
+    ${endgame.length ? `
+      <p class="section-hint" style="margin:16px 0 8px;">Endgame — Auf Haven & Von Leon</p>
+      <div class="flow-track flow-bosses flow-bosses--endgame">${renderTrack(endgame, main.length)}</div>
+    ` : ''}
     ${demi.length ? `
       <p class="section-hint" style="margin:16px 0 8px;">Demi-bosses — optional gear & mesos between Pap and Horntail</p>
-      <div class="flow-track flow-bosses flow-bosses--demi">${renderTrack(demi, main.length)}</div>
+      <div class="flow-track flow-bosses flow-bosses--demi">${renderTrack(demi, main.length + endgame.length)}</div>
     ` : ''}
   `;
 }
 function renderBosses(filter = 'all') {
   const grid = document.getElementById('boss-grid');
-  const tierColors = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple', demi: 'badge-blue' };
+  const tierColors = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple', demi: 'badge-blue', endgame: 'badge-red' };
   const filtered = BOSSES.filter(b => filter === 'all' || b.tier === filter);
   grid.innerHTML = filtered.map(b => `
     <div class="boss-card boss-card--${b.tier}" onclick="showBoss('${b.id}')">
@@ -1232,13 +1237,15 @@ function renderBossDropTable(bossId) {
 }
 
 function renderBossRespawnBanner(bossId) {
-  const cid = { zakum: 'zakum', papulatus: 'pap', horntail: 'ht', pinkbean: 'pb' }[bossId];
+  const b = BOSSES.find(x => x.id === bossId);
+  const cid = b?.checklistId || { zakum: 'zakum', papulatus: 'pap', horntail: 'ht', pinkbean: 'pb' }[bossId];
   if (!cid) return '';
   const status = getBossRespawnStatus(cid);
   if (!status) return '';
+  const weekly = bossId === 'von-leon';
   return status.ready
-    ? '<p class="boss-respawn-banner ready">✓ Off cooldown — ready to run (based on your daily checklist mark)</p>'
-    : `<p class="boss-respawn-banner cooldown">⏳ Respawn in <strong>${status.label}</strong> since last checklist mark</p>`;
+    ? `<p class="boss-respawn-banner ready">✓ Off cooldown — ready to run${weekly ? ' (weekly)' : ''}</p>`
+    : `<p class="boss-respawn-banner cooldown">⏳ Respawn in <strong>${status.label}</strong>${weekly ? ' (resets Monday server time)' : ''}</p>`;
 }
 
 function renderBossPrequestProgress(bossId) {

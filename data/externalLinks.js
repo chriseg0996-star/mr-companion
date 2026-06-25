@@ -8,6 +8,8 @@ const EXTERNAL_LINKS = [
   { label: 'Item Library', url: 'https://royals-library.netlify.app', icon: '🗃️', desc: 'Max stats before you scroll or sell' },
   { label: 'Guide to Neo Tokyo', url: 'https://royals.ms/forum/threads/guide-to-neo-tokyo.146864/', icon: '🗼', desc: 'NT prequest, bosses, and expeditions' },
   { label: 'Zancks Bossing Guide', url: 'https://royals.ms/forum/threads/zancks-bossing-guide.196246/', icon: '💀', desc: 'HP, EXP, and mechanics for all bosses' },
+  { label: 'Von Leon Prequest', url: 'https://royals.ms/forum/threads/lhc-lkc-pre-quest-guide.207734/', icon: '🦁', desc: 'LHC/LKC chain through Is there any hope?' },
+  { label: 'Download Client', url: 'https://royals.ms/download', icon: '⬇️', desc: 'Get the MapleRoyals launcher' },
 ];
 
-const BOSS_RESPAWN_HOURS = { zakum: 24, pap: 24, ht: 24, pb: 168 };
+const BOSS_RESPAWN_HOURS = { zakum: 24, pap: 24, ht: 24, pb: 168, auf: 24, vl: 84 };

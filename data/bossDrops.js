@@ -86,6 +86,27 @@ const BOSS_DROP_TABLES = {
     { item: 'Equipment drops', rate: 'Uncommon', note: 'Endgame gear' },
     { item: 'Mesos', rate: 'Guaranteed', note: 'Top NT income' },
   ],
+  'nameless-magic-monster': [
+    { item: 'White Scroll Fragment A', rate: 'Uncommon', note: 'Craft white scrolls' },
+    { item: 'Achilles 30', rate: 'Rare', note: 'Warrior skill book' },
+    { item: 'Chain Lightning 30', rate: 'Rare', note: 'I/L mage book' },
+    { item: 'Belt scrolls', rate: 'Uncommon', note: '100%/60% belt scrolls' },
+    { item: 'Scrolls', rate: 'Common', note: 'Never vendor' },
+  ],
+  'auf-haven': [
+    { item: 'Auf Haven Circlet', itemKey: 'auf haven circlet', rate: 'Rare', note: 'Endgame helm — scroll with circlet 60%' },
+    { item: 'Chaos Scroll', itemKey: 'chaos scroll', rate: 'Rare', note: 'Never vendor' },
+    { item: 'Element Pierce', rate: 'Rare', note: 'Strong earring drop' },
+    { item: 'Ring 60% scrolls', rate: 'Uncommon', note: 'STR/DEX/INT/LUK ring scrolls' },
+    { item: '5k NX Card', rate: 'Uncommon', note: 'Cash shop credit' },
+  ],
+  'von-leon': [
+    { item: 'Von Leon\'s Belt', itemKey: 'von leon belt', rate: '1 per clear', note: 'BiS belt — never sell' },
+    { item: 'Von Leon\'s Medallion', rate: '1 per clear', note: 'Untradeable one-of-a-kind' },
+    { item: 'Hero\'s Will 10', rate: 'Rare', note: 'Mastery book — valuable' },
+    { item: 'Royal Forging Manuals', rate: 'Rare', note: 'Knives, quiver, bullet manuals' },
+    { item: 'Bonus room loot', rate: 'After clear', note: 'Chaos, white scroll, Von Leon\'s Boots' },
+  ],
 };
 
 const LEVEL_MILESTONES = [
@@ -109,4 +130,7 @@ const LEVEL_MILESTONES = [
   { level: 152, icon: '👾', title: 'Dunas (NT boss)', detail: 'Hardest standard NT boss — party of 3.', page: 'bosses', boss: 'dunas' },
   { level: 158, icon: '🌌', title: 'Nibergen (NT boss)', detail: 'Tokyo Skies — strong EXP, party of 3.', page: 'bosses', boss: 'nibergen' },
   { level: 164, icon: '⚔️', title: 'Dunas v2 (NT boss)', detail: 'Shibuya — White Scroll Fragments.', page: 'bosses', boss: 'dunas-v2' },
+  { level: 160, icon: '👻', title: 'Nameless Magic Monster', detail: 'NT PQ boss — 8k HP, lightning weak.', page: 'bosses', boss: 'nameless-magic-monster' },
+  { level: 170, icon: '🏯', title: 'Auf Haven expedition', detail: 'NT endgame — circlet & chaos drops.', page: 'prequests', prequest: 'auf-haven' },
+  { level: 180, icon: '🦁', title: 'Von Leon', detail: 'LKC prequest — 2 runs/week, best EXP.', page: 'prequests', prequest: 'von-leon' },
 ];

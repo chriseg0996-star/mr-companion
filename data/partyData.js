@@ -39,6 +39,18 @@ const PARTY_PRESETS = {
     label: 'NT — Dunas v2',
     classes: ['Bishop', 'Dark Knight', 'Night Lord'],
   },
+  'nameless-magic-monster': {
+    label: 'NT — Nameless',
+    classes: ['Bishop', 'Ice/Lightning Mage', 'Night Lord'],
+  },
+  'auf-haven': {
+    label: 'Auf Haven',
+    classes: ['Bishop', 'Paladin', 'Night Lord', 'Night Lord', 'Bowmaster', 'Shadower'],
+  },
+  'von-leon': {
+    label: 'Von Leon',
+    classes: ['Bishop', 'Dark Knight', 'Night Lord', 'Bowmaster', 'Hero', 'Shadower'],
+  },
 };
 
 const PARTY_BOSS_RULES = {
@@ -111,6 +123,30 @@ const PARTY_BOSS_RULES = {
     dk: 'required',
     nl: 'recommended',
     notes: ['Party of 3 — 12k+ HP to tank body hits', 'Split ship + body; pin Imperial Guards', 'All Cures for dispel/stun/darkness'],
+  },
+  'nameless-magic-monster': {
+    label: 'Nameless Magic Monster',
+    maxSlots: 3,
+    bishop: 'recommended',
+    dk: false,
+    notes: ['Party of 3 PQ — destroy crystal to spawn', '8k HP survives all hits', 'Lightning weak — I/L mage or NL DPS'],
+  },
+  'auf-haven': {
+    label: 'Auf Haven Expedition',
+    maxSlots: 6,
+    bishop: 'required',
+    dk: 'recommended',
+    notes: ['Bishop Doom essential for Royal Guard & Core Blaze', 'Paladin/Bucc mandatory to pin Auf Haven left', '16–19k HP for Auf body — kill mini spawns fast'],
+  },
+  'von-leon': {
+    label: 'Von Leon',
+    maxSlots: 6,
+    bishop: 'required',
+    dk: 'recommended',
+    nl: 'recommended',
+    bm: 'recommended',
+    shadower: 'recommended',
+    notes: ['2 runs per week — plan comp before entering', '18k+ HP — dodge Golem Drop (1HKO)', 'Clear Gargoyles and Mini Golems immediately'],
   },
 };
 

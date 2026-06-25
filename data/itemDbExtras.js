@@ -30,6 +30,9 @@ Object.assign(ITEM_DB, {
   'squid ink': { verdict: 'vendor', reason: 'Common Aqua Road drop. Vendor unless questing.', tags: ['mob drop', 'etc'] },
   'pure water': { verdict: 'vendor', reason: 'Common etc drop. Vendor to NPC.', tags: ['mob drop', 'etc'] },
   'white scroll fragment': { verdict: 'keep', reason: 'Dunas v2 drop — craft white scrolls. Never vendor.', tags: ['boss drop', 'scroll', 'endgame'] },
+  'auf haven circlet': { verdict: 'keep', reason: 'Endgame helm from Auf Haven. Scroll before selling.', tags: ['helmet', 'endgame', 'boss drop'] },
+  'von leon belt': { verdict: 'keep', reason: 'BiS belt from Von Leon. Never sell.', tags: ['belt', 'endgame', 'boss drop'] },
+  'element pierce': { verdict: 'keep', reason: 'Strong earring from Auf Haven — check FM if dupe.', tags: ['earring', 'endgame'] },
 });
 
 /** Merge Sylafia PRICE_DB entries not already in ITEM_DB with sensible defaults. */

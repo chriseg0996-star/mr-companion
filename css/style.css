@@ -938,6 +938,22 @@ button.btn-ghost:hover {
 }
 
 /* WORLD MAP */
+.world-map-hero {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+}
+.world-map-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 220px;
+  object-fit: cover;
+  object-position: center;
+}
+
 .world-map {
   display: flex;
   align-items: center;

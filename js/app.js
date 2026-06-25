@@ -64,7 +64,7 @@ function renderPQs() {
         <h2>${pq.name} <span style="color:var(--muted);font-weight:400;font-size:13px;">(${pq.short})</span></h2>
         <span class="badge ${priorityBadge[pq.priority]}">${pq.priority}</span>
       </div>
-      ${renderMapScene(pq.mapTheme || 'pq')}
+      ${renderMapScene(pq.mapTheme || 'pq', [], pq.mapImage || null)}
       <h3>Stage Layout</h3>
       ${pq.stages ? renderFlow(pq.stages, 'pq') : ''}
       <div class="info-grid" style="margin-bottom:12px;">
@@ -259,6 +259,10 @@ function renderFlow(steps, type = 'phase') {
 
 function renderWorldMap() {
   const myLevel = parseInt(document.getElementById('level-filter')?.value) || 0;
+  const hero = document.getElementById('world-map-hero');
+  if (hero) {
+    hero.innerHTML = `<img src="assets/images/maps/world-map.png" alt="MapleRoyals world map" class="world-map-img">`;
+  }
   const el = document.getElementById('world-map');
   if (!el) return;
   el.innerHTML = WORLD_MAP.map((z, i) => {
@@ -348,7 +352,7 @@ function showBoss(id) {
     ${b.phases ? renderFlow(b.phases, 'phase') : ''}
     <div class="sep"></div>
     <h3>Arena Map</h3>
-    ${renderMapScene(b.mapTheme || 'cave', b.phases || [b.name])}
+    ${renderMapScene(b.mapTheme || 'cave', b.phases || [b.name], b.mapImage || null)}
     <div class="sep"></div>
     <h3>Prequest</h3>
     <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">${b.prequest}</p>

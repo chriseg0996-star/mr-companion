@@ -72,6 +72,7 @@ const BOSSES = [
     ],
     phases: ['Enter Cave of Life', 'Kill 8 arms', 'Kill Zakum body', 'Loot helmet'],
     mapTheme: 'cave',
+    mapImage: 'assets/images/maps/zakum-arena.png',
   },
   {
     id: 'papulatus',
@@ -95,6 +96,7 @@ const BOSSES = [
     ],
     phases: ['Phase 1 — main body', 'Kill healing clocks', 'Phase 2 — core', 'Loot pendant'],
     mapTheme: 'clock',
+    mapImage: 'assets/images/maps/papulatus-arena.png',
   },
   {
     id: 'horntail',
@@ -119,6 +121,7 @@ const BOSSES = [
     ],
     phases: ['Left head', 'Right head', 'Main body', 'Loot drops'],
     mapTheme: 'volcano',
+    mapImage: 'assets/images/maps/horntail-arena.png',
   },
   {
     id: 'pinkbean',
@@ -143,6 +146,7 @@ const BOSSES = [
     ],
     phases: ['4 statues (simultaneous)', 'Pink Bean phase 1', 'Pink Bean phase 2', 'Loot BiS gear'],
     mapTheme: 'temple',
+    mapImage: 'assets/images/maps/pink-bean-temple.png',
   },
 ];
 
@@ -162,19 +166,19 @@ const LEVELS = [
   ]},
   { range: '10 – 20', label: 'Henesys Area', theme: 'victoria', icon: '🌳', spots: [
     { name: 'Pig Beach', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/pig-beach.png', mobs: ['Pigs', 'Ribbon Pigs'], detail: 'East of Henesys. Easy grind, good for beginners learning your class skills.' },
-    { name: 'Slime Tree / Mushroom Town', type: 'solo', mapStyle: 'forest', mobs: ['Slimes', 'Green Snails', 'Orange Mushrooms'], detail: 'Safe solo maps. Sell drops to NPC for early mesos.' }
+    { name: 'Slime Tree / Mushroom Town', type: 'solo', mapStyle: 'forest', mapImage: 'assets/images/maps/slime-tree.png', mobs: ['Slimes', 'Green Snails', 'Orange Mushrooms'], detail: 'Safe solo maps. Sell drops to NPC for early mesos.' }
   ]},
   { range: '20 – 30', label: 'Kerning City', theme: 'victoria', icon: '🏙️', spots: [
     { name: 'Ant Tunnel I / II', type: 'solo', mapStyle: 'cave', mapImage: 'assets/images/maps/ant-tunnel.png', mobs: ['Zombie Mushrooms', 'Horned Mushrooms'], detail: 'Classic solo grind under Kerning. Good if PQs are unavailable.' },
-    { name: 'Kerning City PQ (KPQ)', type: 'party', mapStyle: 'pq', mobs: ['PQ monsters'], detail: 'Level 21+. Party of 4. Better EXP than solo — priority over grinding. See PQ Guide tab.' }
+    { name: 'Kerning City PQ (KPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/kerning-pq.png', mobs: ['PQ monsters'], detail: 'Level 21+. Party of 4. Better EXP than solo — priority over grinding. See PQ Guide tab.' }
   ]},
   { range: '30 – 50', label: 'Ludibrium', theme: 'ludibrium', icon: '🎠', spots: [
-    { name: 'Ludibrium PQ (LPQ)', type: 'party', mapStyle: 'pq', mobs: ['PQ monsters'], detail: 'Level 35–50. Party of 4. Best EXP and equipment rewards at this range. Run until 50.' },
-    { name: 'Carnival PQ (CPQ)', type: 'party', mapStyle: 'pq', mobs: ['PQ monsters'], detail: 'Level 30–50. 2v2 competitive PQ. Good EXP, drops Onyx Apples.' },
+    { name: 'Ludibrium PQ (LPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/ludibrium-pq.png', mobs: ['PQ monsters'], detail: 'Level 35–50. Party of 4. Best EXP and equipment rewards at this range. Run until 50.' },
+    { name: 'Carnival PQ (CPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/ludibrium-pq.png', mobs: ['PQ monsters'], detail: 'Level 30–50. 2v2 competitive PQ. Good EXP, drops Onyx Apples.' },
     { name: 'Amoria PQ (APQ)', type: 'party', mapStyle: 'pq', mobs: ['PQ monsters'], detail: 'Level 40+. Requires in-game marriage. Best EXP per hour at 40–50 if you have a partner.' }
   ]},
   { range: '50 – 70', label: 'Orbis / El Nath', theme: 'orbis', icon: '☁️', spots: [
-    { name: 'Orbis PQ (OPQ)', type: 'party', mapStyle: 'pq', mobs: ['PQ monsters'], detail: 'Level 51–70. Party of 4. Best EXP at this range. Run until 70.' },
+    { name: 'Orbis PQ (OPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/gallopera.png', mobs: ['PQ monsters'], detail: 'Level 51–70. Party of 4. Best EXP at this range. Run until 70.' },
     { name: 'Coolie Zombies', type: 'solo', mapStyle: 'graveyard', mapImage: 'assets/images/maps/coolie-zombies.png', mobs: ['Coolie Zombies', 'Miner Zombies'], detail: 'El Nath graveyard. Solid solo alternative if no PQ party available.' }
   ]},
   { range: '70 – 85', label: 'Orbis — Stairway', theme: 'orbis', icon: '🌤️', spots: [
@@ -183,19 +187,19 @@ const LEVELS = [
   ]},
   { range: '85 – 100', label: 'Orbis / Pap Prequest', theme: 'ludibrium', icon: '🕐', spots: [
     { name: 'Galloperas (Stairway to the Sky)', type: 'solo', mapStyle: 'sky', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera'], detail: 'Still top EXP here. Start Papulatus prequest in Ludibrium at 85.' },
-    { name: 'Papulatus Prequest', type: 'solo', mapStyle: 'clock', mobs: ['Ludibrium mobs'], detail: 'Complete clocktower questline before your first Pap run. See Bosses tab.' }
+    { name: 'Papulatus Prequest', type: 'solo', mapStyle: 'clock', mapImage: 'assets/images/maps/papulatus-arena.png', mobs: ['Ludibrium mobs'], detail: 'Complete clocktower questline before your first Pap run. See Bosses tab.' }
   ]},
   { range: '100 – 120', label: 'Leafre', theme: 'leafre', icon: '🐉', spots: [
     { name: 'Petristation / Newts', type: 'solo', mapStyle: 'forest', mapImage: 'assets/images/maps/leafre-newts.png', mobs: ['Red Wyvern', 'Blue Wyvern', 'Dark Wyvern'], detail: 'Dragon Forest. Newts give top-tier solo EXP. Start Horntail prequest at 120.' },
-    { name: 'Skelegons (Party)', type: 'party', mapStyle: 'cave', mobs: ['Skelegon', 'Skelosaurus'], detail: 'Best EXP per hour with a strong party. Requires good damage and a Bishop for HS.' }
+    { name: 'Skelegons (Party)', type: 'party', mapStyle: 'cave', mapImage: 'assets/images/maps/leafre-dragons.png', mobs: ['Skelegon', 'Skelosaurus'], detail: 'Best EXP per hour with a strong party. Requires good damage and a Bishop for HS.' }
   ]},
   { range: '120 – 140', label: 'Neo Tokyo + Horntail', theme: 'neotokyo', icon: '🏙️', spots: [
     { name: 'Neo Tokyo (after prequest)', type: 'solo', mapStyle: 'city', mapImage: 'assets/images/maps/neo-tokyo.png', mobs: ['Yakuza Member', 'Gangster', 'Boss encounters'], detail: 'Start prequest in Kerning City. Best training in game at this range once unlocked.' },
-    { name: 'Horntail (daily boss)', type: 'party', mapStyle: 'volcano', mobs: ['Horntail'], detail: 'Run daily for necklace and rings. Complete Leafre prequest the day you hit 120.' }
+    { name: 'Horntail (daily boss)', type: 'party', mapStyle: 'volcano', mapImage: 'assets/images/maps/horntail-arena.png', mobs: ['Horntail'], detail: 'Run daily for necklace and rings. Complete Leafre prequest the day you hit 120.' }
   ]},
   { range: '140 – 200', label: 'Neo Tokyo Deep + Pink Bean', theme: 'endgame', icon: '👑', spots: [
     { name: 'Neo Tokyo Deep Maps', type: 'solo', mapStyle: 'city', mapImage: 'assets/images/maps/neo-tokyo.png', mobs: ['Dunas', 'Toad', 'Robo'], detail: 'Endgame training. Supplement with daily Horntail and Pink Bean runs.' },
-    { name: 'Pink Bean (daily boss)', type: 'party', mapStyle: 'temple', mobs: ['Pink Bean'], detail: 'Start Temple of Time prequest at 140. Hardest boss — see Bosses tab.' }
+    { name: 'Pink Bean (daily boss)', type: 'party', mapStyle: 'temple', mapImage: 'assets/images/maps/pink-bean-temple.png', mobs: ['Pink Bean'], detail: 'Start Temple of Time prequest at 140. Hardest boss — see Bosses tab.' }
   ]},
 ];
 
@@ -222,6 +226,7 @@ const PQS = [
     ],
     stages: ['Stage 1 — clear mobs', 'Stage 2 — collect passes', 'Stage 3 — more clears', 'Stage 4 — boss'],
     mapTheme: 'construction',
+    mapImage: 'assets/images/maps/kerning-pq.png',
   },
   {
     id: 'lpq',
@@ -245,6 +250,7 @@ const PQS = [
     ],
     stages: ['Floor 1 — clears', 'Clock puzzle room', 'Floor 3 — waves', 'Boss room'],
     mapTheme: 'clock',
+    mapImage: 'assets/images/maps/ludibrium-pq.png',
   },
   {
     id: 'cpq',
@@ -268,6 +274,7 @@ const PQS = [
     ],
     stages: ['Team A vs Team B', 'Earn CP from kills', 'Summon mobs on enemy', 'Winner by points'],
     mapTheme: 'carnival',
+    mapImage: 'assets/images/maps/ludibrium-pq.png',
   },
   {
     id: 'opq',
@@ -291,6 +298,7 @@ const PQS = [
     ],
     stages: ['Cloud platform 1', 'Coupon collection', 'Platform maze', 'Boss stage'],
     mapTheme: 'sky',
+    mapImage: 'assets/images/maps/gallopera.png',
   },
   {
     id: 'apq',
@@ -314,6 +322,7 @@ const PQS = [
     ],
     stages: ['Couple stage 1', 'Puzzle room', 'Wave clear', 'Final boss'],
     mapTheme: 'wedding',
+    mapImage: 'assets/images/maps/pink-bean-temple.png',
   },
 ];
 

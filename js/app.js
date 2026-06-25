@@ -3,11 +3,80 @@
 // ══════════════════════════════════════════════
 // NAV
 // ══════════════════════════════════════════════
+const PAGE_TITLES = {
+  home: 'Start Here', leveling: 'Leveling', pqs: 'Party Quests', bosses: 'Bosses',
+  items: 'Items', jobadv: 'Jobs', quiz: 'Class Quiz', gear: 'Gear',
+  checklist: 'Daily', tools: 'Tools', hpwash: 'HP Wash', scrolls: 'Scrolls',
+  mesos: 'Mesos', party: 'Party',
+};
+
 function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
+  else {
+    const match = document.querySelector(`.nav-btn[data-page="${id}"]`);
+    if (match) match.classList.add('active');
+  }
+  document.title = (PAGE_TITLES[id] || 'Guide') + ' — MR Companion';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════
+function renderHome() {
+  document.getElementById('guide-grid').innerHTML = GUIDE_SECTIONS.map(s => `
+    <div class="guide-card" onclick="showPage('${s.id}')">
+      <div class="guide-icon">${s.icon}</div>
+      <div class="guide-title">${s.title}</div>
+      <div class="guide-desc">${s.desc}</div>
+    </div>
+  `).join('');
+}
+
+function renderTools() {
+  const tools = [
+    { id: 'hpwash', icon: '❤️', title: 'HP Wash Calculator', desc: 'How much HP you gain per wash at your INT.' },
+    { id: 'scrolls', icon: '📜', title: 'Scroll Tracker', desc: 'Log scroll attempts and track your success rate.' },
+    { id: 'mesos', icon: '💰', title: 'Meso Tracker', desc: 'Track income and expenses per session.' },
+    { id: 'party', icon: '⚔️', title: 'Party Builder', desc: 'Build a bossing party and check for missing buffs.' },
+    { id: 'checklist', icon: '✅', title: 'Daily Checklist', desc: 'Daily and weekly tasks with progress bar.' },
+  ];
+  document.getElementById('tools-grid').innerHTML = tools.map(t => `
+    <div class="guide-card" onclick="showPage('${t.id}')">
+      <div class="guide-icon">${t.icon}</div>
+      <div class="guide-title">${t.title}</div>
+      <div class="guide-desc">${t.desc}</div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════
+// PQs
+// ══════════════════════════════════════════════
+function renderPQs() {
+  const priorityBadge = { high: 'badge-green', medium: 'badge-yellow', optional: 'badge-blue' };
+  document.getElementById('pq-list').innerHTML = PQS.map(pq => `
+    <div class="card pq-card">
+      <div class="card-header">
+        <h2>${pq.name} <span style="color:var(--muted);font-weight:400;font-size:13px;">(${pq.short})</span></h2>
+        <span class="badge ${priorityBadge[pq.priority]}">${pq.priority}</span>
+      </div>
+      <div class="info-grid" style="margin-bottom:12px;">
+        <div class="info-item"><div class="label">Level</div><div class="value">${pq.level}</div></div>
+        <div class="info-item"><div class="label">Party</div><div class="value">${pq.party}</div></div>
+        <div class="info-item"><div class="label">Location</div><div class="value" style="font-size:12px;">${pq.location}</div></div>
+      </div>
+      <h3>Rewards</h3>
+      <div style="margin-bottom:12px;">${pq.rewards.map(r => `<span class="tag">${r}</span>`).join('')}</div>
+      <h3>How to run</h3>
+      <ul class="drop-list">${pq.howTo.map(s => `<li>${s}</li>`).join('')}</ul>
+      <h3>Tips</h3>
+      <ul class="drop-list">${pq.tips.map(s => `<li>${s}</li>`).join('')}</ul>
+    </div>
+  `).join('');
 }
 
 // ══════════════════════════════════════════════
@@ -109,26 +178,49 @@ function filterBoss(tier, btn) {
 // ══════════════════════════════════════════════
 // LEVELING
 // ══════════════════════════════════════════════
+let levelTypeFilter = 'all';
+
 function renderLevels() {
-  document.getElementById('level-list').innerHTML = LEVELS.map((l, i) => `
-    <div class="level-range">
+  const myLevel = parseInt(document.getElementById('level-filter')?.value) || 0;
+  document.getElementById('level-list').innerHTML = LEVELS.map((l, i) => {
+    const rangeParts = l.range.match(/(\d+)\s*[–-]\s*(\d+)/);
+    const rangeStart = rangeParts ? parseInt(rangeParts[1]) : 0;
+    const rangeEnd = rangeParts ? parseInt(rangeParts[2]) : 200;
+    const isCurrent = myLevel >= rangeStart && myLevel <= rangeEnd;
+    const spots = l.spots.filter(s => levelTypeFilter === 'all' || s.type === levelTypeFilter);
+    if (!spots.length) return '';
+    return `
+    <div class="level-range ${isCurrent ? 'level-current' : ''}" id="level-range-${i}">
       <div class="level-header" onclick="toggleLevel(${i})">
         <div>
           <span class="level-range-label">Lv ${l.range}</span>
+          ${isCurrent ? '<span class="badge badge-green" style="margin-left:8px;font-size:10px;">YOU ARE HERE</span>' : ''}
           <span style="color:var(--muted);font-size:13px;margin-left:10px;">${l.label}</span>
         </div>
-        <span style="color:var(--muted);font-size:12px;">${l.spots.length} spot${l.spots.length > 1 ? 's' : ''} ▾</span>
+        <span style="color:var(--muted);font-size:12px;">${spots.length} spot${spots.length > 1 ? 's' : ''} ▾</span>
       </div>
-      <div class="level-body" id="level-${i}">
-        ${l.spots.map(s => `
+      <div class="level-body ${isCurrent ? 'open' : ''}" id="level-${i}">
+        ${spots.map(s => `
           <div class="spot">
-            <div class="spot-name">${s.name}</div>
+            <div class="spot-name">${s.name} <span class="badge ${s.type === 'party' ? 'badge-blue' : 'badge-green'}" style="font-size:10px;margin-left:6px;">${s.type}</span></div>
+            ${s.mobs ? `<div class="spot-mobs">Mobs: ${s.mobs.join(' · ')}</div>` : ''}
             <div class="spot-detail">${s.detail}</div>
           </div>
         `).join('')}
       </div>
     </div>
-  `).join('');
+  `}).join('');
+}
+
+function highlightLevel() {
+  renderLevels();
+}
+
+function filterLevelType(type, btn) {
+  levelTypeFilter = type;
+  document.querySelectorAll('#page-leveling .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLevels();
 }
 
 function toggleLevel(i) {
@@ -441,6 +533,9 @@ function analyzeParty() {
 // INIT — runs on page load
 // ══════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
+  renderHome();
+  renderTools();
+  renderPQs();
   renderBosses('all');
   renderLevels();
   renderChecklist();

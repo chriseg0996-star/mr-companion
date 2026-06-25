@@ -3,35 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MapleRoyals companion guide — leveling, PQs, bosses, items, and job advancements for v83.">
   <title>MapleRoyals Companion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <nav>
   <div class="nav-inner">
-    <div class="nav-logo">🍁 MR Companion</div>
-    <button class="nav-btn active" onclick="showPage('items', this)">Item Checker</button>
-    <button class="nav-btn" onclick="showPage('bosses', this)">Bosses</button>
-    <button class="nav-btn" onclick="showPage('leveling', this)">Leveling</button>
-    <button class="nav-btn" onclick="showPage('checklist', this)">Daily</button>
-    <button class="nav-btn" onclick="showPage('hpwash', this)">HP Wash</button>
-    <button class="nav-btn" onclick="showPage('scrolls', this)">Scrolls</button>
-    <button class="nav-btn" onclick="showPage('mesos', this)">Mesos</button>
-    <button class="nav-btn" onclick="showPage('quiz', this)">Class Quiz</button>
-    <button class="nav-btn" onclick="showPage('gear', this)">Gear</button>
-    <button class="nav-btn" onclick="showPage('jobadv', this)">Job Adv</button>
-    <button class="nav-btn" onclick="showPage('party', this)">Party</button>
+    <div class="nav-logo"><span class="nav-logo-mark">🍁</span> MR Companion</div>
+    <span class="nav-group-label">Guides</span>
+    <button class="nav-btn active" data-page="home" onclick="showPage('home', this)">Start</button>
+    <button class="nav-btn" data-page="leveling" onclick="showPage('leveling', this)">Leveling</button>
+    <button class="nav-btn" data-page="pqs" onclick="showPage('pqs', this)">PQs</button>
+    <button class="nav-btn" data-page="bosses" onclick="showPage('bosses', this)">Bosses</button>
+    <button class="nav-btn" data-page="items" onclick="showPage('items', this)">Items</button>
+    <button class="nav-btn" data-page="jobadv" onclick="showPage('jobadv', this)">Jobs</button>
+    <span class="nav-group-label">Tools</span>
+    <button class="nav-btn" data-page="quiz" onclick="showPage('quiz', this)">Class Quiz</button>
+    <button class="nav-btn" data-page="gear" onclick="showPage('gear', this)">Gear</button>
+    <button class="nav-btn" data-page="checklist" onclick="showPage('checklist', this)">Daily</button>
+    <button class="nav-btn nav-more" data-page="tools" onclick="showPage('tools', this)">More</button>
   </div>
 </nav>
 
 <div class="hero-wrap">
-  <img src="assets/images/ui/banner.png" alt="MapleRoyals — Henesys" class="hero-banner" onerror="this.closest('.hero-wrap').remove()">
+  <div class="hero-frame">
+    <img src="assets/images/ui/banner.png" alt="MapleRoyals — Henesys" class="hero-banner" onerror="this.closest('.hero-wrap').remove()">
+    <div class="hero-overlay"></div>
+    <div class="hero-caption">MapleRoyals v83 · The Clinic</div>
+  </div>
 </div>
 
-<div id="page-items" class="page active">
-  <h1>Item Checker</h1>
-  <p class="subtitle">Search any item to find out if you should keep it, sell it in FM, or vendor it.</p>
+<div id="page-home" class="page active">
+  <h1>Welcome to MapleRoyals</h1>
+  <p class="subtitle">A beginner-friendly guide for The Clinic — everything you need to understand v83, from your first mob to endgame bosses.</p>
+  <div class="guide-grid" id="guide-grid"></div>
+  <hr class="divider">
+  <h2>New Player Path</h2>
+  <div class="path-steps">
+    <div class="path-step"><span class="path-num">1</span><div><strong>Pick a class</strong><span class="path-desc">Take the Class Quiz or read Job Advancements</span></div></div>
+    <div class="path-step"><span class="path-num">2</span><div><strong>Level 1–50</strong><span class="path-desc">Follow the Leveling guide — run KPQ and LPQ with a party</span></div></div>
+    <div class="path-step"><span class="path-num">3</span><div><strong>Level 50–120</strong><span class="path-desc">OPQ → Galloperas → Neo Tokyo. Start boss prequests early</span></div></div>
+    <div class="path-step"><span class="path-num">4</span><div><strong>Daily bosses</strong><span class="path-desc">Zakum → Pap → Horntail → Pink Bean. Check the Boss guides</span></div></div>
+    <div class="path-step"><span class="path-num">5</span><div><strong>Loot decisions</strong><span class="path-desc">Search any drop in the Item guide — keep, FM, or vendor</span></div></div>
+  </div>
+  <hr class="divider">
+  <div class="grid2">
+    <div class="card">
+      <div class="card-header"><h2>Official Links</h2></div>
+      <div style="font-size:13px;line-height:2.5;">
+        <a href="https://royals.ms" target="_blank" rel="noopener" style="color:var(--blue);display:block;">🍁 MapleRoyals Website</a>
+        <a href="https://royals.ms/vote" target="_blank" rel="noopener" style="color:var(--blue);display:block;">🗳️ Vote (daily)</a>
+        <a href="https://mime.royals.ms" target="_blank" rel="noopener" style="color:var(--blue);display:block;">📚 Wiki</a>
+        <a href="https://royals-library.netlify.app" target="_blank" rel="noopener" style="color:var(--blue);display:block;">🗃️ Item Library</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Share This Guide</h2></div>
+      <p style="font-size:13px;color:var(--muted);margin:0;">Send your friends the link to this page. No install needed — works on phone and desktop.</p>
+    </div>
+  </div>
+</div>
+
+<div id="page-pqs" class="page">
+  <h1>Party Quest Guide</h1>
+  <p class="subtitle">PQs are the fastest way to level on MapleRoyals. Find a party in channel, enter the portal, and clear stages together.</p>
+  <div id="pq-list"></div>
+</div>
+
+<div id="page-tools" class="page">
+  <h1>More Tools</h1>
+  <p class="subtitle">Extra helpers for players who are already settled in.</p>
+  <div class="guide-grid" id="tools-grid"></div>
+</div>
+
+<div id="page-items" class="page">
+  <h1>Item Guide</h1>
+  <p class="subtitle">Dropped something and not sure what to do? Search it — keep, sell in FM, or vendor to NPC.</p>
   <div style="display:flex;gap:8px;margin-bottom:16px;">
     <input type="text" id="item-search" placeholder="e.g. Zakum Helmet, Work Gloves, Steelies...">
     <button class="btn" onclick="checkItem()">Check</button>
@@ -74,7 +126,7 @@
 
 <div id="page-bosses" class="page">
   <h1>Boss Guides</h1>
-  <p class="subtitle">Click any boss for full guide, mechanics, HP requirements, and drops.</p>
+  <p class="subtitle">Prequests, HP requirements, mobs, drops, and party tips for every boss. Click a boss for the full guide.</p>
   <div class="filter-bar">
     <button class="filter-btn active" onclick="filterBoss('all', this)">All</button>
     <button class="filter-btn" onclick="filterBoss('early', this)">Early</button>
@@ -87,7 +139,14 @@
 
 <div id="page-leveling" class="page">
   <h1>Leveling Guide</h1>
-  <p class="subtitle">Best training spots from level 1 to 200. Click a range to expand.</p>
+  <p class="subtitle">Best training spots from level 1 to 200 — maps, mobs, and solo vs party options.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
+    <label style="font-size:13px;color:var(--muted);">I'm level:</label>
+    <input type="number" id="level-filter" placeholder="e.g. 45" min="1" max="200" style="width:80px;" oninput="highlightLevel()">
+    <button class="filter-btn active" onclick="filterLevelType('all', this)">All</button>
+    <button class="filter-btn" onclick="filterLevelType('solo', this)">Solo</button>
+    <button class="filter-btn" onclick="filterLevelType('party', this)">Party / PQ</button>
+  </div>
   <div id="level-list"></div>
 </div>
 
@@ -235,7 +294,7 @@
 
 <div id="page-jobadv" class="page">
   <h1>Job Advancement Guide</h1>
-  <p class="subtitle">Where to go and what to do for every job advancement.</p>
+  <p class="subtitle">Every job change from level 10 to 120 — where to go, what to collect, and what skills to max.</p>
   <div class="filter-bar">
     <button class="filter-btn active" onclick="filterJob('warrior', this)">Warrior</button>
     <button class="filter-btn" onclick="filterJob('thief', this)">Thief</button>
@@ -272,6 +331,8 @@
     <div class="card"><div class="card-header"><span style="font-weight:600;">Papulatus</span><span class="badge badge-yellow">6 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop recommended · Any DPS. Very flexible at appropriate level.</span></div>
   </div>
 </div>
+
+<footer class="site-watermark"><span class="watermark-dot"></span> by Christopher Godines</footer>
 
 <script src="data/gameData.js"></script>
 <script src="js/app.js"></script>

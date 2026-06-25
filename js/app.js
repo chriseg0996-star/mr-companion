@@ -64,6 +64,9 @@ function renderPQs() {
         <h2>${pq.name} <span style="color:var(--muted);font-weight:400;font-size:13px;">(${pq.short})</span></h2>
         <span class="badge ${priorityBadge[pq.priority]}">${pq.priority}</span>
       </div>
+      ${renderMapScene(pq.mapTheme || 'pq')}
+      <h3>Stage Layout</h3>
+      ${pq.stages ? renderFlow(pq.stages, 'pq') : ''}
       <div class="info-grid" style="margin-bottom:12px;">
         <div class="info-item"><div class="label">Level</div><div class="value">${pq.level}</div></div>
         <div class="info-item"><div class="label">Party</div><div class="value">${pq.party}</div></div>
@@ -113,14 +116,103 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ══════════════════════════════════════════════
-// BOSSES
+// MAP VISUALS
 // ══════════════════════════════════════════════
+const MAP_PLATFORMS = {
+  beach:    [{ w: 70, l: 8,  b: 18 }, { w: 45, l: 42, b: 32 }, { w: 55, l: 68, b: 22 }],
+  field:    [{ w: 80, l: 5,  b: 20 }, { w: 50, l: 35, b: 38 }, { w: 60, l: 62, b: 28 }],
+  forest:   [{ w: 65, l: 10, b: 25 }, { w: 40, l: 48, b: 42 }, { w: 55, l: 72, b: 30 }],
+  cave:     [{ w: 75, l: 8,  b: 15 }, { w: 45, l: 38, b: 35 }, { w: 50, l: 65, b: 50 }],
+  pq:       [{ w: 90, l: 5,  b: 20 }, { w: 35, l: 30, b: 40 }, { w: 35, l: 55, b: 40 }, { w: 90, l: 75, b: 20 }],
+  graveyard:[{ w: 70, l: 10, b: 22 }, { w: 50, l: 45, b: 38 }],
+  sky:      [{ w: 40, l: 8,  b: 55 }, { w: 35, l: 35, b: 40 }, { w: 40, l: 62, b: 25 }, { w: 30, l: 82, b: 45 }],
+  clock:    [{ w: 60, l: 20, b: 30 }, { w: 60, l: 50, b: 30 }],
+  city:     [{ w: 85, l: 5,  b: 18 }, { w: 40, l: 40, b: 35 }, { w: 55, l: 70, b: 22 }],
+  volcano:  [{ w: 80, l: 10, b: 25 }, { w: 50, l: 50, b: 45 }],
+  temple:   [{ w: 70, l: 15, b: 20 }, { w: 40, l: 42, b: 38 }, { w: 70, l: 68, b: 20 }],
+};
+
+function renderMapScene(style, mobs = []) {
+  const platforms = MAP_PLATFORMS[style] || MAP_PLATFORMS.field;
+  const mobPositions = platforms.slice(0, Math.min(mobs.length, platforms.length));
+  return `
+    <div class="map-scene map-scene--${style}">
+      <div class="map-scene-grid"></div>
+      ${platforms.map(p => `<div class="map-platform" style="left:${p.l}%;width:${p.w}%;bottom:${p.b}%"></div>`).join('')}
+      ${mobPositions.map((p, i) => `
+        <div class="map-mob" style="left:${p.l + p.w / 2 - 2}%;bottom:${p.b + 6}%" title="${mobs[i] || ''}"></div>
+      `).join('')}
+      <div class="map-scene-label">${style}</div>
+    </div>
+  `;
+}
+
+function renderFlow(steps, type = 'phase') {
+  return `
+    <div class="flow-track flow-${type}">
+      ${steps.map((s, i) => `
+        <div class="flow-step">
+          <div class="flow-dot">${i + 1}</div>
+          <div class="flow-label">${s}</div>
+        </div>
+        ${i < steps.length - 1 ? '<div class="flow-line"></div>' : ''}
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderWorldMap() {
+  const myLevel = parseInt(document.getElementById('level-filter')?.value) || 0;
+  const el = document.getElementById('world-map');
+  if (!el) return;
+  el.innerHTML = WORLD_MAP.map((z, i) => {
+    const parts = z.levels.match(/(\d+)[–-](\d+)/);
+    const active = parts && myLevel >= parseInt(parts[1]) && myLevel <= parseInt(parts[2]);
+    return `
+      <div class="world-node world-node--${z.theme} ${active ? 'active' : ''}" onclick="jumpToZone(${z.levelIndex})">
+        <div class="world-node-icon">${z.icon}</div>
+        <div class="world-node-name">${z.name}</div>
+        <div class="world-node-lv">Lv ${z.levels}</div>
+      </div>
+      ${i < WORLD_MAP.length - 1 ? '<div class="world-connector"></div>' : ''}
+    `;
+  }).join('');
+}
+
+function jumpToZone(i) {
+  if (i < 0 || i >= LEVELS.length) return;
+  const body = document.getElementById('level-' + i);
+  const range = document.getElementById('level-range-' + i);
+  if (body) {
+    body.classList.add('open');
+    range?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    range?.classList.add('level-highlight');
+    setTimeout(() => range?.classList.remove('level-highlight'), 2000);
+  }
+}
+
+function renderBossProgression() {
+  const el = document.getElementById('boss-progression');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="flow-track flow-bosses">
+      ${BOSSES.map((b, i) => `
+        <div class="flow-step boss-node" onclick="showBoss('${b.id}')">
+          <div class="flow-dot boss-dot tier-${b.tier}">${i + 1}</div>
+          <div class="flow-label">${b.name}</div>
+          <div class="flow-sublabel">Lv ${b.level.split('+')[0]}+</div>
+        </div>
+        ${i < BOSSES.length - 1 ? '<div class="flow-line"></div>' : ''}
+      `).join('')}
+    </div>
+  `;
+}
 function renderBosses(filter = 'all') {
   const grid = document.getElementById('boss-grid');
   const tierColors = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple' };
   const filtered = BOSSES.filter(b => filter === 'all' || b.tier === filter);
   grid.innerHTML = filtered.map(b => `
-    <div class="boss-card" onclick="showBoss('${b.id}')">
+    <div class="boss-card boss-card--${b.tier}" onclick="showBoss('${b.id}')">
       <img src="${b.image}" alt="${b.name}" class="boss-img" onerror="this.style.display='none'">
       <div class="card-header" style="margin-bottom:4px;">
         <h2>${b.name}</h2>
@@ -156,6 +248,12 @@ function showBoss(id) {
       <div class="info-item"><div class="label">Respawn</div><div class="value">${b.respawn}</div></div>
     </div>
     <div class="sep"></div>
+    <h3>Boss Flow</h3>
+    ${b.phases ? renderFlow(b.phases, 'phase') : ''}
+    <div class="sep"></div>
+    <h3>Arena Map</h3>
+    ${renderMapScene(b.mapTheme || 'cave', b.phases || [b.name])}
+    <div class="sep"></div>
     <h3>Prequest</h3>
     <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">${b.prequest}</p>
     <h3>Drops</h3>
@@ -173,6 +271,7 @@ function filterBoss(tier, btn) {
   btn.classList.add('active');
   document.getElementById('boss-detail').classList.remove('show');
   renderBosses(tier);
+  renderBossProgression();
 }
 
 // ══════════════════════════════════════════════
@@ -190,7 +289,11 @@ function renderLevels() {
     const spots = l.spots.filter(s => levelTypeFilter === 'all' || s.type === levelTypeFilter);
     if (!spots.length) return '';
     return `
-    <div class="level-range ${isCurrent ? 'level-current' : ''}" id="level-range-${i}">
+    <div class="level-range level-range--${l.theme || 'field'} ${isCurrent ? 'level-current' : ''}" id="level-range-${i}">
+      <div class="level-zone-banner level-zone--${l.theme || 'field'}">
+        <span class="level-zone-icon">${l.icon || '🗺️'}</span>
+        <span class="level-zone-name">${l.label}</span>
+      </div>
       <div class="level-header" onclick="toggleLevel(${i})">
         <div>
           <span class="level-range-label">Lv ${l.range}</span>
@@ -201,9 +304,10 @@ function renderLevels() {
       </div>
       <div class="level-body ${isCurrent ? 'open' : ''}" id="level-${i}">
         ${spots.map(s => `
-          <div class="spot">
+          <div class="spot spot-card">
+            ${renderMapScene(s.mapStyle || 'field', s.mobs || [])}
             <div class="spot-name">${s.name} <span class="badge ${s.type === 'party' ? 'badge-blue' : 'badge-green'}" style="font-size:10px;margin-left:6px;">${s.type}</span></div>
-            ${s.mobs ? `<div class="spot-mobs">Mobs: ${s.mobs.join(' · ')}</div>` : ''}
+            ${s.mobs ? `<div class="spot-mobs">${s.mobs.map(m => `<span class="mob-chip">${m}</span>`).join('')}</div>` : ''}
             <div class="spot-detail">${s.detail}</div>
           </div>
         `).join('')}
@@ -214,6 +318,7 @@ function renderLevels() {
 
 function highlightLevel() {
   renderLevels();
+  renderWorldMap();
 }
 
 function filterLevelType(type, btn) {
@@ -221,6 +326,7 @@ function filterLevelType(type, btn) {
   document.querySelectorAll('#page-leveling .filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderLevels();
+  renderWorldMap();
 }
 
 function toggleLevel(i) {
@@ -536,8 +642,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderHome();
   renderTools();
   renderPQs();
+  renderBossProgression();
   renderBosses('all');
   renderLevels();
+  renderWorldMap();
   renderChecklist();
   renderGear();
   renderQuiz();

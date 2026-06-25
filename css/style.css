@@ -1359,6 +1359,65 @@ kbd {
 .external-link-desc { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
 .external-link-arrow { color: var(--muted); font-size: 14px; }
 
+.home-onboarding { margin-bottom: 20px; }
+
+.onboarding-steps { display: flex; flex-direction: column; gap: 8px; }
+
+.onboarding-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+
+.onboarding-step:hover { border-color: var(--accent); }
+
+.onboarding-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 140, 105, 0.15);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.party-presets { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.party-preset-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.party-preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.party-preset-card { cursor: pointer; transition: border-color 0.15s; }
+.party-preset-card:hover { border-color: var(--accent); }
+
+.btn-sm { font-size: 12px; padding: 4px 10px; }
+
 /* PARTY BUILDER */
 .party-slot {
   background: var(--bg2);

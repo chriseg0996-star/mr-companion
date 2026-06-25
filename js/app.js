@@ -68,6 +68,10 @@ const DEFAULT_CLASS_LINKS = [
   { label: 'Royals Wiki', url: 'https://mime.royals.ms' },
 ];
 
+function getServerDateString() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: SERVER_TIMEZONE || 'America/New_York' });
+}
+
 function getClassLinks(id) {
   const c = CLASS_GUIDES[id];
   const q = CLASS_FORUM_SEARCH?.[id];
@@ -76,6 +80,13 @@ function getClassLinks(id) {
     links.push({
       label: `${c?.name || 'Class'} — forum search`,
       url: `${CLASS_FORUM_URL}search/?q=${q}`,
+    });
+  }
+  const wikiSlug = CLASS_WIKI_SLUG?.[id];
+  if (wikiSlug) {
+    links.push({
+      label: `${c?.name || 'Class'} — Wiki page`,
+      url: `${CLASS_WIKI_URL}/index.php/${wikiSlug}`,
     });
   }
   (c?.links || []).forEach(l => {
@@ -176,12 +187,14 @@ function setProfileLevel(v) {
   highlightLevel();
   renderHomeNextSteps();
   renderHomeProgress();
+  renderHomeOnboarding();
 }
 
 function setProfileClass(id) {
   if (id) localStorage.setItem('mr-class', id);
   else localStorage.removeItem('mr-class');
   renderHomeNextSteps();
+  renderHomeProgress();
   renderGear();
 }
 
@@ -287,6 +300,7 @@ function initProfile() {
   classSelect.addEventListener('change', () => setProfileClass(classSelect.value));
   renderHomeNextSteps();
   renderHomeProgress();
+  renderHomeOnboarding();
 }
 
 function renderHome() {
@@ -299,6 +313,46 @@ function renderHome() {
   `).join('');
   renderHomeNextSteps();
   renderHomeProgress();
+  renderHomeOnboarding();
+}
+
+function renderHomeOnboarding() {
+  const el = document.getElementById('home-onboarding');
+  if (!el) return;
+  const { level } = getProfile();
+  if (level) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div class="card onboarding-card">
+      <div class="card-header"><h2>New here?</h2><span class="badge badge-blue">Start in 30 sec</span></div>
+      <div class="onboarding-steps">
+        <button type="button" class="onboarding-step" onclick="showPage('quiz')"><span class="onboarding-num">1</span><span>Take the <strong>Class Quiz</strong></span></button>
+        <button type="button" class="onboarding-step" onclick="showPage('leveling')"><span class="onboarding-num">2</span><span>Read the <strong>Leveling Guide</strong></span></button>
+        <button type="button" class="onboarding-step" onclick="document.getElementById('profile-level').focus()"><span class="onboarding-num">3</span><span>Enter your <strong>level</strong> above for personalized tips</span></button>
+      </div>
+    </div>
+  `;
+}
+
+function getProfileJobProgress() {
+  const { classId } = getProfile();
+  if (!classId || !CLASS_GUIDES[classId]) return null;
+  const branch = JOB_BRANCH_MAP?.[CLASS_GUIDES[classId].branch];
+  if (!branch || !JOB_PATHS[branch]) return null;
+  return { branch, label: CLASS_GUIDES[classId].branch, ...getJobProgress(branch) };
+}
+
+function copyDeepLink(page, sub) {
+  const url = location.href.split('#')[0] + '#' + (sub ? `${page}/${encodeURIComponent(sub)}` : page);
+  const done = () => {
+    const toast = document.getElementById('share-toast');
+    if (toast) { toast.textContent = 'Link copied!'; setTimeout(() => { toast.textContent = ''; }, 2000); }
+  };
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(url).then(done);
+  else {
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta); done();
+  }
 }
 
 function getPrequestOverallProgress() {
@@ -343,7 +397,7 @@ function getBossRespawnStatus(checklistId) {
 }
 
 function maybeResetDailies() {
-  const today = new Date().toDateString();
+  const today = getServerDateString();
   const last = localStorage.getItem('mr-checklist-date');
   if (last === today) return;
   const state = loadCheckState();
@@ -368,6 +422,8 @@ function renderHomeProgress() {
   const dailyDone = dailyItems.filter(i => checkState[i.id]).length;
   const bossRuns = CHECKLIST.filter(i => i.boss && checkState[i.id]).length;
   const bossTotal = CHECKLIST.filter(i => i.boss).length;
+  const job = getProfileJobProgress();
+  const jobPct = job?.total ? Math.round((job.done / job.total) * 100) : 0;
 
   el.innerHTML = `
     <div class="home-progress-grid">
@@ -381,6 +437,14 @@ function renderHomeProgress() {
         <p style="font-size:13px;color:var(--muted);margin:0;">Boss runs marked: ${bossRuns}/${bossTotal}</p>
         <button type="button" class="btn btn-sm btn-ghost" style="margin-top:10px;" onclick="showPage('checklist')">Open checklist →</button>
       </div>
+      ${job ? `
+      <div class="card home-progress-card">
+        <div class="card-header"><h2>Job Steps</h2><span class="badge badge-blue">${job.done}/${job.total}</span></div>
+        <p style="font-size:12px;color:var(--muted);margin:0 0 8px;">${job.label} path</p>
+        <div class="prequest-track-bar"><div style="width:${jobPct}%"></div></div>
+        <button type="button" class="btn btn-sm btn-ghost" style="margin-top:10px;" onclick="showPage('jobadv')">Job guide →</button>
+      </div>
+      ` : ''}
       <div class="card home-progress-card">
         <div class="card-header"><h2>Next Milestone</h2></div>
         ${renderNextMilestoneCard(level)}
@@ -1238,7 +1302,7 @@ function resetDailyChecklist() {
     delete checkState[i.id];
     if (i.boss) localStorage.removeItem(`mr-boss-run-${i.id}`);
   });
-  localStorage.setItem('mr-checklist-date', new Date().toDateString());
+  localStorage.setItem('mr-checklist-date', getServerDateString());
   saveCheckState();
   renderChecklist();
 }
@@ -1489,7 +1553,7 @@ function isStepDone(key) {
 
 function toggleStep(key, rerender) {
   localStorage.setItem(key, isStepDone(key) ? '0' : '1');
-  if (rerender === 'job') renderJobAdv();
+  if (rerender === 'job') { renderJobAdv(); renderHomeProgress(); }
   else if (rerender === 'prequest') { renderPrequests(); renderPrequestOverview(); renderHomeNextSteps(); renderHomeProgress(); }
 }
 
@@ -1622,7 +1686,10 @@ function renderPrequests() {
       <div class="card quest-card prequest-card" id="prequest-${pq.id}">
         <div class="card-header">
           <h2>${pq.name}</h2>
-          <span class="badge badge-yellow">Start Lv ${pq.startLevel}+</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button type="button" class="btn-ghost btn-sm" onclick="event.stopPropagation();copyDeepLink('prequests','${pq.id}')" title="Copy share link">⎘</button>
+            <span class="badge badge-yellow">Start Lv ${pq.startLevel}+</span>
+          </div>
         </div>
         ${pq.mapImage ? renderMapScene('field', [], pq.mapImage) : ''}
         <p style="font-size:14px;color:var(--muted);margin-bottom:12px;">${pq.summary}</p>
@@ -1784,6 +1851,63 @@ function renderClasses() {
 // PARTY BUILDER
 // ══════════════════════════════════════════════
 let partyMembers = [];
+let partyBossTarget = 'horntail';
+
+function loadPartyMembers() {
+  try { return JSON.parse(localStorage.getItem('mr-party') || '[]'); }
+  catch { return []; }
+}
+
+function savePartyMembers() {
+  localStorage.setItem('mr-party', JSON.stringify(partyMembers));
+}
+
+partyMembers = loadPartyMembers();
+
+function initPartyBuilder() {
+  partyMembers = loadPartyMembers();
+  const sel = document.getElementById('party-boss-target');
+  if (sel) {
+    partyBossTarget = localStorage.getItem('mr-party-boss') || 'horntail';
+    sel.value = partyBossTarget;
+    sel.addEventListener('change', () => {
+      partyBossTarget = sel.value;
+      localStorage.setItem('mr-party-boss', partyBossTarget);
+      analyzeParty();
+    });
+  }
+  if (!partyMembers.length) {
+    const { classId } = getProfile();
+    if (classId && CLASS_GUIDES[classId]) {
+      const name = CLASS_GUIDES[classId].name;
+      const map = { 'Fire/Poison Arch Mage': 'Fire/Poison Mage', 'Ice/Lightning Arch Mage': 'Ice/Lightning Mage' };
+      partyMembers = [map[name] || name];
+      savePartyMembers();
+    }
+  }
+  renderPartyPresets();
+  renderPartySlots();
+}
+
+function renderPartyPresets() {
+  const el = document.getElementById('party-presets');
+  if (!el || typeof PARTY_PRESETS === 'undefined') return;
+  el.innerHTML = Object.entries(PARTY_PRESETS).map(([id, p]) => `
+    <button type="button" class="party-preset-btn" onclick="loadPartyPreset('${id}')">${p.label}</button>
+  `).join('');
+}
+
+function loadPartyPreset(id) {
+  const preset = PARTY_PRESETS[id];
+  if (!preset) return;
+  partyMembers = [...preset.classes];
+  partyBossTarget = id;
+  const sel = document.getElementById('party-boss-target');
+  if (sel) sel.value = id;
+  localStorage.setItem('mr-party-boss', id);
+  savePartyMembers();
+  renderPartySlots();
+}
 
 function renderPartySlots() {
   const grid = document.getElementById('party-slots');
@@ -1805,40 +1929,71 @@ function addToParty() {
   const cls = document.getElementById('party-class-select').value;
   if (!cls || partyMembers.length >= 6) return;
   partyMembers.push(cls);
+  savePartyMembers();
   renderPartySlots();
 }
 
 function removeFromParty(i) {
   partyMembers.splice(i, 1);
+  savePartyMembers();
   renderPartySlots();
 }
 
 function clearParty() {
   partyMembers = [];
+  savePartyMembers();
   renderPartySlots();
 }
 
 function analyzeParty() {
   const rec = document.getElementById('party-rec');
   if (!partyMembers.length) {
-    rec.innerHTML = '<p style="color:var(--muted);font-size:13px;margin:0;">Add classes to get party analysis.</p>';
+    rec.innerHTML = '<p style="color:var(--muted);font-size:13px;margin:0;">Add classes or load a preset to analyze your party.</p>';
     return;
   }
+  const rules = PARTY_BOSS_RULES?.[partyBossTarget];
   const hasBishop = partyMembers.includes('Bishop');
   const hasDK = partyMembers.includes('Dark Knight');
+  const nlCount = partyMembers.filter(c => c === 'Night Lord').length;
+  const hasBM = partyMembers.includes('Bowmaster');
+  const hasShadower = partyMembers.includes('Shadower');
   const warnings = [];
   const goods = [];
-  if (!hasBishop) warnings.push('⚠️ No Bishop — Holy Symbol and Heal missing. Bossing will be very difficult.');
-  else goods.push('✓ Bishop present — Holy Symbol and Heal covered.');
-  if (!hasDK) warnings.push('⚠️ No Dark Knight — Hyper Body missing. HP requirements double without it.');
-  else goods.push('✓ Dark Knight present — Hyper Body active for full party.');
-  if (partyMembers.includes('Bowmaster')) goods.push('✓ Bowmaster present — Sharp Eyes buffs party damage.');
-  if (partyMembers.includes('Buccaneer')) goods.push('✓ Buccaneer present — Speed Infusion buffs party attack speed.');
-  if (partyMembers.includes('Shadower')) goods.push('✓ Shadower present — Smokescreen available for 1-hit KO protection.');
+
+  if (rules) {
+    if (rules.bishop === 'required' && !hasBishop) warnings.push('⚠️ Bishop required for ' + rules.label);
+    else if (rules.bishop === 'recommended' && !hasBishop) warnings.push('⚠️ Bishop recommended for ' + rules.label);
+    else if (hasBishop) goods.push('✓ Bishop — Holy Symbol + Heal');
+
+    if (rules.dk === 'required' && !hasDK) warnings.push('⚠️ Dark Knight required for ' + rules.label);
+    else if (rules.dk === 'recommended' && !hasDK) warnings.push('⚠️ Dark Knight recommended for ' + rules.label);
+    else if (hasDK) goods.push('✓ Dark Knight — Hyper Body');
+
+    if (rules.nlMin && nlCount < rules.nlMin) warnings.push(`⚠️ Need at least ${rules.nlMin} Night Lord(s) for ${rules.label}`);
+    if (rules.nl === 'recommended' && !nlCount) warnings.push('⚠️ Night Lord recommended for boss DPS');
+    if (nlCount) goods.push(`✓ ${nlCount} Night Lord${nlCount > 1 ? 's' : ''} — burst DPS`);
+
+    if (rules.bm === 'recommended' && !hasBM) warnings.push('⚠️ Bowmaster recommended — Sharp Eyes');
+    else if (hasBM) goods.push('✓ Bowmaster — Sharp Eyes');
+
+    if (rules.shadower === 'recommended' && !hasShadower) warnings.push('⚠️ Shadower recommended — Smokescreen');
+    else if (hasShadower) goods.push('✓ Shadower — Smokescreen');
+
+    if (partyMembers.includes('Buccaneer')) goods.push('✓ Buccaneer — Speed Infusion');
+  } else {
+    if (!hasBishop) warnings.push('⚠️ No Bishop — Holy Symbol and Heal missing.');
+    else goods.push('✓ Bishop present');
+    if (!hasDK) warnings.push('⚠️ No Dark Knight — Hyper Body missing.');
+    else goods.push('✓ Dark Knight present');
+  }
+
+  if (partyMembers.length < 6) warnings.push(`ℹ️ ${6 - partyMembers.length} empty slot(s) — add more DPS`);
+
   rec.innerHTML = `
-    <div style="margin-bottom:8px;font-size:13px;font-weight:600;">Party Analysis (${partyMembers.length}/6)</div>
+    <div style="margin-bottom:8px;font-size:13px;font-weight:600;">${rules?.label || 'Party'} Analysis (${partyMembers.length}/6)</div>
     ${goods.map(g => `<div style="font-size:13px;color:var(--green);margin-bottom:4px;">${g}</div>`).join('')}
     ${warnings.map(w => `<div style="font-size:13px;color:var(--yellow);margin-bottom:4px;">${w}</div>`).join('')}
+    ${rules?.notes ? `<ul class="drop-list" style="margin-top:10px;font-size:12px;">${rules.notes.map(n => `<li>${n}</li>`).join('')}</ul>` : ''}
   `;
 }
 
@@ -1969,6 +2124,13 @@ function initGlobalSearch() {
       e.preventDefault();
       openSearch();
     }
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const tag = document.activeElement?.tagName;
+      if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
+        e.preventDefault();
+        openSearch();
+      }
+    }
     if (e.key === 'Escape') closeSearch();
   });
   input.addEventListener('input', () => { searchActive = -1; renderSearchResults(input.value); });
@@ -2012,7 +2174,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderPrequests();
   renderClasses();
   renderGlossary();
-  renderPartySlots();
+  initPartyBuilder();
   renderPopularPrices();
   renderScrollPrices();
   renderQuickRefChips();

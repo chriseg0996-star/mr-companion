@@ -135,6 +135,16 @@ const BOSS_DROP_TABLES = {
     { item: 'Scrolls', rate: 'Common', note: 'Never vendor scrolls' },
     { item: 'Ores & etc', rate: 'Common', note: 'Vendor ores' },
   ],
+  'black-crow': [
+    { item: 'Equipment drops', rate: 'Uncommon', note: 'Check FM' },
+    { item: 'Scrolls', rate: 'Common', note: 'Never vendor scrolls' },
+    { item: 'Ores & etc', rate: 'Common', note: 'Vendor ores' },
+  ],
+  leviathan: [
+    { item: 'Equipment drops', rate: 'Uncommon', note: 'Check FM' },
+    { item: 'Scrolls', rate: 'Common', note: 'Never vendor scrolls' },
+    { item: 'Ores & etc', rate: 'Common', note: 'Vendor ores' },
+  ],
   chao: [
     { item: 'Chao\'s Tusk', itemKey: 'chao\'s tusk', rate: '1 per clear', note: 'Required for Ephenia prequest' },
     { item: 'Yellow Snow Shoes', rate: 'Uncommon', note: 'Strong shoes — keep or scroll' },
@@ -152,6 +162,11 @@ const BOSS_DROP_TABLES = {
     { item: 'Yellow Snowshoes', rate: 'Uncommon', note: 'Keep or scroll' },
     { item: 'Class weapons', rate: 'Uncommon', note: 'Leomite, Magicodar, etc.' },
     { item: 'NX Cards', rate: 'Common', note: 'Cash shop credit' },
+  ],
+  'kacchuu-musha': [
+    { item: 'Kacchuu Musha Fragment', itemKey: 'kacchuu musha fragment', rate: '1 per clear', note: 'Samurai Knight Armor Piece — Castellan Toad summon' },
+    { item: 'Equipment drops', rate: 'Uncommon', note: 'Check FM' },
+    { item: 'Scrolls', rate: 'Common', note: 'Never vendor scrolls' },
   ],
 };
 
@@ -172,9 +187,12 @@ const LEVEL_MILESTONES = [
   { level: 90, icon: '🏰', title: 'Crimsonwood Keep', detail: 'Start keystone prequest. CWKPQ for mastery books.', page: 'prequests', prequest: 'cwk' },
   { level: 110, icon: '🐟', title: 'Pianus (area boss)', detail: 'No prequest — sweep Aqua Road channels. Drops mastery books.', page: 'bosses', boss: 'pianus' },
   { level: 110, icon: '🦶', title: 'Bigfoot (area boss)', detail: 'Masteria twisted paths — 12k touch, ~12h respawn.', page: 'bosses', boss: 'bigfoot' },
+  { level: 115, icon: '🐦', title: 'Black Crow (area boss)', detail: 'Mu Lung temple — ~8.2k magic, long respawn.', page: 'bosses', boss: 'black-crow' },
   { level: 120, icon: '🌲', title: 'Chao (Ellin Forest)', detail: 'After Pap prequest — 2 runs/day.', page: 'prequests', prequest: 'chao' },
+  { level: 120, icon: '🐉', title: 'Leviathan (area boss)', detail: 'Leafre Canyon — ~2h respawn, camp channels.', page: 'bosses', boss: 'leviathan' },
   { level: 125, icon: '🧚', title: 'Ephenia (EPQ)', detail: 'After Chao — Guardian Medal unlock.', page: 'prequests', prequest: 'ephenia' },
   { level: 130, icon: '👘', title: 'Anego (area boss)', detail: 'Zipangu Parlor — drops comb for The Boss.', page: 'bosses', boss: 'anego' },
+  { level: 120, icon: '⚔️', title: 'Kacchuu Musha (area boss)', detail: 'Zipangu Castle Corridor — fragment for Toad armor.', page: 'bosses', boss: 'kacchuu-musha' },
   { level: 120, icon: '🐉', title: 'Horntail + Neo Tokyo', detail: 'HT prequest first, then NT for training.', page: 'prequests', prequest: 'horntail' },
   { level: 140, icon: '👑', title: 'Pink Bean', detail: 'Start Temple of Time prequest immediately.', page: 'prequests', prequest: 'pinkbean' },
   { level: 145, icon: '🤖', title: 'Vergamot (NT boss)', detail: 'Neo Tokyo expedition after PB — daily mesos.', page: 'bosses', boss: 'vergamot' },

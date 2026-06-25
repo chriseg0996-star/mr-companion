@@ -13,4 +13,4 @@ const EXTERNAL_LINKS = [
   { label: 'Download Client', url: 'https://royals.ms/download', icon: '⬇️', desc: 'Get the MapleRoyals launcher' },
 ];
 
-const BOSS_RESPAWN_HOURS = { zakum: 24, pap: 24, ht: 24, pb: 168, auf: 24, vl: 84, 'nt-toad': 24, 'nt-vergamot': 24, 'nt-dunas': 24, 'nt-nibergen': 24, 'nt-nameless': 24, 'nt-dunas-v2': 24, shaolin: 24, kcg: 24, 'the-boss': 24, chao: 12, ephenia: 12, anego: 12 };
+const BOSS_RESPAWN_HOURS = { zakum: 24, pap: 24, ht: 24, pb: 168, auf: 24, vl: 84, 'nt-toad': 24, 'nt-vergamot': 24, 'nt-dunas': 24, 'nt-nibergen': 24, 'nt-nameless': 24, 'nt-dunas-v2': 24, shaolin: 24, kcg: 24, 'the-boss': 24, chao: 12, ephenia: 12, anego: 12, leviathan: 2, 'black-crow': 12, 'kacchuu-musha': 8 };

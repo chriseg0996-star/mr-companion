@@ -36,6 +36,7 @@ Object.assign(ITEM_DB, {
   'soul lantern': { verdict: 'keep', reason: 'Krexel prequest item — tradable (~6–9m). Keep until Krexel unlocked.', tags: ['quest', 'krexel', 'tradeable'] },
   'female boss comb': { verdict: 'keep', reason: 'Required for The Boss expedition — do not sell until stocked.', tags: ['quest', 'boss drop', 'zipangu'] },
   'chao\'s tusk': { verdict: 'keep', reason: 'Ephenia prequest item — not tradeable. Keep until EPQ turn-in.', tags: ['quest', 'ellin'] },
+  'kacchuu musha fragment': { verdict: 'keep', reason: 'Samurai Knight Armor Piece for Castellan Toad — keep until Ninja Castle summon.', tags: ['quest', 'zipangu', 'boss drop'] },
 });
 
 /** Merge Sylafia PRICE_DB entries not already in ITEM_DB with sensible defaults. */

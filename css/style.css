@@ -558,6 +558,8 @@ button.btn-ghost:hover {
 
 /* FILTER BAR */
 .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+.filter-bar--secondary { margin-top: -14px; margin-bottom: 18px; }
+.filter-bar--secondary .filter-btn { font-size: 12px; padding: 5px 10px; }
 
 .filter-btn {
   background: var(--bg2);

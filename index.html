@@ -243,7 +243,7 @@
   <h1>Boss Guides</h1>
   <p class="subtitle">Prequests, HP requirements, mobs, drops, and party tips for every boss. Click a boss for the full guide.</p>
   <div id="boss-progression" class="boss-progression"></div>
-  <div class="filter-bar">
+  <div class="filter-bar" id="boss-tier-filters">
     <button class="filter-btn active" onclick="filterBoss('all', this)">All</button>
     <button class="filter-btn" onclick="filterBoss('early', this)">Early</button>
     <button class="filter-btn" onclick="filterBoss('mid', this)">Mid</button>
@@ -251,6 +251,7 @@
     <button class="filter-btn" onclick="filterBoss('endgame', this)">Endgame</button>
     <button class="filter-btn" onclick="filterBoss('demi', this)">Demi</button>
   </div>
+  <div class="filter-bar filter-bar--secondary" id="boss-region-filters"></div>
   <div id="boss-detail" class="boss-detail"></div>
   <div class="boss-grid" id="boss-grid"></div>
 </div>

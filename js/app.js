@@ -1197,10 +1197,55 @@ function renderBossProgression() {
     ` : ''}
   `;
 }
-function renderBosses(filter = 'all') {
+
+let bossTierFilter = 'all';
+let bossRegionFilter = 'all';
+
+const BOSS_REGIONS = [
+  { id: 'all', label: 'All regions' },
+  { id: 'zipangu', label: 'Zipangu' },
+  { id: 'ellin', label: 'Ellin' },
+  { id: 'leafre', label: 'Leafre' },
+  { id: 'mu-lung', label: 'Mu Lung' },
+  { id: 'singapore', label: 'Singapore' },
+  { id: 'masteria', label: 'Masteria' },
+  { id: 'malaysia', label: 'Malaysia' },
+  { id: 'aqua', label: 'Aqua Road' },
+  { id: 'victoria', label: 'Victoria' },
+  { id: 'ludibrium', label: 'Ludibrium' },
+];
+
+function getBossRegion(b) {
+  const loc = (b.location || '').toLowerCase();
+  if (loc.includes('zipangu') || loc.includes('neo tokyo')) return 'zipangu';
+  if (loc.includes('ellin')) return 'ellin';
+  if (loc.includes('leafre') || loc.includes('lion king')) return 'leafre';
+  if (loc.includes('mu lung')) return 'mu-lung';
+  if (loc.includes('singapore') || loc.includes('boat quay') || loc.includes('ulu')) return 'singapore';
+  if (loc.includes('masteria') || loc.includes('crimsonwood')) return 'masteria';
+  if (loc.includes('malaysia')) return 'malaysia';
+  if (loc.includes('aqua')) return 'aqua';
+  if (loc.includes('victoria') || loc.includes('cursed sanctuary')) return 'victoria';
+  if (loc.includes('ludibrium') || loc.includes('clocktower') || loc.includes('temple of time')) return 'ludibrium';
+  return 'other';
+}
+
+function initBossRegionFilters() {
+  const bar = document.getElementById('boss-region-filters');
+  if (!bar) return;
+  bar.innerHTML = BOSS_REGIONS.map((r, i) =>
+    `<button type="button" class="filter-btn filter-btn--region ${i === 0 ? 'active' : ''}" onclick="filterBossRegion('${r.id}', this)">${r.label}</button>`
+  ).join('');
+}
+
+function renderBosses() {
   const grid = document.getElementById('boss-grid');
   const tierColors = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple', demi: 'badge-blue', endgame: 'badge-red' };
-  const filtered = BOSSES.filter(b => filter === 'all' || b.tier === filter);
+  const filtered = BOSSES.filter(b => {
+    if (bossTierFilter !== 'all' && b.tier !== bossTierFilter) return false;
+    if (bossRegionFilter !== 'all' && getBossRegion(b) !== bossRegionFilter) return false;
+    return true;
+  });
   grid.innerHTML = filtered.map(b => `
     <div class="boss-card boss-card--${b.tier}" onclick="showBoss('${b.id}')">
       <img src="${b.image}" alt="${b.name}" class="boss-img" onerror="this.style.display='none'">
@@ -1320,18 +1365,27 @@ function showBoss(id, skipHash) {
     <div class="sep"></div>
     <h3>Tips</h3>
     <ul class="drop-list">${b.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-    ${b.forumGuide ? `<p style="margin-top:12px;"><a href="${b.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Neo Tokyo forum guide ↗</a></p>` : ''}
+    ${b.forumGuide ? `<p style="margin-top:12px;"><a href="${b.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a></p>` : ''}
   `;
   detail.classList.add('show');
   detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function filterBoss(tier, btn) {
-  document.querySelectorAll('#page-bosses .filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#boss-tier-filters .filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  bossTierFilter = tier;
   document.getElementById('boss-detail').classList.remove('show');
-  renderBosses(tier);
+  renderBosses();
   renderBossProgression();
+}
+
+function filterBossRegion(region, btn) {
+  document.querySelectorAll('#boss-region-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  bossRegionFilter = region;
+  document.getElementById('boss-detail').classList.remove('show');
+  renderBosses();
 }
 
 // ══════════════════════════════════════════════
@@ -1463,7 +1517,7 @@ function loadChecklistCollapsed() {
   try {
     const stored = localStorage.getItem('mr-checklist-collapsed');
     if (stored) return JSON.parse(stored);
-    return { 'neo-tokyo-bosses-lv-130': true };
+    return { 'neo-tokyo-bosses-lv-130': true, 'ellin-bosses-lv-120': true };
   } catch { return {}; }
 }
 
@@ -2465,7 +2519,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTools();
   renderPQs();
   renderBossProgression();
-  renderBosses('all');
+  initBossRegionFilters();
+  renderBosses();
   renderLevels();
   renderWorldMap();
   renderLevelMilestones();

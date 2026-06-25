@@ -130,6 +130,29 @@ const BOSS_DROP_TABLES = {
     { item: '5k NX Card', rate: 'Uncommon', note: 'Cash shop credit' },
     { item: 'NX Cards', rate: 'Common', note: '1k / 250 / 100 NX drops' },
   ],
+  bigfoot: [
+    { item: 'Equipment drops', rate: 'Uncommon', note: 'Check FM' },
+    { item: 'Scrolls', rate: 'Common', note: 'Never vendor scrolls' },
+    { item: 'Ores & etc', rate: 'Common', note: 'Vendor ores' },
+  ],
+  chao: [
+    { item: 'Chao\'s Tusk', itemKey: 'chao\'s tusk', rate: '1 per clear', note: 'Required for Ephenia prequest' },
+    { item: 'Yellow Snow Shoes', rate: 'Uncommon', note: 'Strong shoes — keep or scroll' },
+    { item: 'Earring STR 30%', rate: 'Uncommon', note: 'Never vendor scrolls' },
+    { item: 'Ellin Crystal', rate: 'Common', note: 'Quest/craft material' },
+  ],
+  ephenia: [
+    { item: 'Ephenia\'s Shard', rate: '1 per clear', note: 'EPQ completion item' },
+    { item: 'Yellow Work Gloves', itemKey: 'work gloves', rate: 'Rare', note: 'Strong gloves — scroll ATT' },
+    { item: 'Earring 60% scrolls', rate: 'Uncommon', note: 'STR/DEX/LUK — valuable' },
+    { item: 'Ellin Crystal', rate: 'Common', note: 'Quest/craft material' },
+  ],
+  anego: [
+    { item: 'Female Boss\' Comb', itemKey: 'female boss comb', rate: '1 per clear', note: 'Required for The Boss expedition' },
+    { item: 'Yellow Snowshoes', rate: 'Uncommon', note: 'Keep or scroll' },
+    { item: 'Class weapons', rate: 'Uncommon', note: 'Leomite, Magicodar, etc.' },
+    { item: 'NX Cards', rate: 'Common', note: 'Cash shop credit' },
+  ],
 };
 
 const LEVEL_MILESTONES = [
@@ -148,6 +171,10 @@ const LEVEL_MILESTONES = [
   { level: 85, icon: '🎡', title: 'Scarlion / Targa', detail: 'Start Lam questline in Malaysia. Helmets at 140.', page: 'prequests', prequest: 'scar-targa' },
   { level: 90, icon: '🏰', title: 'Crimsonwood Keep', detail: 'Start keystone prequest. CWKPQ for mastery books.', page: 'prequests', prequest: 'cwk' },
   { level: 110, icon: '🐟', title: 'Pianus (area boss)', detail: 'No prequest — sweep Aqua Road channels. Drops mastery books.', page: 'bosses', boss: 'pianus' },
+  { level: 110, icon: '🦶', title: 'Bigfoot (area boss)', detail: 'Masteria twisted paths — 12k touch, ~12h respawn.', page: 'bosses', boss: 'bigfoot' },
+  { level: 120, icon: '🌲', title: 'Chao (Ellin Forest)', detail: 'After Pap prequest — 2 runs/day.', page: 'prequests', prequest: 'chao' },
+  { level: 125, icon: '🧚', title: 'Ephenia (EPQ)', detail: 'After Chao — Guardian Medal unlock.', page: 'prequests', prequest: 'ephenia' },
+  { level: 130, icon: '👘', title: 'Anego (area boss)', detail: 'Zipangu Parlor — drops comb for The Boss.', page: 'bosses', boss: 'anego' },
   { level: 120, icon: '🐉', title: 'Horntail + Neo Tokyo', detail: 'HT prequest first, then NT for training.', page: 'prequests', prequest: 'horntail' },
   { level: 140, icon: '👑', title: 'Pink Bean', detail: 'Start Temple of Time prequest immediately.', page: 'prequests', prequest: 'pinkbean' },
   { level: 145, icon: '🤖', title: 'Vergamot (NT boss)', detail: 'Neo Tokyo expedition after PB — daily mesos.', page: 'bosses', boss: 'vergamot' },

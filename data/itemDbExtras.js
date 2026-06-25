@@ -34,6 +34,8 @@ Object.assign(ITEM_DB, {
   'von leon belt': { verdict: 'keep', reason: 'BiS belt from Von Leon. Never sell.', tags: ['belt', 'endgame', 'boss drop'] },
   'element pierce': { verdict: 'keep', reason: 'Strong earring from Auf Haven — check FM if dupe.', tags: ['earring', 'endgame'] },
   'soul lantern': { verdict: 'keep', reason: 'Krexel prequest item — tradable (~6–9m). Keep until Krexel unlocked.', tags: ['quest', 'krexel', 'tradeable'] },
+  'female boss comb': { verdict: 'keep', reason: 'Required for The Boss expedition — do not sell until stocked.', tags: ['quest', 'boss drop', 'zipangu'] },
+  'chao\'s tusk': { verdict: 'keep', reason: 'Ephenia prequest item — not tradeable. Keep until EPQ turn-in.', tags: ['quest', 'ellin'] },
 });
 
 /** Merge Sylafia PRICE_DB entries not already in ITEM_DB with sensible defaults. */

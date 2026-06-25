@@ -1192,7 +1192,7 @@ function renderBossProgression() {
       <div class="flow-track flow-bosses flow-bosses--endgame">${renderTrack(endgame, main.length)}</div>
     ` : ''}
     ${demi.length ? `
-      <p class="section-hint" style="margin:16px 0 8px;">Demi-bosses — optional gear & mesos between Pap and Horntail</p>
+      <p class="section-hint" style="margin:16px 0 8px;">Demi-bosses — optional gear, mesos & EPQ between Pap and Horntail</p>
       <div class="flow-track flow-bosses flow-bosses--demi">${renderTrack(demi, main.length + endgame.length)}</div>
     ` : ''}
   `;

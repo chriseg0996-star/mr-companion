@@ -5,9 +5,14 @@
 // ══════════════════════════════════════════════
 const PAGE_TITLES = {
   home: 'Start Here', leveling: 'Leveling', pqs: 'Party Quests', bosses: 'Bosses',
-  items: 'Items', jobadv: 'Jobs', quiz: 'Class Quiz', gear: 'Gear',
-  checklist: 'Daily', tools: 'Tools', hpwash: 'HP Wash', scrolls: 'Scrolls',
-  mesos: 'Mesos', party: 'Party',
+  prequests: 'Prequests', items: 'Items', classes: 'Classes', jobadv: 'Jobs',
+  quiz: 'Class Quiz', gear: 'Gear', checklist: 'Daily', tools: 'Tools',
+  hpwash: 'HP Wash', scrolls: 'Scrolls', mesos: 'Mesos', party: 'Party',
+};
+
+const QUIZ_CLASS_IDS = {
+  'Dark Knight': 'dark-knight', Bishop: 'bishop', 'Night Lord': 'night-lord',
+  Bowmaster: 'bowmaster', Shadower: 'shadower', Buccaneer: 'buccaneer',
 };
 
 function showPage(id, btn) {
@@ -500,7 +505,12 @@ function showBoss(id) {
     <h3>Arena Map</h3>
     ${renderMapScene(b.mapTheme || 'cave', b.phases || [b.name], b.mapImage || null)}
     <div class="sep"></div>
-    <h3>Prequest</h3>
+    <h3>Prequest Walkthrough</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">
+      <a href="#" onclick="openPrequest('${b.id}');return false;" style="color:var(--blue);">Open full step-by-step prequest guide →</a>
+    </p>
+    <div class="sep"></div>
+    <h3>Prequest Summary</h3>
     <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">${b.prequest}</p>
     <h3>Drops</h3>
     <ul class="drop-list">${b.drops.map(d => `<li>${d}</li>`).join('')}</ul>
@@ -752,8 +762,20 @@ function showQuizResult() {
   document.getElementById('quiz-class').textContent = best.name;
   document.getElementById('quiz-why').textContent = best.why;
   document.getElementById('quiz-tags').innerHTML = best.badges.map(b => `<span class="tag">${b}</span>`).join('');
+  const classId = QUIZ_CLASS_IDS[best.name];
+  const guideBtn = classId
+    ? `<button class="btn" style="margin-right:8px;" onclick="openClassGuide('${classId}')">Read ${best.name} Guide →</button>`
+    : '';
+  const resultEl = document.getElementById('quiz-result');
+  let actions = resultEl.querySelector('.quiz-actions');
+  if (!actions) {
+    actions = document.createElement('div');
+    actions.className = 'quiz-actions';
+    resultEl.appendChild(actions);
+  }
+  actions.innerHTML = `${guideBtn}<button class="btn-ghost" onclick="resetQuiz()">Retake Quiz</button>`;
   const icon = document.getElementById('quiz-class-icon');
-  if (icon) { icon.src = best.icon; icon.alt = best.name; }
+  if (icon) { icon.src = best.icon; icon.alt = best.name; icon.style.display = ''; }
   document.getElementById('quiz-result').classList.add('show');
 }
 
@@ -785,6 +807,36 @@ function renderGear() {
 }
 
 // ══════════════════════════════════════════════
+// PROGRESS TRACKING (jobs + prequests)
+// ══════════════════════════════════════════════
+function stepKey(prefix, id) { return `mr-${prefix}-${id}`; }
+
+function isStepDone(key) {
+  return localStorage.getItem(key) === '1';
+}
+
+function toggleStep(key, rerender) {
+  localStorage.setItem(key, isStepDone(key) ? '0' : '1');
+  if (rerender === 'job') renderJobAdv();
+  else if (rerender === 'prequest') renderPrequests();
+}
+
+function renderCheckableSteps(steps, prefix, rerender) {
+  return steps.map((s, i) => {
+    const key = stepKey(prefix, s.id);
+    const done = isStepDone(key);
+    return `
+      <div class="quest-step ${done ? 'done' : ''}" onclick="toggleStep('${key}', '${rerender}')">
+        <div class="quest-step-check">${done ? '✓' : i + 1}</div>
+        <div class="quest-step-body">
+          <div class="quest-step-text">${s.text}</div>
+          ${s.detail ? `<div class="quest-step-detail">${s.detail}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
 // JOB ADVANCEMENT
 // ══════════════════════════════════════════════
 let currentJob = 'warrior';
@@ -796,27 +848,221 @@ function filterJob(job, btn) {
   renderJobAdv();
 }
 
+function getJobProgress(pathKey) {
+  const path = JOB_PATHS[pathKey];
+  if (!path) return { done: 0, total: 0 };
+  let done = 0, total = 0;
+  path.advancements.forEach(a => {
+    a.steps.forEach(s => {
+      total++;
+      if (isStepDone(stepKey('job', s.id))) done++;
+    });
+  });
+  return { done, total };
+}
+
 function renderJobAdv() {
-  const d = JOB_DATA[currentJob];
+  const path = JOB_PATHS[currentJob];
+  const { done, total } = getJobProgress(currentJob);
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const bar = document.getElementById('job-progress-bar');
+  const label = document.getElementById('job-progress-label');
+  if (bar) bar.style.width = pct + '%';
+  if (label) label.textContent = total ? `${done} / ${total} steps complete (${pct}%)` : '';
+
   document.getElementById('job-container').innerHTML = `
-    <p style="color:var(--muted);font-size:13px;margin-bottom:20px;">${d.class}</p>
-    ${d.advancements.map(a => `
-      <div class="card" style="margin-bottom:12px;">
-        <div class="card-header">
-          <h2>${a.job}</h2>
-          <span class="badge badge-blue" style="font-size:10px;">${a.location}</span>
-        </div>
-        ${a.steps.map((s, i) => `
-          <div class="job-step">
-            <div class="job-step-num">${i + 1}</div>
-            <div class="job-step-content">
-              <div class="job-step-desc">${s}</div>
+    <p class="job-tree-label">${path.tree}</p>
+    <div class="job-timeline">
+      ${path.advancements.map((a, ai) => `
+        <div class="job-timeline-item">
+          <div class="job-timeline-marker">Lv ${a.level}</div>
+          <div class="card quest-card">
+            <div class="card-header">
+              <h2>${a.title}</h2>
+              <span class="badge badge-blue">${a.location}</span>
             </div>
+            <p class="quest-npc"><strong>NPC:</strong> ${a.npc}</p>
+            ${renderCheckableSteps(a.steps, 'job', 'job')}
+            ${a.skillPriority ? `
+              <div class="quest-extras">
+                <strong>Skill priority:</strong>
+                ${a.skillPriority.map(s => `<span class="tag">${s}</span>`).join('')}
+              </div>` : ''}
+            ${a.tips ? `<ul class="drop-list quest-tips">${a.tips.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}
+            ${a.classLink ? `<p class="quest-link-hint">At 4th job, read your <a href="#" onclick="showPage('classes');return false;" style="color:var(--blue);">class guide</a>.</p>` : ''}
           </div>
-        `).join('')}
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════
+// PREQUESTS
+// ══════════════════════════════════════════════
+function openPrequest(id) {
+  showPage('prequests');
+  const el = document.getElementById('prequest-' + id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.add('prequest-highlight');
+    setTimeout(() => el.classList.remove('prequest-highlight'), 2000);
+  }
+}
+
+function renderPrequests() {
+  const el = document.getElementById('prequest-list');
+  if (!el || typeof PREQUESTS === 'undefined') return;
+  el.innerHTML = PREQUESTS.map(pq => {
+    const done = pq.steps.filter(s => isStepDone(stepKey('pq', `${pq.id}-${s.id}`))).length;
+    const total = pq.steps.length;
+    return `
+      <div class="card quest-card prequest-card" id="prequest-${pq.id}">
+        <div class="card-header">
+          <h2>${pq.name}</h2>
+          <span class="badge badge-yellow">Start Lv ${pq.startLevel}+</span>
+        </div>
+        ${pq.mapImage ? renderMapScene('field', [], pq.mapImage) : ''}
+        <p style="font-size:14px;color:var(--muted);margin-bottom:12px;">${pq.summary}</p>
+        <div class="info-grid" style="margin-bottom:16px;">
+          <div class="info-item"><div class="label">Recommend</div><div class="value" style="font-size:12px;">${pq.recommendLevel}</div></div>
+          <div class="info-item"><div class="label">Duration</div><div class="value">${pq.duration}</div></div>
+          <div class="info-item"><div class="label">Location</div><div class="value" style="font-size:12px;">${pq.location}</div></div>
+          <div class="info-item"><div class="label">Progress</div><div class="value">${done}/${total}</div></div>
+        </div>
+        <h3>Requirements</h3>
+        <ul class="drop-list">${pq.requirements.map(r => `<li>${r}</li>`).join('')}</ul>
+        <h3>Steps</h3>
+        ${renderCheckableSteps(pq.steps.map(s => ({ ...s, id: `${pq.id}-${s.id}` })), 'pq', 'prequest')}
+        <h3>Tips</h3>
+        <ul class="drop-list">${pq.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+        ${pq.bossId ? `<button class="btn btn-sm" onclick="showPage('bosses');showBoss('${pq.bossId}')">View Boss Guide →</button>` : ''}
       </div>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+// CLASS GUIDES
+// ══════════════════════════════════════════════
+let currentClassBranch = 'all';
+let currentClassId = null;
+
+function openClassGuide(id) {
+  showPage('classes');
+  showClass(id);
+}
+
+function filterClassBranch(branch, btn) {
+  document.querySelectorAll('#class-branch-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  currentClassBranch = branch;
+  currentClassId = null;
+  document.getElementById('class-detail').innerHTML = '';
+  document.getElementById('class-detail').classList.remove('show');
+  renderClassGrid();
+}
+
+function renderClassBranchFilters() {
+  const el = document.getElementById('class-branch-filters');
+  if (!el) return;
+  el.innerHTML = `
+    <button class="filter-btn active" onclick="filterClassBranch('all', this)">All</button>
+    ${CLASS_BRANCHES.map(b => `
+      <button class="filter-btn" onclick="filterClassBranch('${b.id}', this)">${b.label}</button>
     `).join('')}
   `;
+}
+
+function renderClassGrid() {
+  const el = document.getElementById('class-grid');
+  if (!el || typeof CLASS_GUIDES === 'undefined') return;
+  const ids = currentClassBranch === 'all'
+    ? CLASS_BRANCHES.flatMap(b => b.classes)
+    : (CLASS_BRANCHES.find(b => b.id === currentClassBranch)?.classes || []);
+  el.innerHTML = ids.map(id => {
+    const c = CLASS_GUIDES[id];
+    if (!c) return '';
+    const diffColor = c.difficulty.includes('Beginner') ? 'badge-green' : c.difficulty.includes('Hard') ? 'badge-red' : 'badge-yellow';
+    return `
+      <div class="class-card ${currentClassId === id ? 'active' : ''}" onclick="showClass('${id}')">
+        <img src="${c.icon}" alt="" class="class-card-icon" onerror="this.style.display='none'">
+        <div class="class-card-name">${c.name}</div>
+        <div class="class-card-role">${c.role}</div>
+        <span class="badge ${diffColor}" style="font-size:10px;margin-top:6px;">${c.difficulty}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function showClass(id) {
+  currentClassId = id;
+  const c = CLASS_GUIDES[id];
+  const detail = document.getElementById('class-detail');
+  if (!c || !detail) return;
+  renderClassGrid();
+  detail.innerHTML = `
+    <div class="class-detail-top">
+      <img src="${c.icon}" alt="" class="class-detail-icon" onerror="this.style.display='none'">
+      <div>
+        <h2>${c.name}</h2>
+        <p style="font-size:13px;color:var(--muted);margin:4px 0;">${c.path}</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+          ${(c.badges || []).map(b => `<span class="tag">${b}</span>`).join('')}
+        </div>
+      </div>
+      <button class="btn-ghost" onclick="document.getElementById('class-detail').classList.remove('show')" style="font-size:12px;padding:5px 12px;margin-left:auto;flex-shrink:0;">Close</button>
+    </div>
+    <div class="info-grid">
+      <div class="info-item"><div class="label">Role</div><div class="value" style="font-size:12px;">${c.role}</div></div>
+      <div class="info-item"><div class="label">Difficulty</div><div class="value">${c.difficulty}</div></div>
+      <div class="info-item"><div class="label">Cost</div><div class="value">${c.cost}</div></div>
+      <div class="info-item"><div class="label">HP Wash</div><div class="value" style="font-size:12px;">${c.hpWash}</div></div>
+    </div>
+    <div class="sep"></div>
+    <h3>Overview</h3>
+    <p style="font-size:14px;color:var(--muted);">${c.overview}</p>
+    <div class="grid2" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-header"><h2>Pros</h2><span class="badge badge-green">+</span></div>
+        <ul class="drop-list">${c.pros.map(p => `<li>${p}</li>`).join('')}</ul>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>Cons</h2><span class="badge badge-red">−</span></div>
+        <ul class="drop-list">${c.cons.map(p => `<li>${p}</li>`).join('')}</ul>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <h3>Skill Build</h3>
+    <div class="skill-build-grid">
+      ${Object.entries(c.skills).map(([phase, skills]) => `
+        <div class="skill-phase">
+          <div class="skill-phase-label">${phase}</div>
+          ${skills.map(s => `<span class="tag">${s}</span>`).join('')}
+        </div>
+      `).join('')}
+    </div>
+    <div class="sep"></div>
+    <h3>Leveling</h3>
+    <p style="font-size:13px;color:var(--muted);">${c.leveling}</p>
+    <h3 style="margin-top:16px;">Bossing</h3>
+    <p style="font-size:13px;color:var(--muted);">${c.bossing}</p>
+    <h3 style="margin-top:16px;">Party Value</h3>
+    <p style="font-size:13px;color:var(--muted);">${c.partyValue}</p>
+    <h3 style="margin-top:16px;">Common Mistakes</h3>
+    <ul class="drop-list">${c.mistakes.map(m => `<li>${m}</li>`).join('')}</ul>
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-sm" onclick="showPage('jobadv')">Job Advancements →</button>
+      <button class="btn btn-sm btn-ghost" onclick="showPage('gear')">Gear Roadmap →</button>
+    </div>
+  `;
+  detail.classList.add('show');
+  detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderClasses() {
+  renderClassBranchFilters();
+  renderClassGrid();
 }
 
 // ══════════════════════════════════════════════
@@ -896,6 +1142,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderGear();
   renderQuiz();
   renderJobAdv();
+  renderPrequests();
+  renderClasses();
   renderPartySlots();
   renderPopularPrices();
   initLevelProfile();

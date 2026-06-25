@@ -329,9 +329,11 @@ const PQS = [
 const GUIDE_SECTIONS = [
   { id: 'leveling', icon: '📈', title: 'Leveling Guide', desc: 'Where to train from level 1 to 200 — maps, mobs, and when to run PQs.' },
   { id: 'pqs', icon: '👥', title: 'Party Quests', desc: 'KPQ, LPQ, CPQ, OPQ explained — how to run them and what you get.' },
+  { id: 'prequests', icon: '📜', title: 'Prequests', desc: 'Step-by-step Zakum, Pap, Horntail, Neo Tokyo, and Pink Bean unlock chains.' },
   { id: 'bosses', icon: '💀', title: 'Boss Guides', desc: 'Zakum, Papulatus, Horntail, Pink Bean — prequests, HP reqs, drops, and tips.' },
+  { id: 'classes', icon: '⚔️', title: 'Class Guides', desc: 'Full guide for every 4th job — skills, leveling, bossing, and party role.' },
   { id: 'items', icon: '🎒', title: 'Item Guide', desc: 'What to keep, sell in FM, or vendor. Search any drop you are unsure about.' },
-  { id: 'jobadv', icon: '⚔️', title: 'Job Advancements', desc: 'Every job change from level 10 to 120 — where to go and what to do.' },
+  { id: 'jobadv', icon: '🎖️', title: 'Job Advancements', desc: 'Every job change from level 8/10 to 120 — quests, NPCs, and skill priorities.' },
   { id: 'quiz', icon: '🎯', title: 'Pick Your Class', desc: 'Not sure what to play? Short quiz recommends a class for your playstyle.' },
   { id: 'gear', icon: '🛡️', title: 'Gear Roadmap', desc: 'What gear to aim for at each stage of the game, in priority order.' },
 ];
@@ -432,51 +434,3 @@ const CLASS_RESULTS = [
   { name: 'Shadower', icon: 'assets/images/classes/thief.png', tags: ['dps', 'mid', 'support'], why: 'Smokescreen is one of the most valuable bossing skills. More affordable than NL with unique Meso Explosion mechanic.', badges: ['Unique Mechanic', 'Party Utility', 'Moderate Cost'] },
   { name: 'Buccaneer', icon: 'assets/images/classes/pirate.png', tags: ['tank', 'mid', 'dps'], why: 'Speed Infusion buffs party attack speed. Super Transform is mechanically fun. Underrated but very capable.', badges: ['Fun Mechanic', 'Party Buff', 'Underrated'] },
 ];
-
-const JOB_DATA = {
-  warrior: {
-    class: 'Warrior → Spearman / Fighter / Page → Dark Knight / Hero / Paladin',
-    advancements: [
-      { job: '1st Job — Level 10', location: 'Perion — Warriors\' Sanctuary', steps: ['Talk to Dances with Balrog in Perion', 'No test required', 'Choose weapon path: Sword, Spear, or Blunt Weapon', 'Allocate SP into Power Strike and Slash Blast first'] },
-      { job: '2nd Job — Level 30', location: 'Perion — Job Instructor', steps: ['Talk to the job instructor in Perion', 'Complete quest: collect 30 Dark Marbles', 'Choose: Fighter (sword/axe), Page (sword/blunt), or Spearman (spear/polearm)', 'Max Hyper Body first if choosing Spearman'] },
-      { job: '3rd Job — Level 70', location: 'El Nath — Holy Ground', steps: ['Travel to El Nath', 'Talk to your job instructor', 'Enter the Holy Ground portal', 'Defeat the Demon solo — bring potions', 'Return to receive 3rd job advancement'] },
-      { job: '4th Job — Level 120', location: 'Leafre — Dragon Master', steps: ['Travel to Leafre', 'Talk to Harmonia the Dragon Master', 'No quest required — straightforward advancement', 'Dark Knight: max Berserk first', 'Hero: max Brandish first', 'Paladin: max Heaven\'s Hammer first'] },
-    ]
-  },
-  thief: {
-    class: 'Rogue → Assassin / Bandit → Night Lord / Shadower',
-    advancements: [
-      { job: '1st Job — Level 10', location: 'Kerning City — Fusion Bar', steps: ['Talk to Dark Lord in Kerning City', 'No test required', 'Choose: Assassin (claw) or Bandit (dagger)', 'Assassin: max Lucky Seven first'] },
-      { job: '2nd Job — Level 30', location: 'Kerning City — Job Instructor', steps: ['Talk to the job instructor', 'Collect 30 Dark Marbles from assigned mob', 'Assassin: max Claw Mastery and Booster first', 'Bandit: max Savage Blow first'] },
-      { job: '3rd Job — Level 70', location: 'El Nath — Holy Ground', steps: ['Travel to El Nath', 'Talk to your job instructor', 'Enter the Holy Ground portal and defeat the Demon solo', 'Assassin → Hermit, Bandit → Chief Bandit'] },
-      { job: '4th Job — Level 120', location: 'Leafre', steps: ['Talk to your 4th job instructor in Leafre', 'Hermit → Night Lord: max Quadruple Throw first', 'Chief Bandit → Shadower: max Assassinate first', 'NL: activate Shadow Stars immediately'] },
-    ]
-  },
-  archer: {
-    class: 'Hunter / Crossbowman → Ranger / Sniper → Bowmaster / Marksman',
-    advancements: [
-      { job: '1st Job — Level 10', location: 'Henesys — Bowman Instructional School', steps: ['Talk to Athena Pierce in Henesys', 'No test required', 'Choose: Hunter (bow) or Crossbowman (crossbow)', 'Max The Eye of Amazon and Focus first'] },
-      { job: '2nd Job — Level 30', location: 'Henesys — Job Instructor', steps: ['Collect 30 Dark Marbles', 'Hunter → Ranger: max Arrow Bomb and Booster', 'Crossbowman → Sniper: max Iron Arrow and Booster'] },
-      { job: '3rd Job — Level 70', location: 'El Nath — Holy Ground', steps: ['Travel to El Nath and defeat the Demon solo', 'Ranger: max Arrow Rain first', 'Sniper: max Blizzard first', 'Puppet is mandatory — level it early'] },
-      { job: '4th Job — Level 120', location: 'Leafre', steps: ['Talk to 4th job instructor in Leafre', 'Ranger → Bowmaster: max Hurricane first', 'Sniper → Marksman: max Snipe first', 'Sharp Eyes buffs entire party — always active'] },
-    ]
-  },
-  mage: {
-    class: 'Wizard → Mage → Bishop / Ice-Lightning / Fire-Poison',
-    advancements: [
-      { job: '1st Job — Level 8', location: 'Ellinia — Magic Library', steps: ['Talk to Grendel the Really Old in Ellinia', 'Mages advance at level 8, not 10', 'Choose: Fire/Poison, Ice/Lightning, or Cleric path', 'Max Magic Bolt and Magic Guard first'] },
-      { job: '2nd Job — Level 30', location: 'Ellinia — Job Instructor', steps: ['Collect 30 Dark Marbles', 'Cleric → Priest: max Teleport, Heal, and Holy Arrow', 'F/P: max Spell Mastery and MP Eater', 'I/L: max Spell Mastery and Thunderbolt'] },
-      { job: '3rd Job — Level 70', location: 'El Nath — Holy Ground', steps: ['Travel to El Nath and defeat the Demon solo (mages have low HP — stock potions)', 'Priest → Bishop: max Holy Symbol immediately', 'F/P Mage: max Poison Mist', 'I/L Mage: max Ice Strike'] },
-      { job: '4th Job — Level 120', location: 'Leafre', steps: ['Talk to 4th job instructor in Leafre', 'Bishop: max Genesis and Bahamut, then Infinity', 'I/L: max Chain Lightning and Infinity', 'F/P: max Meteor Shower and Infinity', 'Infinity is a game-changer — prioritize it'] },
-    ]
-  },
-  pirate: {
-    class: 'Pirate → Brawler / Gunslinger → Buccaneer / Corsair',
-    advancements: [
-      { job: '1st Job — Level 10', location: 'Nautilus Harbor', steps: ['Talk to Kyrin on the Nautilus', 'Choose: Brawler (knuckle) or Gunslinger (gun)', 'Brawler: max Flash Fist and Dash', 'Gunslinger: max Double Shot and Dash'] },
-      { job: '2nd Job — Level 30', location: 'Nautilus Harbor — Job Instructor', steps: ['Return to Nautilus Harbor', 'Collect 30 Dark Marbles', 'Brawler → Marauder: max Knuckle Mastery and Booster', 'Gunslinger → Outlaw: max Gun Mastery and Booster'] },
-      { job: '3rd Job — Level 70', location: 'El Nath — Holy Ground', steps: ['Travel to El Nath and defeat the Demon solo', 'Marauder → Buccaneer: max Energy Charge mechanic', 'Outlaw → Corsair: max Wrath of Octopi and Battleship'] },
-      { job: '4th Job — Level 120', location: 'Leafre', steps: ['Talk to 4th job instructor in Leafre', 'Buccaneer: max Super Transformation first, then Demolition', 'Corsair: max Rapid Fire first, then Battleship Torpedo', 'Buccaneer: Speed Infusion buffs party — always active'] },
-    ]
-  }
-};

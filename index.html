@@ -21,7 +21,9 @@
     <button class="nav-btn" data-page="leveling" onclick="showPage('leveling', this)">Leveling</button>
     <button class="nav-btn" data-page="pqs" onclick="showPage('pqs', this)">PQs</button>
     <button class="nav-btn" data-page="bosses" onclick="showPage('bosses', this)">Bosses</button>
+    <button class="nav-btn" data-page="prequests" onclick="showPage('prequests', this)">Prequests</button>
     <button class="nav-btn" data-page="items" onclick="showPage('items', this)">Items</button>
+    <button class="nav-btn" data-page="classes" onclick="showPage('classes', this)">Classes</button>
     <button class="nav-btn" data-page="jobadv" onclick="showPage('jobadv', this)">Jobs</button>
     <span class="nav-group-label">Tools</span>
     <button class="nav-btn" data-page="quiz" onclick="showPage('quiz', this)">Class Quiz</button>
@@ -48,7 +50,7 @@
   <div class="path-steps">
     <div class="path-step"><span class="path-num">1</span><div><strong>Pick a class</strong><span class="path-desc">Take the Class Quiz or read Job Advancements</span></div></div>
     <div class="path-step"><span class="path-num">2</span><div><strong>Level 1–50</strong><span class="path-desc">Follow the Leveling guide — run KPQ and LPQ with a party</span></div></div>
-    <div class="path-step"><span class="path-num">3</span><div><strong>Level 50–120</strong><span class="path-desc">OPQ → Galloperas → Neo Tokyo. Start boss prequests early</span></div></div>
+    <div class="path-step"><span class="path-num">3</span><div><strong>Level 50–120</strong><span class="path-desc">OPQ → Galloperas → Neo Tokyo. <a href="#" onclick="showPage('prequests');return false;" style="color:var(--blue);">Start prequests early</a></span></div></div>
     <div class="path-step"><span class="path-num">4</span><div><strong>Daily bosses</strong><span class="path-desc">Zakum → Pap → Horntail → Pink Bean. Check the Boss guides</span></div></div>
     <div class="path-step"><span class="path-num">5</span><div><strong>Loot decisions</strong><span class="path-desc">Search any drop in the Item guide — keep, FM, or vendor</span></div></div>
   </div>
@@ -294,7 +296,6 @@
     <div class="quiz-class-name" id="quiz-class"></div>
     <p id="quiz-why" style="color:var(--muted);margin-bottom:20px;"></p>
     <div id="quiz-tags" style="margin-bottom:20px;"></div>
-    <button class="btn-ghost" onclick="resetQuiz()">Retake Quiz</button>
   </div>
 </div>
 
@@ -309,9 +310,25 @@
   <div id="gear-timeline"></div>
 </div>
 
+<div id="page-prequests" class="page">
+  <h1>Prequest Guide</h1>
+  <p class="subtitle">Step-by-step walkthroughs to unlock bosses and Neo Tokyo. Check off steps as you complete them.</p>
+  <div id="prequest-list"></div>
+</div>
+
+<div id="page-classes" class="page">
+  <h1>Class Guides</h1>
+  <p class="subtitle">Every 4th job — skills, leveling path, bossing role, and party value.</p>
+  <div class="filter-bar" id="class-branch-filters"></div>
+  <div class="class-grid" id="class-grid"></div>
+  <div id="class-detail" class="class-detail"></div>
+</div>
+
 <div id="page-jobadv" class="page">
   <h1>Job Advancement Guide</h1>
-  <p class="subtitle">Every job change from level 10 to 120 — where to go, what to collect, and what skills to max.</p>
+  <p class="subtitle">Every job change from level 8/10 to 120 — NPCs, quest steps, and skill priorities. Check off steps as you go.</p>
+  <div class="job-progress-bar-wrap"><div class="job-progress-bar" id="job-progress-bar"></div></div>
+  <p class="section-hint" id="job-progress-label"></p>
   <div class="filter-bar">
     <button class="filter-btn active" onclick="filterJob('warrior', this)">Warrior</button>
     <button class="filter-btn" onclick="filterJob('thief', this)">Thief</button>
@@ -352,6 +369,9 @@
 <footer class="site-watermark"><span class="watermark-dot"></span> by Christopher Godines</footer>
 
 <script src="data/gameData.js"></script>
+<script src="data/jobData.js"></script>
+<script src="data/prequestData.js"></script>
+<script src="data/classGuides.js"></script>
 <script src="data/priceData.js"></script>
 <script src="js/app.js"></script>
 </body>

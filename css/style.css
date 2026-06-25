@@ -801,6 +801,121 @@ button.btn-ghost:hover {
 .job-step-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
 .job-step-desc { font-size: 13px; color: var(--muted); }
 
+.job-progress-bar-wrap {
+  height: 6px;
+  background: var(--bg3);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.job-progress-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius: 99px;
+  transition: width 0.3s var(--ease);
+}
+.job-tree-label { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.job-timeline { display: flex; flex-direction: column; gap: 20px; }
+.job-timeline-marker {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+/* QUEST STEPS (jobs + prequests) */
+.quest-card { margin-bottom: 20px; }
+.quest-npc { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+.quest-step {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.12s;
+  margin-bottom: 6px;
+}
+.quest-step:hover { background: var(--bg3); }
+.quest-step.done { opacity: 0.65; }
+.quest-step.done .quest-step-text { text-decoration: line-through; }
+.quest-step-check {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.quest-step.done .quest-step-check {
+  background: var(--green);
+  border-color: var(--green);
+  color: #0a0c10;
+}
+.quest-step-text { font-size: 14px; font-weight: 500; }
+.quest-step-detail { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.quest-extras { margin-top: 14px; font-size: 13px; }
+.quest-extras .tag { margin: 4px 4px 0 0; }
+.quest-tips { margin-top: 12px; }
+.prequest-highlight { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+/* CLASS GUIDES */
+.class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.class-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.class-card:hover, .class-card.active {
+  border-color: var(--accent);
+  background: var(--bg3);
+}
+.class-card-icon { width: 48px; height: 48px; object-fit: contain; margin-bottom: 8px; }
+.class-card-name { font-family: var(--display); font-size: 14px; font-weight: 700; }
+.class-card-role { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.class-detail {
+  display: none;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-top: 8px;
+}
+.class-detail.show { display: block; }
+.class-detail-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.class-detail-icon { width: 64px; height: 64px; object-fit: contain; flex-shrink: 0; }
+.skill-build-grid { display: flex; flex-direction: column; gap: 12px; }
+.skill-phase-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.quiz-actions { margin-top: 8px; }
+
 /* PARTY BUILDER */
 .party-slot {
   background: var(--bg2);

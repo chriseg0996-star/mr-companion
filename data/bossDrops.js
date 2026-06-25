@@ -24,6 +24,13 @@ const BOSS_DROP_TABLES = {
     { item: 'Pink Adventurer Cape', itemKey: 'pink adventurer cape', rate: 'Very rare', note: 'BiS cape — never sell' },
     { item: 'Mesos', rate: 'Guaranteed', note: 'Strong meso income per run' },
   ],
+  cwk: [
+    { item: 'Mark of Naricain', itemKey: 'mark of naricain', rate: '1 per boss', note: 'Crafting material — keep' },
+    { item: 'Naricain Demon Elixir', itemKey: 'naricain demon elixir', rate: 'Boss / Bonus', note: 'Top attack potion' },
+    { item: 'Mastery Books', rate: 'Bonus armory', note: 'Hurricane, Sharp Eyes, Demo, Blizzard, etc.' },
+    { item: 'Elemental Wand / Staff', rate: 'Bonus armory', note: 'Wand 6–8, Staff 7 — check FM' },
+    { item: 'CWK Cloaks & Goggles', rate: 'Bonus armory', note: 'Crimsonheart Cloak, Spectrum Goggles' },
+  ],
 };
 
 const LEVEL_MILESTONES = [
@@ -36,6 +43,7 @@ const LEVEL_MILESTONES = [
   { level: 51, icon: '👥', title: 'OPQ unlocked', detail: 'Best EXP from 51–70.', page: 'pqs' },
   { level: 70, icon: '🎖️', title: '4th Job', detail: 'Final advancement — read your class guide.', page: 'classes' },
   { level: 85, icon: '🕐', title: 'Papulatus', detail: 'Start clocktower prequest. Daily pendant upgrade.', page: 'prequests', prequest: 'papulatus' },
+  { level: 90, icon: '🏰', title: 'Crimsonwood Keep', detail: 'Start keystone prequest. CWKPQ for mastery books.', page: 'prequests', prequest: 'cwk' },
   { level: 120, icon: '🐉', title: 'Horntail + Neo Tokyo', detail: 'HT prequest first, then NT for training.', page: 'prequests', prequest: 'horntail' },
   { level: 140, icon: '👑', title: 'Pink Bean', detail: 'Start Temple of Time prequest immediately.', page: 'prequests', prequest: 'pinkbean' },
 ];

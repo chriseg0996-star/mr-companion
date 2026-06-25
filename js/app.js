@@ -361,6 +361,10 @@ function renderHomeNextSteps() {
     const p = prequestProgress('papulatus');
     if (p.done < p.total) steps.push({ icon: '🕐', text: 'Papulatus prequest', action: () => openPrequest('papulatus'), label: `${p.done}/${p.total} steps` });
   }
+  if (level >= 90) {
+    const cwk = prequestProgress('cwk');
+    if (cwk.done < cwk.total) steps.push({ icon: '🏰', text: 'Crimsonwood Keystone prequest', action: () => openPrequest('cwk'), label: `${cwk.done}/${cwk.total} steps` });
+  }
   if (level >= 120) {
     const ht = prequestProgress('horntail');
     if (ht.done < ht.total) steps.push({ icon: '🐉', text: 'Horntail prequest — do this first', action: () => openPrequest('horntail'), label: `${ht.done}/${ht.total} steps` });
@@ -623,9 +627,11 @@ function renderExternalLinks(targetId) {
 // ══════════════════════════════════════════════
 function isPQInRange(pq, level) {
   if (!level) return false;
-  const m = pq.level.match(/(\d+)\s*[–-]\s*(\d+)/);
-  if (!m) return false;
-  return level >= parseInt(m[1], 10) && level <= parseInt(m[2], 10);
+  const range = pq.level.match(/(\d+)\s*[–-]\s*(\d+)/);
+  if (range) return level >= parseInt(range[1], 10) && level <= parseInt(range[2], 10);
+  const minOnly = pq.level.match(/(\d+)\s*\+/);
+  if (minOnly) return level >= parseInt(minOnly[1], 10);
+  return false;
 }
 
 function openPQ(id, skipHash) {
@@ -684,6 +690,11 @@ function renderPQs() {
       <ul class="drop-list">${pq.howTo.map(s => `<li>${s}</li>`).join('')}</ul>
       <h3>Tips</h3>
       <ul class="drop-list">${pq.tips.map(s => `<li>${s}</li>`).join('')}</ul>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+        ${pq.prequestId ? `<button type="button" class="btn btn-sm btn-ghost" onclick="openPrequest('${pq.prequestId}')">Prequest guide →</button>` : ''}
+        ${pq.bossId ? `<button type="button" class="btn btn-sm" onclick="showPage('bosses');showBoss('${pq.bossId}')">View Boss Guide →</button>` : ''}
+        ${pq.forumGuide ? `<a href="${pq.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a>` : ''}
+      </div>
     </div>
   `).join('');
 }
@@ -723,6 +734,14 @@ const ITEM_QUERY_PATTERNS = [
   [/scorpion stings?/i, 'scorpion sting'],
   [/lion king certificates?/i, 'lion king certificate'],
   [/eye of fire/i, 'eye of fire'],
+  [/dragon stone/i, 'dragon stone'],
+  [/crimson hearts?/i, 'crimson heart'],
+  [/crimsonwood keystone/i, 'crimsonwood keystone'],
+  [/mark of naricain/i, 'mark of naricain'],
+  [/naricain demon elixir/i, 'naricain demon elixir'],
+  [/green bandana/i, 'green bandana'],
+  [/heartstopper/i, 'heartstopper'],
+  [/zakum cape/i, 'zakum cape'],
 ];
 
 function resolveItemQuery(text) {
@@ -1827,7 +1846,10 @@ function renderPrequests() {
         ${renderCheckableSteps(pq.steps.map(s => ({ ...s, id: `${pq.id}-${s.id}` })), 'pq', 'prequest')}
         <h3>Tips</h3>
         <ul class="drop-list">${pq.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-        ${pq.bossId ? `<button class="btn btn-sm" onclick="showPage('bosses');showBoss('${pq.bossId}')">View Boss Guide →</button>` : ''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+          ${pq.bossId ? `<button class="btn btn-sm" onclick="showPage('bosses');showBoss('${pq.bossId}')">View Boss Guide →</button>` : ''}
+          ${pq.forumGuide ? `<a href="${pq.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a>` : ''}
+        </div>
       </div>
     `;
   }).join('');

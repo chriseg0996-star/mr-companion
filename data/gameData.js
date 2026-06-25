@@ -52,6 +52,20 @@ const ITEM_DB = {
   'scorpion sting': { verdict: 'keep', reason: 'Zakum prequest drop. Collect 30 for Adobis.', tags: ['prequest', 'zakum'] },
   'lion king certificate': { verdict: 'keep', reason: 'Zakum prequest drop. Collect 50 — longest farm step.', tags: ['prequest', 'zakum'] },
   'eye of fire': { verdict: 'keep', reason: 'Summons Zakum after torches are lit. Do not sell.', tags: ['prequest', 'zakum', 'consumable'] },
+  // More boss & PQ drops
+  'zakum cape': { verdict: 'fm', reason: 'Decent cape — scroll with ATT or sell in FM.', tags: ['boss drop', 'cape'] },
+  'dragon stone': { verdict: 'keep', reason: 'Rare Horntail drop. Valuable — check FM before selling.', tags: ['boss drop', 'horntail', 'crafting'] },
+  'necklace of strength': { verdict: 'keep', reason: 'Horntail entry ticket from prequest. Required for runs.', tags: ['prequest', 'horntail'] },
+  // CWK / Masteria
+  'crimson heart': { verdict: 'keep', reason: 'CWKPQ signup cost — leader needs 12 per run. Tradeable.', tags: ['prequest', 'cwk', 'tradeable'] },
+  'crimsonwood keystone': { verdict: 'keep', reason: 'Required to enter CWKPQ. One-time prequest reward.', tags: ['prequest', 'cwk'] },
+  'mark of naricain': { verdict: 'keep', reason: 'CWKPQ boss drop. Used for high-end crafting.', tags: ['boss drop', 'cwk'] },
+  'naricain demon elixir': { verdict: 'keep', reason: 'Top-tier attack potion from CWKPQ. Save for bossing.', tags: ['consumable', 'cwk', 'bossing'] },
+  // Training / FM staples
+  'green bandana': { verdict: 'fm', reason: 'Popular thief helm. Good FM value from NLC farming.', tags: ['equipment', 'thief'] },
+  'gelt chocolate': { verdict: 'fm', reason: 'PQ/boss consumable. Sells well in FM.', tags: ['consumable'] },
+  'heartstopper': { verdict: 'keep', reason: 'Strong attack buff for boss runs. Stock before HT/PB.', tags: ['consumable', 'bossing'] },
+  'demon elixir': { verdict: 'keep', reason: 'Strong attack potion. Use for bossing, not training.', tags: ['consumable', 'bossing'] },
 };
 
 const BOSSES = [
@@ -153,6 +167,33 @@ const BOSSES = [
     mapTheme: 'temple',
     mapImage: 'assets/images/maps/pink-bean-temple.png',
   },
+  {
+    id: 'cwk',
+    name: 'Crimsonwood Keep',
+    tier: 'mid',
+    level: '90+ (bosses ~130)',
+    respawn: '2 runs per day',
+    party: '10–30 expedition',
+    hpReq: '5,500+ HP (melee bosses)',
+    dmgReq: 'Funded party required',
+    location: 'Masteria — Crimsonwood Keep',
+    image: 'assets/images/maps/world-map.png',
+    drops: ['Mastery Books', 'Naricain Demon Elixir', 'Mark of Naricain', 'Elemental Wands/Staves', 'CWK cloaks'],
+    prequest: 'Complete the Crimsonwood Keystone questline in Masteria/NLC. Expedition leader needs 12 Crimson Hearts to register each run.',
+    tips: [
+      'Expedition needs at least 2 of each job branch',
+      'Stages 1–5 are class trials — assign roles before boss room',
+      'Pin melee bosses bottom-left; ranged bosses on top platforms',
+      'Margana (Mage boss) is weak to Holy — Paladins shine',
+      'Bishop dispels Weapon DEF Up on Margana',
+      'Clear bonus armory after bosses for mastery books',
+      'See Prequests → CWK for the keystone chain',
+    ],
+    phases: ['Class trial stages', 'Summon Twisted Masters', 'Bottom floor melees', 'Top floor ranged', 'Bonus armory'],
+    mapTheme: 'forest',
+    mapImage: 'assets/images/maps/world-map.png',
+    checklistId: 'cwk',
+  },
 ];
 
 const WORLD_MAP = [
@@ -192,7 +233,8 @@ const LEVELS = [
   ]},
   { range: '85 – 100', label: 'Orbis / Pap Prequest', theme: 'ludibrium', icon: '🕐', spots: [
     { name: 'Galloperas (Stairway to the Sky)', type: 'solo', mapStyle: 'sky', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera'], detail: 'Still top EXP here. Start Papulatus prequest in Ludibrium at 85.' },
-    { name: 'Papulatus Prequest', type: 'solo', mapStyle: 'clock', mapImage: 'assets/images/maps/papulatus-arena.png', mobs: ['Ludibrium mobs'], detail: 'Complete clocktower questline before your first Pap run. See Bosses tab.' }
+    { name: 'Papulatus Prequest', type: 'solo', mapStyle: 'clock', mapImage: 'assets/images/maps/papulatus-arena.png', mobs: ['Ludibrium mobs'], detail: 'Complete clocktower questline before your first Pap run. See Bosses tab.' },
+    { name: 'CWK Keystone (lv 90+)', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/world-map.png', mobs: ['Crimsonwood mobs'], detail: 'At 90, start the Crimsonwood Keystone chain in Masteria/NLC. Unlocks CWKPQ expeditions.' }
   ]},
   { range: '100 – 120', label: 'Leafre', theme: 'leafre', icon: '🐉', spots: [
     { name: 'Petristation / Newts', type: 'solo', mapStyle: 'forest', mapImage: 'assets/images/maps/leafre-newts.png', mobs: ['Red Wyvern', 'Blue Wyvern', 'Dark Wyvern'], detail: 'Dragon Forest. Newts give top-tier solo EXP. Start Horntail prequest at 120.' },
@@ -329,13 +371,42 @@ const PQS = [
     mapTheme: 'wedding',
     mapImage: 'assets/images/maps/pink-bean-temple.png',
   },
+  {
+    id: 'cwkpq',
+    name: 'Crimsonwood Keep PQ',
+    short: 'CWKPQ',
+    level: '90+',
+    party: '10–30 expedition',
+    location: 'Masteria — Crimsonwood Keep (Hall to Inner Sanctum)',
+    priority: 'optional',
+    prequestId: 'cwk',
+    rewards: ['Mastery Books', 'Naricain Demon Elixir', 'Elemental Wands/Staves', 'CWK cloaks', 'EXP'],
+    howTo: [
+      'Complete Crimsonwood Keystone prequest (see Prequests tab)',
+      'Form an expedition of 10–30 players with 2+ of each job branch',
+      'Squad leader provides 12 Crimson Hearts to register the run',
+      'Clear stages 1–5: agility, storage, class weapon trials, unity test',
+      'Boss stage: defeat the five Twisted Masters, then loot the bonus armory',
+    ],
+    tips: [
+      'Two attempts per day — join active guild/channel expeditions',
+      'Assign bowman, warrior, mage, thief, and pirate rooms before boss',
+      'Melees handle bottom-floor bosses; ranged take top platforms',
+      'Bonus room has mastery books — always clear if time allows',
+      'Crimson Hearts are tradeable if you are leading',
+    ],
+    stages: ['Inner Sanctum', 'Storage chamber', 'Class trials', 'Test of Wit', 'Test of Unity', 'Twisted Masters', 'Bonus armory'],
+    mapTheme: 'forest',
+    mapImage: 'assets/images/maps/world-map.png',
+    forumGuide: 'https://royals.ms/forum/threads/crimsonwood-party-quest-prequisite-guide-2020-cwpq.153541/',
+  },
 ];
 
 const GUIDE_SECTIONS = [
   { id: 'leveling', icon: '📈', title: 'Leveling Guide', desc: 'Where to train from level 1 to 200 — maps, mobs, and when to run PQs.' },
-  { id: 'pqs', icon: '👥', title: 'Party Quests', desc: 'KPQ, LPQ, CPQ, OPQ explained — how to run them and what you get.' },
-  { id: 'prequests', icon: '📜', title: 'Prequests', desc: 'Step-by-step Zakum, Pap, Horntail, Neo Tokyo, and Pink Bean unlock chains.' },
-  { id: 'bosses', icon: '💀', title: 'Boss Guides', desc: 'Zakum, Papulatus, Horntail, Pink Bean — prequests, HP reqs, drops, and tips.' },
+  { id: 'pqs', icon: '👥', title: 'Party Quests', desc: 'KPQ through CWKPQ — how to run them, rewards, and when they are best.' },
+  { id: 'prequests', icon: '📜', title: 'Prequests', desc: 'Zakum, Pap, HT, PB, CWK keystone, and Neo Tokyo unlock chains.' },
+  { id: 'bosses', icon: '💀', title: 'Boss Guides', desc: 'Zakum, Pap, Horntail, Pink Bean, and Crimsonwood Keep — reqs, drops, tips.' },
   { id: 'classes', icon: '⚔️', title: 'Class Guides', desc: 'Full guide for every 4th job — skills, leveling, bossing, and party role.' },
   { id: 'items', icon: '🎒', title: 'Item Guide', desc: 'What to keep, sell in FM, or vendor. Search any drop you are unsure about.' },
   { id: 'jobadv', icon: '🎖️', title: 'Job Advancements', desc: 'Every job change from level 8/10 to 120 — quests, NPCs, and skill priorities.' },
@@ -351,6 +422,7 @@ const CHECKLIST = [
   { cat: 'Daily', label: 'Farm mesos at training spot', id: 'farm' },
   { cat: 'Daily', label: 'Check Free Market prices', id: 'fm' },
   { cat: 'Daily', label: 'Complete daily quests', id: 'daily-q' },
+  { cat: 'Weekly', label: 'Run CWKPQ (lv 90+, 2/day)', id: 'cwk' },
   { cat: 'Weekly', label: 'Run Pink Bean (lv 140+)', id: 'pb', boss: true },
   { cat: 'Weekly', label: 'Complete Monster Book collections', id: 'mb' },
   { cat: 'Weekly', label: 'Restock potions', id: 'pots' },

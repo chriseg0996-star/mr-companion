@@ -162,7 +162,7 @@ const WORLD_MAP = [
 
 const LEVELS = [
   { range: '1 – 10', label: 'Maple Island', theme: 'island', icon: '🏝️', spots: [
-    { name: 'Tutorial Quests', type: 'solo', mapStyle: 'beach', mobs: ['Snails', 'Blue Snails', 'Shrooms'], detail: 'Complete all tutorial quests on Maple Island. Enough EXP to hit 10 without grinding. Take the boat to Lith Harbor when done.' }
+    { name: 'Tutorial Quests', type: 'solo', mapStyle: 'beach', mobs: ['Snails', 'Blue Snails', 'Shrooms'], detail: 'Complete all tutorial quests on Maple Island — talk to every NPC with a quest icon. Enough EXP to hit 10 without grinding. Take the boat from South Perry to Lith Harbor when done.' }
   ]},
   { range: '10 – 20', label: 'Henesys Area', theme: 'victoria', icon: '🌳', spots: [
     { name: 'Pig Beach', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/pig-beach.png', mobs: ['Pigs', 'Ribbon Pigs'], detail: 'East of Henesys. Easy grind, good for beginners learning your class skills.' },

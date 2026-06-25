@@ -22,6 +22,10 @@ const CLASS_GUIDES = {
     partyValue: 'Mandatory for Horntail and Pink Bean.',
     mistakes: ['Forgetting HB after dispel', 'Not maxing Hyper Body at 2nd job'],
     badges: ['Beginner Friendly', 'Party Essential', 'Low Cost'],
+    links: [
+      { label: 'Class Guides Forum', url: 'https://royals.ms/forum/forums/class-guides.109/' },
+      { label: 'Royals Wiki — Warrior', url: 'https://mime.royals.ms' },
+    ],
   },
   bishop: {
     name: 'Bishop', branch: 'Mage', path: 'Cleric → Priest → Bishop',
@@ -36,6 +40,10 @@ const CLASS_GUIDES = {
     partyValue: 'Mandatory for Horntail and Pink Bean.',
     mistakes: ['Not maxing Holy Symbol at 3rd job', 'Forgetting Res'],
     badges: ['Party Essential', 'Always Invited', 'Low Cost'],
+    links: [
+      { label: 'Class Guides Forum', url: 'https://royals.ms/forum/forums/class-guides.109/' },
+      { label: 'Royals Wiki — Magician', url: 'https://mime.royals.ms' },
+    ],
   },
   bowmaster: {
     name: 'Bowmaster', branch: 'Archer', path: 'Hunter → Ranger → Bowmaster',

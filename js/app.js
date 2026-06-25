@@ -7,6 +7,7 @@ const PAGE_TITLES = {
   home: 'Start Here', leveling: 'Leveling', pqs: 'Party Quests', bosses: 'Bosses',
   prequests: 'Prequests', items: 'Items', classes: 'Classes', jobadv: 'Jobs',
   quiz: 'Class Quiz', gear: 'Gear', checklist: 'Daily', tools: 'Tools',
+  glossary: 'Mob Glossary',
   hpwash: 'HP Wash', scrolls: 'Scrolls', mesos: 'Mesos', party: 'Party',
 };
 
@@ -29,8 +30,140 @@ function showPage(id, btn) {
 }
 
 // ══════════════════════════════════════════════
-// HOME
+// HOME + CHARACTER PROFILE
 // ══════════════════════════════════════════════
+const DEFAULT_CLASS_LINKS = [
+  { label: 'Class Guides Forum', url: 'https://royals.ms/forum/forums/class-guides.109/' },
+  { label: 'Royals Wiki', url: 'https://mime.royals.ms' },
+];
+
+function getProfile() {
+  return {
+    level: parseInt(localStorage.getItem('mr-level')) || 0,
+    classId: localStorage.getItem('mr-class') || '',
+  };
+}
+
+function setProfileLevel(v) {
+  if (v) localStorage.setItem('mr-level', v);
+  else localStorage.removeItem('mr-level');
+  const lf = document.getElementById('level-filter');
+  const pl = document.getElementById('profile-level');
+  if (lf) lf.value = v || '';
+  if (pl) pl.value = v || '';
+  highlightLevel();
+  renderHomeNextSteps();
+}
+
+function setProfileClass(id) {
+  if (id) localStorage.setItem('mr-class', id);
+  else localStorage.removeItem('mr-class');
+  renderHomeNextSteps();
+}
+
+function prequestProgress(id) {
+  const pq = PREQUESTS.find(p => p.id === id);
+  if (!pq) return { done: 0, total: 0 };
+  const done = pq.steps.filter(s => isStepDone(stepKey('pq', `${id}-${s.id}`))).length;
+  return { done, total: pq.steps.length };
+}
+
+function renderHomeNextSteps() {
+  const el = document.getElementById('home-next-steps');
+  if (!el) return;
+  const { level, classId } = getProfile();
+  if (!level && !classId) { el.innerHTML = ''; return; }
+
+  const steps = [];
+  if (!classId && level < 30) {
+    steps.push({ icon: '🎯', text: 'Not sure what to play?', action: () => showPage('quiz'), label: 'Take Class Quiz' });
+  }
+  if (classId && CLASS_GUIDES[classId]) {
+    steps.push({ icon: '⚔️', text: `Playing ${CLASS_GUIDES[classId].name}`, action: () => openClassGuide(classId), label: 'Open class guide' });
+  }
+  if (level > 0 && level < 10) {
+    steps.push({ icon: '🏝️', text: 'Finish Maple Island tutorials', action: () => { showPage('leveling'); jumpToZone(0); }, label: 'Leveling guide' });
+  }
+  if (level >= 8 && level < 30) {
+    steps.push({ icon: '🎖️', text: 'Complete your next job advancement', action: () => showPage('jobadv'), label: 'Job guide' });
+  }
+  if (level >= 21 && level <= 30) {
+    steps.push({ icon: '👥', text: 'KPQ is fastest EXP at your level', action: () => showPage('pqs'), label: 'PQ guide' });
+  }
+  if (level >= 35 && level <= 50) {
+    steps.push({ icon: '👥', text: 'Run LPQ until level 50', action: () => showPage('pqs'), label: 'PQ guide' });
+  }
+  if (level >= 51 && level <= 70) {
+    steps.push({ icon: '👥', text: 'OPQ is best EXP right now', action: () => showPage('pqs'), label: 'PQ guide' });
+  }
+  if (level >= 70 && level < 85) {
+    steps.push({ icon: '🌤️', text: 'Train at Galloperas (Stairway to the Sky)', action: () => { showPage('leveling'); jumpToZone(4); }, label: 'Leveling' });
+  }
+  if (level >= 50) {
+    const z = prequestProgress('zakum');
+    if (z.done < z.total) steps.push({ icon: '💀', text: 'Zakum prequest in progress', action: () => openPrequest('zakum'), label: `${z.done}/${z.total} steps` });
+  }
+  if (level >= 85) {
+    const p = prequestProgress('papulatus');
+    if (p.done < p.total) steps.push({ icon: '🕐', text: 'Papulatus prequest', action: () => openPrequest('papulatus'), label: `${p.done}/${p.total} steps` });
+  }
+  if (level >= 120) {
+    const ht = prequestProgress('horntail');
+    if (ht.done < ht.total) steps.push({ icon: '🐉', text: 'Horntail prequest — do this first', action: () => openPrequest('horntail'), label: `${ht.done}/${ht.total} steps` });
+    const nt = prequestProgress('neo-tokyo');
+    if (nt.done < nt.total) steps.push({ icon: '🏙️', text: 'Neo Tokyo prequest for best EXP', action: () => openPrequest('neo-tokyo'), label: `${nt.done}/${nt.total} steps` });
+  }
+  if (level >= 140) {
+    const pb = prequestProgress('pinkbean');
+    if (pb.done < pb.total) steps.push({ icon: '👑', text: 'Pink Bean / Temple of Time', action: () => openPrequest('pinkbean'), label: `${pb.done}/${pb.total} steps` });
+  }
+  if (level >= 50) {
+    steps.push({ icon: '✅', text: 'Daily: vote, Zakum, farm mesos', action: () => showPage('checklist'), label: 'Daily checklist' });
+  }
+
+  if (!steps.length) {
+    el.innerHTML = '';
+    window._homeActions = [];
+    return;
+  }
+  window._homeActions = steps.map(s => s.action);
+  el.innerHTML = `
+    <h2 style="margin-bottom:12px;">Your Next Steps${level ? ` <span style="color:var(--muted);font-size:14px;font-weight:400;">· Lv ${level}</span>` : ''}</h2>
+    <div class="next-steps-grid">
+      ${steps.slice(0, 6).map((s, i) => `
+        <button type="button" class="next-step-card" onclick="runHomeAction(${i})">
+          <span class="next-step-icon">${s.icon}</span>
+          <span class="next-step-text">${s.text}</span>
+          <span class="next-step-cta">${s.label} →</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function runHomeAction(i) {
+  if (window._homeActions && window._homeActions[i]) window._homeActions[i]();
+}
+
+function initProfile() {
+  const levelInput = document.getElementById('profile-level');
+  const classSelect = document.getElementById('profile-class');
+  if (!levelInput || !classSelect) return;
+
+  if (typeof CLASS_GUIDES !== 'undefined') {
+    classSelect.innerHTML = '<option value="">Not sure yet</option>' +
+      Object.entries(CLASS_GUIDES).map(([id, c]) => `<option value="${id}">${c.name}</option>`).join('');
+  }
+
+  const { level, classId } = getProfile();
+  if (level) levelInput.value = level;
+  if (classId) classSelect.value = classId;
+
+  levelInput.addEventListener('input', () => setProfileLevel(levelInput.value));
+  classSelect.addEventListener('change', () => setProfileClass(classSelect.value));
+  renderHomeNextSteps();
+}
+
 function renderHome() {
   document.getElementById('guide-grid').innerHTML = GUIDE_SECTIONS.map(s => `
     <div class="guide-card" onclick="showPage('${s.id}')">
@@ -39,10 +172,12 @@ function renderHome() {
       <div class="guide-desc">${s.desc}</div>
     </div>
   `).join('');
+  renderHomeNextSteps();
 }
 
 function renderTools() {
   const tools = [
+    { id: 'glossary', icon: '👾', title: 'Mob Glossary', desc: 'What are Galloperas, newts, and other mobs you will train on.' },
     { id: 'hpwash', icon: '❤️', title: 'HP Wash Calculator', desc: 'How much HP you gain per wash at your INT.' },
     { id: 'scrolls', icon: '📜', title: 'Scroll Tracker', desc: 'Log scroll attempts and track your success rate.' },
     { id: 'mesos', icon: '💰', title: 'Meso Tracker', desc: 'Track income and expenses per session.' },
@@ -345,14 +480,11 @@ function initLevelProfile() {
   if (saved) { input.value = saved; highlightLevel(); }
   input.addEventListener('input', () => {
     const v = input.value;
-    if (v) localStorage.setItem('mr-level', v);
-    else localStorage.removeItem('mr-level');
+    setProfileLevel(v);
+    const pl = document.getElementById('profile-level');
+    if (pl && pl.value !== v) pl.value = v;
   });
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  initItemAutocomplete();
-});
 
 // ══════════════════════════════════════════════
 // MAP VISUALS
@@ -818,7 +950,7 @@ function isStepDone(key) {
 function toggleStep(key, rerender) {
   localStorage.setItem(key, isStepDone(key) ? '0' : '1');
   if (rerender === 'job') renderJobAdv();
-  else if (rerender === 'prequest') renderPrequests();
+  else if (rerender === 'prequest') { renderPrequests(); renderHomeNextSteps(); }
 }
 
 function renderCheckableSteps(steps, prefix, rerender) {
@@ -830,6 +962,7 @@ function renderCheckableSteps(steps, prefix, rerender) {
         <div class="quest-step-check">${done ? '✓' : i + 1}</div>
         <div class="quest-step-body">
           <div class="quest-step-text">${s.text}</div>
+          ${s.drops ? `<div class="quest-step-drops">Drops: ${s.drops}</div>` : ''}
           ${s.detail ? `<div class="quest-step-detail">${s.detail}</div>` : ''}
         </div>
       </div>`;
@@ -1055,6 +1188,13 @@ function showClass(id) {
       <button class="btn btn-sm" onclick="showPage('jobadv')">Job Advancements →</button>
       <button class="btn btn-sm btn-ghost" onclick="showPage('gear')">Gear Roadmap →</button>
     </div>
+    ${(c.links || DEFAULT_CLASS_LINKS).length ? `
+      <div class="sep"></div>
+      <h3>Official Resources</h3>
+      <div style="font-size:13px;line-height:2.2;">
+        ${(c.links || DEFAULT_CLASS_LINKS).map(l => `<a href="${l.url}" target="_blank" rel="noopener" style="color:var(--blue);display:block;">${l.label} →</a>`).join('')}
+      </div>
+    ` : ''}
   `;
   detail.classList.add('show');
   detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1128,10 +1268,136 @@ function analyzeParty() {
 }
 
 // ══════════════════════════════════════════════
-// INIT — runs on page load
+// MOB GLOSSARY
 // ══════════════════════════════════════════════
+function renderGlossary() {
+  const el = document.getElementById('glossary-list');
+  const q = (document.getElementById('glossary-search')?.value || '').trim().toLowerCase();
+  if (!el || typeof MOB_GLOSSARY === 'undefined') return;
+  const mobs = MOB_GLOSSARY.filter(m =>
+    !q || m.name.toLowerCase().includes(q) || m.area.toLowerCase().includes(q) || m.tip.toLowerCase().includes(q)
+  );
+  el.innerHTML = mobs.map(m => `
+    <div class="card glossary-card">
+      <div class="card-header">
+        <h2>${m.name}</h2>
+        <span class="badge badge-blue">Lv ${m.level}</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">📍 ${m.area}</p>
+      <p style="font-size:14px;">${m.tip}</p>
+    </div>
+  `).join('') || `<p style="color:var(--muted);">No mobs match "${q}".</p>`;
+}
+
+// ══════════════════════════════════════════════
+// GLOBAL SEARCH (Ctrl+K)
+// ══════════════════════════════════════════════
+let searchIndex = null;
+let searchActive = -1;
+
+function buildSearchIndex() {
+  if (searchIndex) return searchIndex;
+  const items = [];
+  GUIDE_SECTIONS.forEach(s => items.push({ type: 'Guide', label: s.title, sub: s.desc, action: () => showPage(s.id) }));
+  if (typeof CLASS_GUIDES !== 'undefined') {
+    Object.entries(CLASS_GUIDES).forEach(([id, c]) => {
+      items.push({ type: 'Class', label: c.name, sub: c.role, action: () => openClassGuide(id) });
+    });
+  }
+  if (typeof PREQUESTS !== 'undefined') {
+    PREQUESTS.forEach(p => items.push({ type: 'Prequest', label: p.name, sub: `Start Lv ${p.startLevel}+`, action: () => openPrequest(p.id) }));
+  }
+  BOSSES.forEach(b => items.push({ type: 'Boss', label: b.name, sub: b.location, action: () => { showPage('bosses'); showBoss(b.id); } }));
+  Object.keys(ITEM_DB).forEach(k => items.push({ type: 'Item', label: k, sub: ITEM_DB[k].verdict, action: () => { showPage('items'); checkItem(k); } }));
+  if (typeof MOB_GLOSSARY !== 'undefined') {
+    MOB_GLOSSARY.forEach(m => items.push({ type: 'Mob', label: m.name, sub: m.area, action: () => showPage('glossary') }));
+  }
+  LEVELS.forEach(l => l.spots.forEach(s => {
+    items.push({ type: 'Training', label: s.name, sub: `Lv ${l.range}`, action: () => showPage('leveling') });
+  }));
+  searchIndex = items;
+  return items;
+}
+
+function openSearch() {
+  const overlay = document.getElementById('search-overlay');
+  const input = document.getElementById('global-search-input');
+  if (!overlay || !input) return;
+  overlay.hidden = false;
+  input.value = '';
+  searchActive = -1;
+  renderSearchResults('');
+  input.focus();
+}
+
+function closeSearch() {
+  const overlay = document.getElementById('search-overlay');
+  if (overlay) overlay.hidden = true;
+  searchActive = -1;
+}
+
+function renderSearchResults(q) {
+  const list = document.getElementById('global-search-results');
+  if (!list) return;
+  const ql = q.trim().toLowerCase();
+  const matches = !ql ? [] : buildSearchIndex()
+    .map(item => {
+      let score = scoreItemMatch(item.label, ql);
+      if (score < 0 && item.sub) score = scoreItemMatch(item.sub, ql);
+      if (item.sub && item.sub.toLowerCase().includes(ql)) score = Math.max(score, 35);
+      return { item, score };
+    })
+    .filter(x => x.score >= 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 12);
+  window._searchActions = matches.map(m => m.item.action);
+  list.innerHTML = matches.length ? matches.map((m, idx) => `
+    <li class="search-result-item${idx === searchActive ? ' active' : ''}" role="option" onclick="runSearchAction(${idx})">
+      <span class="search-result-type">${m.item.type}</span>
+      <span class="search-result-label">${m.item.label}</span>
+      <span class="search-result-sub">${m.item.sub || ''}</span>
+    </li>
+  `).join('') : `<li class="search-empty">${ql ? 'No results' : 'Type to search guides, classes, items, bosses...'}</li>`;
+}
+
+function runSearchAction(idx) {
+  closeSearch();
+  if (window._searchActions && window._searchActions[idx]) window._searchActions[idx]();
+}
+
+function initGlobalSearch() {
+  const input = document.getElementById('global-search-input');
+  if (!input) return;
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      openSearch();
+    }
+    if (e.key === 'Escape') closeSearch();
+  });
+  input.addEventListener('input', () => { searchActive = -1; renderSearchResults(input.value); });
+  input.addEventListener('keydown', e => {
+    const list = document.getElementById('global-search-results');
+    const count = list?.querySelectorAll('.search-result-item').length || 0;
+    if (e.key === 'ArrowDown' && count) {
+      e.preventDefault();
+      searchActive = Math.min(searchActive + 1, count - 1);
+      renderSearchResults(input.value);
+    } else if (e.key === 'ArrowUp' && count) {
+      e.preventDefault();
+      searchActive = searchActive <= 0 ? count - 1 : searchActive - 1;
+      renderSearchResults(input.value);
+    } else if (e.key === 'Enter' && searchActive >= 0) {
+      e.preventDefault();
+      runSearchAction(searchActive);
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderHome();
+  initProfile();
+  initGlobalSearch();
   renderTools();
   renderPQs();
   renderBossProgression();
@@ -1144,7 +1410,9 @@ document.addEventListener('DOMContentLoaded', () => {
   renderJobAdv();
   renderPrequests();
   renderClasses();
+  renderGlossary();
   renderPartySlots();
   renderPopularPrices();
   initLevelProfile();
+  initItemAutocomplete();
 });

@@ -44,6 +44,23 @@
 <div id="page-home" class="page active">
   <h1>Welcome to MapleRoyals</h1>
   <p class="subtitle">A beginner-friendly guide for The Clinic — everything you need to understand v83, from your first mob to endgame bosses.</p>
+  <div class="card profile-card" id="profile-card">
+    <div class="card-header"><h2>My Character</h2><span class="badge badge-blue">Saved locally</span></div>
+    <div class="profile-fields">
+      <div class="profile-field">
+        <label for="profile-level">Level</label>
+        <input type="number" id="profile-level" min="1" max="200" placeholder="e.g. 45">
+      </div>
+      <div class="profile-field">
+        <label for="profile-class">Class (optional)</label>
+        <select id="profile-class">
+          <option value="">Not sure yet</option>
+        </select>
+      </div>
+    </div>
+    <p class="section-hint" style="margin:12px 0 0;">Used to highlight your leveling zone and suggest what to do next. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to search anything.</p>
+  </div>
+  <div id="home-next-steps" class="home-next-steps"></div>
   <div class="guide-grid" id="guide-grid"></div>
   <hr class="divider">
   <h2>New Player Path</h2>
@@ -84,6 +101,21 @@
   <h1>More Tools</h1>
   <p class="subtitle">Extra helpers for players who are already settled in.</p>
   <div class="guide-grid" id="tools-grid"></div>
+</div>
+
+<div id="page-glossary" class="page">
+  <h1>Mob Glossary</h1>
+  <p class="subtitle">Quick reference for mobs you'll see in leveling and prequest guides.</p>
+  <input type="text" id="glossary-search" placeholder="Search mobs..." style="width:100%;max-width:400px;margin-bottom:16px;" oninput="renderGlossary()">
+  <div id="glossary-list" class="glossary-list"></div>
+</div>
+
+<div id="search-overlay" class="search-overlay" hidden onclick="if(event.target===this)closeSearch()">
+  <div class="search-modal" role="dialog" aria-label="Search">
+    <input type="text" id="global-search-input" placeholder="Search guides, classes, items, mobs..." autocomplete="off">
+    <ul id="global-search-results" class="global-search-results"></ul>
+    <p class="search-hint">↑↓ navigate · Enter open · Esc close</p>
+  </div>
 </div>
 
 <div id="page-items" class="page">
@@ -372,6 +404,7 @@
 <script src="data/jobData.js"></script>
 <script src="data/prequestData.js"></script>
 <script src="data/classGuides.js"></script>
+<script src="data/mobGlossary.js"></script>
 <script src="data/priceData.js"></script>
 <script src="js/app.js"></script>
 </body>

@@ -15,9 +15,9 @@ const PREQUESTS = [
     requirements: ['Level 50+ to start', 'Can complete most steps before 70', 'Party of 1–6 for the actual boss'],
     steps: [
       { id: 'z1', text: 'Talk to Adobis in El Nath', detail: 'Adobis is near the Zakum quest area in El Nath. Start the questline here.' },
-      { id: 'z2', text: 'Collect 30 Gold Teeth', detail: 'Drop from Zombie Lupins in El Nath area. Farm until you have 30.' },
-      { id: 'z3', text: 'Collect 30 Scorpion Stings', detail: 'Drop from Scorpions in the desert/el Nath outskirts maps.' },
-      { id: 'z4', text: 'Collect 50 Lion King Certificates', detail: 'Drop from Lioners and related mobs. This step takes the longest — be patient.' },
+      { id: 'z2', text: 'Collect 30 Gold Teeth', drops: 'Zombie Lupin', detail: 'Drop from Zombie Lupins in El Nath area. Farm until you have 30.' },
+      { id: 'z3', text: 'Collect 30 Scorpion Stings', drops: 'Scorpion', detail: 'Drop from Scorpions in the desert/El Nath outskirts maps.' },
+      { id: 'z4', text: 'Collect 50 Lion King Certificates', drops: 'Lioner', detail: 'Drop from Lioners and related mobs. This step takes the longest — be patient.' },
       { id: 'z5', text: 'Return all items to Adobis', detail: 'He grants access to the Cave of Life.' },
       { id: 'z6', text: 'Enter Cave of Life and light all 5 torches', detail: 'Each torch requires a party to coordinate. You can enter with a party to light them together.' },
       { id: 'z7', text: 'Summon Zakum with the Eye of Fire', detail: 'Once torches are lit, the boss can be summoned. Bring a party and potions.' },

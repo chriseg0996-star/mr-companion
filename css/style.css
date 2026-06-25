@@ -918,6 +918,16 @@ button.btn-ghost:hover {
 .check-label { font-size: 14px; flex: 1; }
 .check-category { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 10px; }
 .check-subcategory { font-size: 11px; color: var(--accent); margin: 12px 0 6px 4px; font-weight: 600; }
+.check-subcat-header {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  margin: 12px 0 6px; padding: 8px 12px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--accent); font-size: 12px; font-weight: 600; cursor: pointer; text-align: left;
+}
+.check-subcat-header:hover { border-color: var(--border-hover); background: var(--bg3); }
+.check-subcat-meta { font-size: 11px; color: var(--muted); font-weight: 500; }
+.check-subcat-body { margin-bottom: 4px; }
+.check-subcat-body.collapsed { display: none; }
 .check-boss-link {
   margin-left: auto; flex-shrink: 0;
   background: none; border: 1px solid var(--border); border-radius: 6px;

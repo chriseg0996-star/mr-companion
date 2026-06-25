@@ -118,6 +118,18 @@ const BOSS_DROP_TABLES = {
     { item: 'Ring 30% scrolls', rate: 'Uncommon', note: 'STR/DEX/INT/LUK ring scrolls' },
     { item: 'Shiny Powder', rate: 'Bonus stage', note: '5m meso each — need Bug Catching Net' },
   ],
+  'the-boss': [
+    { item: 'Brown Work Glove', itemKey: 'work gloves', rate: 'Rare', note: 'Scroll with ATT — valuable' },
+    { item: 'Shogun Earrings', rate: 'Uncommon', note: 'Strong earrings — check FM' },
+    { item: 'Gold Emerald Earrings', rate: 'Uncommon', note: 'Keep or scroll' },
+    { item: 'Face 30% scrolls', rate: 'Uncommon', note: 'STR/DEX/INT/LUK face scrolls' },
+    { item: '5k NX Card', rate: 'Guaranteed', note: '2 per clear' },
+  ],
+  'capt-latanica': [
+    { item: 'Soul Lantern', itemKey: 'soul lantern', rate: '1 per clear', note: 'For Krexel prequest — tradable' },
+    { item: '5k NX Card', rate: 'Uncommon', note: 'Cash shop credit' },
+    { item: 'NX Cards', rate: 'Common', note: '1k / 250 / 100 NX drops' },
+  ],
 };
 
 const LEVEL_MILESTONES = [
@@ -130,6 +142,7 @@ const LEVEL_MILESTONES = [
   { level: 51, icon: '👥', title: 'OPQ unlocked', detail: 'Best EXP from 51–70.', page: 'pqs' },
   { level: 70, icon: '🎖️', title: '4th Job', detail: 'Final advancement — read your class guide.', page: 'classes' },
   { level: 70, icon: '🐙', title: 'Krexel prequest', detail: 'Start Ralph questline in Singapore. Lantern is tradable.', page: 'prequests', prequest: 'krexel' },
+  { level: 63, icon: '⚓', title: 'Capt. Latanica', detail: 'Soul Lantern for Krexel — or buy in FM.', page: 'prequests', prequest: 'latanica' },
   { level: 80, icon: '🔥', title: 'Jr. Balrog (area boss)', detail: 'No prequest — Cursed Sanctuary, ~3h respawn.', page: 'bosses', boss: 'jr-balrog' },
   { level: 85, icon: '🕐', title: 'Papulatus', detail: 'Start clocktower prequest. Daily pendant upgrade.', page: 'prequests', prequest: 'papulatus' },
   { level: 85, icon: '🎡', title: 'Scarlion / Targa', detail: 'Start Lam questline in Malaysia. Helmets at 140.', page: 'prequests', prequest: 'scar-targa' },
@@ -143,6 +156,7 @@ const LEVEL_MILESTONES = [
   { level: 164, icon: '⚔️', title: 'Dunas v2 (NT boss)', detail: 'Shibuya — White Scroll Fragments.', page: 'bosses', boss: 'dunas-v2' },
   { level: 160, icon: '👻', title: 'Nameless Magic Monster', detail: 'NT PQ boss — 8k HP, lightning weak.', page: 'bosses', boss: 'nameless-magic-monster' },
   { level: 170, icon: '🏯', title: 'Auf Haven expedition', detail: 'NT endgame — circlet & chaos drops.', page: 'prequests', prequest: 'auf-haven' },
+  { level: 175, icon: '👔', title: 'The Boss expedition', detail: 'Zipangu — Brown WG & Shogun Earrings.', page: 'prequests', prequest: 'the-boss' },
   { level: 150, icon: '🧘', title: 'Shaolin / Wu-Ling', detail: 'Eastern China temple — best EXP/HP demi.', page: 'prequests', prequest: 'shaolin' },
   { level: 180, icon: '🌹', title: 'King Castle Golem', detail: 'Daily Rose Garden — best EXP/HP ratio.', page: 'bosses', boss: 'king-castle-golem' },
   { level: 180, icon: '🦁', title: 'Von Leon', detail: 'LKC prequest — 2 runs/week, best EXP.', page: 'prequests', prequest: 'von-leon' },

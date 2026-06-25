@@ -1188,7 +1188,7 @@ function renderBossProgression() {
   el.innerHTML = `
     <div class="flow-track flow-bosses">${renderTrack(main)}</div>
     ${endgame.length ? `
-      <p class="section-hint" style="margin:16px 0 8px;">Endgame — Auf Haven, Von Leon & Rose Garden</p>
+      <p class="section-hint" style="margin:16px 0 8px;">Endgame — Auf Haven, The Boss, Von Leon & Rose Garden</p>
       <div class="flow-track flow-bosses flow-bosses--endgame">${renderTrack(endgame, main.length)}</div>
     ` : ''}
     ${demi.length ? `
@@ -1455,32 +1455,96 @@ function saveCheckState() {
 
 let checkState = loadCheckState();
 
+function checklistSubcatSlug(subcat) {
+  return subcat.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function loadChecklistCollapsed() {
+  try {
+    const stored = localStorage.getItem('mr-checklist-collapsed');
+    if (stored) return JSON.parse(stored);
+    return { 'neo-tokyo-bosses-lv-130': true };
+  } catch { return {}; }
+}
+
+let checklistCollapsed = loadChecklistCollapsed();
+
+function toggleChecklistSubcat(subcat) {
+  const key = checklistSubcatSlug(subcat);
+  checklistCollapsed[key] = !checklistCollapsed[key];
+  localStorage.setItem('mr-checklist-collapsed', JSON.stringify(checklistCollapsed));
+  renderChecklist();
+}
+
+function buildChecklistGroups() {
+  const groups = [];
+  for (const item of CHECKLIST) {
+    const last = groups[groups.length - 1];
+    if (item.subcat) {
+      if (last?.type === 'subcat' && last.key === item.subcat) {
+        last.items.push(item);
+        if (item.subcatCollapsible) last.collapsible = true;
+      } else {
+        groups.push({
+          type: 'subcat',
+          key: item.subcat,
+          collapsible: !!item.subcatCollapsible,
+          items: [item],
+        });
+      }
+    } else {
+      groups.push({ type: 'item', items: [item] });
+    }
+  }
+  return groups;
+}
+
+function renderChecklistItem(item) {
+  const done = checkState[item.id];
+  const bossNote = item.boss ? formatBossRunTime(item.id) : '';
+  return `
+    <div class="check-item ${done ? 'done' : ''}" onclick="toggleCheck('${item.id}')">
+      <div class="check-box">${done ? '✓' : ''}</div>
+      <span class="check-label">${item.label}${bossNote ? `<span class="check-boss-time">${bossNote}</span>` : ''}</span>
+      ${item.bossId ? `<button type="button" class="check-boss-link" title="Open boss guide" onclick="event.stopPropagation();showPage('bosses');showBoss('${item.bossId}')">→</button>` : ''}
+    </div>
+  `;
+}
+
 function renderChecklist() {
   maybeResetDailies();
+  checklistCollapsed = loadChecklistCollapsed();
   const container = document.getElementById('checklist-container');
   let lastCat = '';
-  let lastSubcat = '';
   let html = '';
-  CHECKLIST.forEach(item => {
-    if (item.cat !== lastCat) {
-      html += `<div class="check-category">${item.cat}</div>`;
-      lastCat = item.cat;
-      lastSubcat = '';
+  for (const group of buildChecklistGroups()) {
+    const cat = group.items[0].cat;
+    if (cat !== lastCat) {
+      html += `<div class="check-category">${cat}</div>`;
+      lastCat = cat;
     }
-    if (item.subcat && item.subcat !== lastSubcat) {
-      html += `<div class="check-subcategory">${item.subcat}</div>`;
-      lastSubcat = item.subcat;
+    if (group.type === 'subcat') {
+      const slug = checklistSubcatSlug(group.key);
+      const collapsed = group.collapsible && checklistCollapsed[slug];
+      const doneCount = group.items.filter(i => checkState[i.id]).length;
+      if (group.collapsible) {
+        html += `
+          <button type="button" class="check-subcat-header" onclick="toggleChecklistSubcat('${group.key.replace(/'/g, "\\'")}')">
+            <span>${collapsed ? '▸' : '▾'} ${group.key}</span>
+            <span class="check-subcat-meta">${doneCount}/${group.items.length}</span>
+          </button>
+          <div class="check-subcat-body${collapsed ? ' collapsed' : ''}">
+            ${group.items.map(renderChecklistItem).join('')}
+          </div>
+        `;
+      } else {
+        html += `<div class="check-subcategory">${group.key}</div>`;
+        html += group.items.map(renderChecklistItem).join('');
+      }
+    } else {
+      html += group.items.map(renderChecklistItem).join('');
     }
-    const done = checkState[item.id];
-    const bossNote = item.boss ? formatBossRunTime(item.id) : '';
-    html += `
-      <div class="check-item ${done ? 'done' : ''}" onclick="toggleCheck('${item.id}')">
-        <div class="check-box">${done ? '✓' : ''}</div>
-        <span class="check-label">${item.label}${bossNote ? `<span class="check-boss-time">${bossNote}</span>` : ''}</span>
-        ${item.bossId ? `<button type="button" class="check-boss-link" title="Open boss guide" onclick="event.stopPropagation();showPage('bosses');showBoss('${item.bossId}')">→</button>` : ''}
-      </div>
-    `;
-  });
+  }
   container.innerHTML = html;
   const done = Object.values(checkState).filter(Boolean).length;
   const total = CHECKLIST.length;

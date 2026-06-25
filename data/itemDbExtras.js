@@ -33,6 +33,7 @@ Object.assign(ITEM_DB, {
   'auf haven circlet': { verdict: 'keep', reason: 'Endgame helm from Auf Haven. Scroll before selling.', tags: ['helmet', 'endgame', 'boss drop'] },
   'von leon belt': { verdict: 'keep', reason: 'BiS belt from Von Leon. Never sell.', tags: ['belt', 'endgame', 'boss drop'] },
   'element pierce': { verdict: 'keep', reason: 'Strong earring from Auf Haven — check FM if dupe.', tags: ['earring', 'endgame'] },
+  'soul lantern': { verdict: 'keep', reason: 'Krexel prequest item — tradable (~6–9m). Keep until Krexel unlocked.', tags: ['quest', 'krexel', 'tradeable'] },
 });
 
 /** Merge Sylafia PRICE_DB entries not already in ITEM_DB with sensible defaults. */

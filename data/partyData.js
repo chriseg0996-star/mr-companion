@@ -55,6 +55,10 @@ const PARTY_PRESETS = {
     label: 'Shaolin',
     classes: ['Bishop', 'Ice/Lightning Mage', 'Night Lord', 'Hero', 'Bowmaster', 'Dark Knight'],
   },
+  'the-boss': {
+    label: 'The Boss',
+    classes: ['Bishop', 'Bishop', 'Bishop', 'Night Lord', 'Hero', 'Dark Knight'],
+  },
 };
 
 const PARTY_BOSS_RULES = {
@@ -158,6 +162,14 @@ const PARTY_BOSS_RULES = {
     bishop: 'recommended',
     dk: false,
     notes: ['Ice weakness — I/L mage or funded DPS', 'Pin 3 clones with Bahamut/doom or ignore with Bullseye', '12k+ HP recommended'],
+  },
+  'the-boss': {
+    label: 'The Boss Expedition',
+    maxSlots: 6,
+    bishop: 'required',
+    dk: 'recommended',
+    nl: 'recommended',
+    notes: ['3 Bishop Holy Shield mules ideal for Bodyguard A', '28k HP for melee on Bodyguard A — or play ranged', 'Fire weak on Bodyguard A & The Boss; ice weak on Bodyguard B'],
   },
 };
 

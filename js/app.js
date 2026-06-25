@@ -1080,6 +1080,7 @@ function initLevelProfile() {
 // MAP VISUALS
 // ══════════════════════════════════════════════
 const MAP_PLATFORMS = {
+  island:   [{ w: 75, l: 5,  b: 22 }, { w: 50, l: 35, b: 35 }, { w: 60, l: 65, b: 28 }],
   beach:    [{ w: 70, l: 8,  b: 18 }, { w: 45, l: 42, b: 32 }, { w: 55, l: 68, b: 22 }],
   field:    [{ w: 80, l: 5,  b: 20 }, { w: 50, l: 35, b: 38 }, { w: 60, l: 62, b: 28 }],
   forest:   [{ w: 65, l: 10, b: 25 }, { w: 40, l: 48, b: 42 }, { w: 55, l: 72, b: 30 }],
@@ -1187,7 +1188,7 @@ function renderBossProgression() {
   el.innerHTML = `
     <div class="flow-track flow-bosses">${renderTrack(main)}</div>
     ${endgame.length ? `
-      <p class="section-hint" style="margin:16px 0 8px;">Endgame — Auf Haven & Von Leon</p>
+      <p class="section-hint" style="margin:16px 0 8px;">Endgame — Auf Haven, Von Leon & Rose Garden</p>
       <div class="flow-track flow-bosses flow-bosses--endgame">${renderTrack(endgame, main.length)}</div>
     ` : ''}
     ${demi.length ? `
@@ -1458,11 +1459,17 @@ function renderChecklist() {
   maybeResetDailies();
   const container = document.getElementById('checklist-container');
   let lastCat = '';
+  let lastSubcat = '';
   let html = '';
   CHECKLIST.forEach(item => {
     if (item.cat !== lastCat) {
       html += `<div class="check-category">${item.cat}</div>`;
       lastCat = item.cat;
+      lastSubcat = '';
+    }
+    if (item.subcat && item.subcat !== lastSubcat) {
+      html += `<div class="check-subcategory">${item.subcat}</div>`;
+      lastSubcat = item.subcat;
     }
     const done = checkState[item.id];
     const bossNote = item.boss ? formatBossRunTime(item.id) : '';
@@ -1470,6 +1477,7 @@ function renderChecklist() {
       <div class="check-item ${done ? 'done' : ''}" onclick="toggleCheck('${item.id}')">
         <div class="check-box">${done ? '✓' : ''}</div>
         <span class="check-label">${item.label}${bossNote ? `<span class="check-boss-time">${bossNote}</span>` : ''}</span>
+        ${item.bossId ? `<button type="button" class="check-boss-link" title="Open boss guide" onclick="event.stopPropagation();showPage('bosses');showBoss('${item.bossId}')">→</button>` : ''}
       </div>
     `;
   });
@@ -2264,7 +2272,7 @@ function renderGlossary() {
         <h2>${m.name}</h2>
         <span class="badge badge-blue">Lv ${m.level}</span>
       </div>
-      ${m.mapImage ? `<div class="glossary-map">${renderMapScene('field', m.drops ? [m.drops] : [], m.mapImage)}</div>` : ''}
+      ${m.mapImage || m.mapStyle ? `<div class="glossary-map">${renderMapScene(m.mapStyle || 'field', m.drops ? [m.drops] : [], m.mapImage || null)}</div>` : ''}
       <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">📍 ${m.area}${m.drops ? ` · <span style="color:var(--gold);">Drops: ${m.drops}</span>` : ''}</p>
       <p style="font-size:14px;">${m.tip}</p>
       ${m.prequest ? `<button class="btn btn-sm btn-ghost" style="margin-top:10px;" onclick="openPrequest('${m.prequest}')">Open ${(PREQUESTS?.find(p => p.id === m.prequest)?.short || m.prequest)} prequest →</button>` : ''}

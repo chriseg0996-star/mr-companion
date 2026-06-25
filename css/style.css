@@ -915,8 +915,15 @@ button.btn-ghost:hover {
   color: #0a0c10;
 }
 
-.check-label { font-size: 14px; }
+.check-label { font-size: 14px; flex: 1; }
 .check-category { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 20px 0 10px; }
+.check-subcategory { font-size: 11px; color: var(--accent); margin: 12px 0 6px 4px; font-weight: 600; }
+.check-boss-link {
+  margin-left: auto; flex-shrink: 0;
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  color: var(--muted); font-size: 12px; padding: 2px 8px; cursor: pointer;
+}
+.check-boss-link:hover { border-color: var(--accent); color: var(--accent); }
 
 .check-progress {
   background: var(--bg3);
@@ -1770,6 +1777,7 @@ kbd {
 }
 
 .map-scene--beach    { background: linear-gradient(180deg, #1a4a6e 0%, #2d6a4f 55%, #5a4a2a 55%, #3d3020 100%); }
+.map-scene--island   { background: linear-gradient(180deg, #4a9fd4 0%, #6ec4e8 35%, #7dce9a 55%, #c4a35a 55%, #8b7355 100%); }
 .map-scene--field    { background: linear-gradient(180deg, #1a3a5c 0%, #3d6b45 60%, #4a3520 100%); }
 .map-scene--forest   { background: linear-gradient(180deg, #0f2840 0%, #1a4a30 70%, #2a2010 100%); }
 .map-scene--cave     { background: linear-gradient(180deg, #080810 0%, #15101a 80%, #2a1810 100%); }

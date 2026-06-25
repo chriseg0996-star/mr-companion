@@ -51,6 +51,10 @@ const PARTY_PRESETS = {
     label: 'Von Leon',
     classes: ['Bishop', 'Dark Knight', 'Night Lord', 'Bowmaster', 'Hero', 'Shadower'],
   },
+  shaolin: {
+    label: 'Shaolin',
+    classes: ['Bishop', 'Ice/Lightning Mage', 'Night Lord', 'Hero', 'Bowmaster', 'Dark Knight'],
+  },
 };
 
 const PARTY_BOSS_RULES = {
@@ -147,6 +151,13 @@ const PARTY_BOSS_RULES = {
     bm: 'recommended',
     shadower: 'recommended',
     notes: ['2 runs per week — plan comp before entering', '18k+ HP — dodge Golem Drop (1HKO)', 'Clear Gargoyles and Mini Golems immediately'],
+  },
+  shaolin: {
+    label: 'Wu-Ling Yaoseng',
+    maxSlots: 6,
+    bishop: 'recommended',
+    dk: false,
+    notes: ['Ice weakness — I/L mage or funded DPS', 'Pin 3 clones with Bahamut/doom or ignore with Bullseye', '12k+ HP recommended'],
   },
 };
 

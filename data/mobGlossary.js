@@ -1,7 +1,7 @@
 // Common MapleRoyals mobs — quick reference for beginners
 
 const MOB_GLOSSARY = [
-  { name: 'Snail / Blue Snail', area: 'Maple Island', level: '1–5', category: 'training', tip: 'First mobs you fight. Tutorial quests give enough EXP to skip grinding here.', mapImage: 'assets/images/maps/maple-island.png' },
+  { name: 'Snail / Blue Snail', area: 'Maple Island', level: '1–5', category: 'training', tip: 'First mobs you fight. Tutorial quests give enough EXP to skip grinding here.', mapStyle: 'island' },
   { name: 'Slime / Orange Mushroom', area: 'Victoria Island', level: '8–15', category: 'training', tip: 'Slime Tree and Mushroom Town — safe early solo maps near Henesys.', mapImage: 'assets/images/maps/slime-tree.png' },
   { name: 'Pig / Ribbon Pig', area: 'Pig Beach', level: '10–20', category: 'training', tip: 'East of Henesys. Classic beginner grind — easy mobs, low risk.', mapImage: 'assets/images/maps/pig-beach.png' },
   { name: 'Zombie Mushroom', area: 'Ant Tunnel', level: '20–30', category: 'training', tip: 'Under Kerning City. Solo alternative when KPQ party is unavailable.', mapImage: 'assets/images/maps/ant-tunnel.png' },

@@ -107,6 +107,17 @@ const BOSS_DROP_TABLES = {
     { item: 'Royal Forging Manuals', rate: 'Rare', note: 'Knives, quiver, bullet manuals' },
     { item: 'Bonus room loot', rate: 'After clear', note: 'Chaos, white scroll, Von Leon\'s Boots' },
   ],
+  shaolin: [
+    { item: '5k NX Card', rate: 'Uncommon', note: 'Cash shop credit' },
+    { item: 'Mastery Books', rate: 'Common', note: 'Holy Charge, Chain Lightning, Assassinate, etc.' },
+    { item: '250 / 100 NX Cards', rate: 'Common', note: 'Smaller NX drops' },
+  ],
+  'king-castle-golem': [
+    { item: 'Ifia\'s Ring', rate: 'Rare', note: 'Untradeable ring — keep' },
+    { item: '5k NX Card', rate: 'Uncommon', note: 'Cash shop credit' },
+    { item: 'Ring 30% scrolls', rate: 'Uncommon', note: 'STR/DEX/INT/LUK ring scrolls' },
+    { item: 'Shiny Powder', rate: 'Bonus stage', note: '5m meso each — need Bug Catching Net' },
+  ],
 };
 
 const LEVEL_MILESTONES = [
@@ -132,5 +143,7 @@ const LEVEL_MILESTONES = [
   { level: 164, icon: '⚔️', title: 'Dunas v2 (NT boss)', detail: 'Shibuya — White Scroll Fragments.', page: 'bosses', boss: 'dunas-v2' },
   { level: 160, icon: '👻', title: 'Nameless Magic Monster', detail: 'NT PQ boss — 8k HP, lightning weak.', page: 'bosses', boss: 'nameless-magic-monster' },
   { level: 170, icon: '🏯', title: 'Auf Haven expedition', detail: 'NT endgame — circlet & chaos drops.', page: 'prequests', prequest: 'auf-haven' },
+  { level: 150, icon: '🧘', title: 'Shaolin / Wu-Ling', detail: 'Eastern China temple — best EXP/HP demi.', page: 'prequests', prequest: 'shaolin' },
+  { level: 180, icon: '🌹', title: 'King Castle Golem', detail: 'Daily Rose Garden — best EXP/HP ratio.', page: 'bosses', boss: 'king-castle-golem' },
   { level: 180, icon: '🦁', title: 'Von Leon', detail: 'LKC prequest — 2 runs/week, best EXP.', page: 'prequests', prequest: 'von-leon' },
 ];

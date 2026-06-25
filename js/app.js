@@ -83,31 +83,119 @@ function renderPQs() {
 }
 
 // ══════════════════════════════════════════════
-// ITEM CHECKER
+// ITEM CHECKER + FM PRICES
 // ══════════════════════════════════════════════
-function checkItem() {
-  const q = document.getElementById('item-search').value.trim().toLowerCase();
+const POPULAR_PRICE_KEYS = [
+  'onyx apple', 'work gloves', 'chaos scroll', 'white scroll',
+  'ap reset', 'vip zak helm', 'vip htp', 'heartstopper', 'stormcaster', 'bwg',
+];
+
+function lookupItem(q) {
+  const ql = q.trim().toLowerCase();
+  const match = Object.keys(ITEM_DB).find(k => ql.includes(k) || k.includes(ql));
+  return match ? { key: match, ...ITEM_DB[match] } : null;
+}
+
+function lookupPrice(q) {
+  if (typeof PRICE_DB === 'undefined') return null;
+  const ql = q.trim().toLowerCase();
+  if (PRICE_DB[ql]) return { key: ql, ...PRICE_DB[ql] };
+  const match = Object.keys(PRICE_DB).find(k => ql.includes(k) || k.includes(ql));
+  return match ? { key: match, ...PRICE_DB[match] } : null;
+}
+
+function priceHtml(price) {
+  if (!price) return '';
+  const cat = price.category ? `<span class="price-cat">${price.category}</span>` : '';
+  return `
+    <div class="price-tag">
+      <span class="price-label">FM Price</span>
+      <span class="price-value">${price.price}</span>${cat}
+    </div>`;
+}
+
+function priceCredit() {
+  if (typeof PRICE_SOURCE === 'undefined') return '';
+  return `<p class="price-credit">From <a href="${PRICE_SOURCE.url}" target="_blank" rel="noopener">${PRICE_SOURCE.name}</a> — double-check in FM before selling.</p>`;
+}
+
+function checkItem(prefill) {
+  const input = document.getElementById('item-search');
+  if (prefill) input.value = prefill;
+  const q = input.value.trim().toLowerCase();
   const box = document.getElementById('item-result');
   if (!q) return;
 
-  const match = Object.keys(ITEM_DB).find(k => q.includes(k) || k.includes(q));
-  if (match) {
-    const d = ITEM_DB[match];
+  const item = lookupItem(q);
+  const price = lookupPrice(q);
+
+  if (item) {
     const colors = { keep: 'verdict-keep', fm: 'verdict-fm', vendor: 'verdict-vendor' };
     const labels = { keep: '✓ Keep', fm: '💰 Sell in FM', vendor: '✗ Vendor' };
     box.innerHTML = `
-      <div class="item-result-header ${colors[d.verdict]}">${labels[d.verdict]}</div>
-      <p style="color:var(--muted);font-size:14px;margin-bottom:12px;">${d.reason}</p>
-      <div>${d.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      <div class="item-result-header ${colors[item.verdict]}">${labels[item.verdict]}</div>
+      <div class="item-result-name">${item.key}</div>
+      ${priceHtml(price)}
+      <p style="color:var(--muted);font-size:14px;margin-bottom:12px;">${item.reason}</p>
+      <div>${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      ${price ? priceCredit() : ''}
+    `;
+  } else if (price) {
+    box.innerHTML = `
+      <div class="item-result-header verdict-fm">💰 FM Price Found</div>
+      <div class="item-result-name">${price.key}</div>
+      ${priceHtml(price)}
+      <p style="color:var(--muted);font-size:14px;margin-bottom:12px;">Not in our keep/vendor guide — check max stats in the item library before selling.</p>
+      <a href="https://royals-library.netlify.app" target="_blank" rel="noopener" style="color:var(--blue);font-size:14px;">🗃️ Open Item Library →</a>
+      ${priceCredit()}
     `;
   } else {
     box.innerHTML = `
       <div style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--yellow);">Item not in database</div>
       <p style="color:var(--muted);font-size:14px;margin-bottom:12px;">Check the item library for max stats, then price check in FM before deciding.</p>
-      <a href="https://royals-library.netlify.app" target="_blank" style="color:var(--blue);font-size:14px;">🗃️ Open Item Library →</a>
+      <a href="https://royals-library.netlify.app" target="_blank" rel="noopener" style="color:var(--blue);font-size:14px;display:block;margin-bottom:6px;">🗃️ Open Item Library →</a>
+      <a href="https://docs.google.com/spreadsheets/d/1B3sxmpaW7RGrQAAxAyeR-xS4mdKCTTs_DzgV0qo2p_8/edit" target="_blank" rel="noopener" style="color:var(--blue);font-size:14px;">📊 Sylafia Price Guide →</a>
     `;
   }
   box.classList.add('show');
+  if (prefill) box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderPopularPrices() {
+  const el = document.getElementById('popular-prices');
+  if (!el || typeof PRICE_DB === 'undefined') return;
+  el.innerHTML = POPULAR_PRICE_KEYS.filter(k => PRICE_DB[k]).map(k => {
+    const p = PRICE_DB[k];
+    return `<button type="button" class="price-card" onclick="checkItem('${k.replace(/'/g, "\\'")}')">
+      <span class="price-card-name">${k}</span>
+      <span class="price-card-value">${p.price}</span>
+    </button>`;
+  }).join('');
+}
+
+function shareGuide() {
+  const url = window.location.href.split('#')[0];
+  const toast = document.getElementById('share-toast');
+  const done = () => { if (toast) { toast.textContent = 'Copied!'; setTimeout(() => { toast.textContent = ''; }, 2000); } };
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(url).then(done);
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta); done();
+  }
+}
+
+function initLevelProfile() {
+  const input = document.getElementById('level-filter');
+  if (!input) return;
+  const saved = localStorage.getItem('mr-level');
+  if (saved) { input.value = saved; highlightLevel(); }
+  input.addEventListener('input', () => {
+    const v = input.value;
+    if (v) localStorage.setItem('mr-level', v);
+    else localStorage.removeItem('mr-level');
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -659,4 +747,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderQuiz();
   renderJobAdv();
   renderPartySlots();
+  renderPopularPrices();
+  initLevelProfile();
 });

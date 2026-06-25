@@ -343,10 +343,36 @@ button.btn-ghost:hover {
 }
 
 /* ITEM CHECKER */
-.item-result-header { font-family: var(--display); font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+.item-result-header { font-family: var(--display); font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.item-result-name { font-size: 14px; color: var(--muted); text-transform: capitalize; margin-bottom: 12px; }
 .verdict-keep { color: var(--green); }
 .verdict-fm { color: var(--gold); }
 .verdict-vendor { color: var(--red); }
+
+.price-tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(255, 200, 87, 0.08); border: 1px solid rgba(255, 200, 87, 0.25);
+  border-radius: var(--radius-sm); padding: 8px 14px; margin-bottom: 14px;
+}
+.price-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.price-value { font-family: var(--display); font-size: 18px; font-weight: 700; color: var(--gold); }
+.price-cat { font-size: 11px; color: var(--muted); background: var(--bg3); padding: 2px 8px; border-radius: 99px; }
+.price-credit { font-size: 12px; color: var(--muted); margin-top: 12px; }
+.price-credit a { color: var(--blue); }
+
+.section-hint { font-size: 13px; color: var(--muted); margin: -8px 0 16px; }
+.price-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 8px; }
+.price-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 12px 14px; cursor: pointer; text-align: left; transition: border-color 0.15s, background 0.15s;
+}
+.price-card:hover { border-color: var(--gold); background: var(--bg3); }
+.price-card-name { font-size: 12px; color: var(--muted); text-transform: capitalize; }
+.price-card-value { font-family: var(--display); font-size: 15px; font-weight: 700; color: var(--gold); }
+
+.share-toast { font-size: 12px; color: var(--green); margin-left: 10px; }
+.btn-sm { padding: 6px 14px; font-size: 13px; }
 
 /* BOSS */
 .boss-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }

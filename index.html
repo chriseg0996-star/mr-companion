@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="MapleRoyals companion guide — leveling, PQs, bosses, items, and job advancements for v83.">
   <title>MapleRoyals Companion</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍁</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
@@ -64,7 +65,9 @@
     </div>
     <div class="card">
       <div class="card-header"><h2>Share This Guide</h2></div>
-      <p style="font-size:13px;color:var(--muted);margin:0;">Send your friends the link to this page. No install needed — works on phone and desktop.</p>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Send your friends the link — no install needed, works on phone and desktop.</p>
+      <button class="btn btn-sm" onclick="shareGuide()">Copy Link</button>
+      <span id="share-toast" class="share-toast"></span>
     </div>
   </div>
 </div>
@@ -83,12 +86,16 @@
 
 <div id="page-items" class="page">
   <h1>Item Guide</h1>
-  <p class="subtitle">Dropped something and not sure what to do? Search it — keep, sell in FM, or vendor to NPC.</p>
+  <p class="subtitle">Dropped something and not sure what to do? Search it — keep, sell in FM, or vendor to NPC. FM prices from Sylafia's guide.</p>
   <div style="display:flex;gap:8px;margin-bottom:16px;">
-    <input type="text" id="item-search" placeholder="e.g. Zakum Helmet, Work Gloves, Steelies...">
+    <input type="text" id="item-search" placeholder="e.g. Zakum Helmet, Work Gloves, Chaos Scroll...">
     <button class="btn" onclick="checkItem()">Check</button>
   </div>
   <div id="item-result" class="result-box"></div>
+  <hr class="divider">
+  <h2>Popular FM Prices</h2>
+  <p class="section-hint">Tap an item to search. Prices from <a href="https://docs.google.com/spreadsheets/d/1B3sxmpaW7RGrQAAxAyeR-xS4mdKCTTs_DzgV0qo2p_8/edit" target="_blank" rel="noopener">Sylafia's Price Guide</a> — always double-check before selling.</p>
+  <div id="popular-prices" class="price-grid"></div>
   <hr class="divider">
   <h2>Quick Reference</h2>
   <div class="grid2">
@@ -114,6 +121,7 @@
     <div class="card">
       <div class="card-header"><h2>Useful Links</h2><span class="badge badge-blue">TOOLS</span></div>
       <div style="font-size:13px;line-height:2.5;">
+        <a href="https://docs.google.com/spreadsheets/d/1B3sxmpaW7RGrQAAxAyeR-xS4mdKCTTs_DzgV0qo2p_8/edit" target="_blank" rel="noopener" style="color:var(--blue);display:block;">📊 Sylafia Price Guide (FM)</a>
         <a href="https://royals-library.netlify.app" target="_blank" style="color:var(--blue);display:block;">🗃️ Item Library (max stats)</a>
         <a href="https://royals.ms/forum/forums/price-check.64/" target="_blank" style="color:var(--blue);display:block;">💰 Price Check Forum</a>
         <a href="https://royals.ms/forum/forums/guides.57/" target="_blank" style="color:var(--blue);display:block;">📖 Official Guides</a>
@@ -340,6 +348,7 @@
 <footer class="site-watermark"><span class="watermark-dot"></span> by Christopher Godines</footer>
 
 <script src="data/gameData.js"></script>
+<script src="data/priceData.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

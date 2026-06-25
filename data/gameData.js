@@ -161,11 +161,11 @@ const LEVELS = [
     { name: 'Tutorial Quests', type: 'solo', mapStyle: 'beach', mobs: ['Snails', 'Blue Snails', 'Shrooms'], detail: 'Complete all tutorial quests on Maple Island. Enough EXP to hit 10 without grinding. Take the boat to Lith Harbor when done.' }
   ]},
   { range: '10 – 20', label: 'Henesys Area', theme: 'victoria', icon: '🌳', spots: [
-    { name: 'Pig Beach', type: 'solo', mapStyle: 'field', mobs: ['Pigs', 'Ribbon Pigs'], detail: 'East of Henesys. Easy grind, good for beginners learning your class skills.' },
+    { name: 'Pig Beach', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/pig-beach.png', mobs: ['Pigs', 'Ribbon Pigs'], detail: 'East of Henesys. Easy grind, good for beginners learning your class skills.' },
     { name: 'Slime Tree / Mushroom Town', type: 'solo', mapStyle: 'forest', mobs: ['Slimes', 'Green Snails', 'Orange Mushrooms'], detail: 'Safe solo maps. Sell drops to NPC for early mesos.' }
   ]},
   { range: '20 – 30', label: 'Kerning City', theme: 'victoria', icon: '🏙️', spots: [
-    { name: 'Ant Tunnel I / II', type: 'solo', mapStyle: 'cave', mobs: ['Zombie Mushrooms', 'Horned Mushrooms'], detail: 'Classic solo grind under Kerning. Good if PQs are unavailable.' },
+    { name: 'Ant Tunnel I / II', type: 'solo', mapStyle: 'cave', mapImage: 'assets/images/maps/ant-tunnel.png', mobs: ['Zombie Mushrooms', 'Horned Mushrooms'], detail: 'Classic solo grind under Kerning. Good if PQs are unavailable.' },
     { name: 'Kerning City PQ (KPQ)', type: 'party', mapStyle: 'pq', mobs: ['PQ monsters'], detail: 'Level 21+. Party of 4. Better EXP than solo — priority over grinding. See PQ Guide tab.' }
   ]},
   { range: '30 – 50', label: 'Ludibrium', theme: 'ludibrium', icon: '🎠', spots: [
@@ -186,15 +186,15 @@ const LEVELS = [
     { name: 'Papulatus Prequest', type: 'solo', mapStyle: 'clock', mobs: ['Ludibrium mobs'], detail: 'Complete clocktower questline before your first Pap run. See Bosses tab.' }
   ]},
   { range: '100 – 120', label: 'Leafre', theme: 'leafre', icon: '🐉', spots: [
-    { name: 'Petristation / Newts', type: 'solo', mapStyle: 'forest', mobs: ['Red Wyvern', 'Blue Wyvern', 'Dark Wyvern'], detail: 'Dragon Forest. Newts give top-tier solo EXP. Start Horntail prequest at 120.' },
+    { name: 'Petristation / Newts', type: 'solo', mapStyle: 'forest', mapImage: 'assets/images/maps/leafre-newts.png', mobs: ['Red Wyvern', 'Blue Wyvern', 'Dark Wyvern'], detail: 'Dragon Forest. Newts give top-tier solo EXP. Start Horntail prequest at 120.' },
     { name: 'Skelegons (Party)', type: 'party', mapStyle: 'cave', mobs: ['Skelegon', 'Skelosaurus'], detail: 'Best EXP per hour with a strong party. Requires good damage and a Bishop for HS.' }
   ]},
   { range: '120 – 140', label: 'Neo Tokyo + Horntail', theme: 'neotokyo', icon: '🏙️', spots: [
-    { name: 'Neo Tokyo (after prequest)', type: 'solo', mapStyle: 'city', mobs: ['Yakuza Member', 'Gangster', 'Boss encounters'], detail: 'Start prequest in Kerning City. Best training in game at this range once unlocked.' },
+    { name: 'Neo Tokyo (after prequest)', type: 'solo', mapStyle: 'city', mapImage: 'assets/images/maps/neo-tokyo.png', mobs: ['Yakuza Member', 'Gangster', 'Boss encounters'], detail: 'Start prequest in Kerning City. Best training in game at this range once unlocked.' },
     { name: 'Horntail (daily boss)', type: 'party', mapStyle: 'volcano', mobs: ['Horntail'], detail: 'Run daily for necklace and rings. Complete Leafre prequest the day you hit 120.' }
   ]},
   { range: '140 – 200', label: 'Neo Tokyo Deep + Pink Bean', theme: 'endgame', icon: '👑', spots: [
-    { name: 'Neo Tokyo Deep Maps', type: 'solo', mapStyle: 'city', mobs: ['Dunas', 'Toad', 'Robo'], detail: 'Endgame training. Supplement with daily Horntail and Pink Bean runs.' },
+    { name: 'Neo Tokyo Deep Maps', type: 'solo', mapStyle: 'city', mapImage: 'assets/images/maps/neo-tokyo.png', mobs: ['Dunas', 'Toad', 'Robo'], detail: 'Endgame training. Supplement with daily Horntail and Pink Bean runs.' },
     { name: 'Pink Bean (daily boss)', type: 'party', mapStyle: 'temple', mobs: ['Pink Bean'], detail: 'Start Temple of Time prequest at 140. Hardest boss — see Bosses tab.' }
   ]},
 ];

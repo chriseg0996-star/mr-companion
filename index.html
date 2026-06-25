@@ -456,12 +456,7 @@
   <p class="subtitle">Build your ideal bossing party and get composition recommendations.</p>
   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
     <label style="font-size:13px;color:var(--muted);">Boss target:</label>
-    <select id="party-boss-target" style="min-width:140px;">
-      <option value="zakum">Zakum</option>
-      <option value="papulatus">Papulatus</option>
-      <option value="horntail" selected>Horntail</option>
-      <option value="pinkbean">Pink Bean</option>
-    </select>
+    <select id="party-boss-target" style="min-width:160px;"></select>
     <span class="section-hint" style="margin:0;">Or load a preset:</span>
     <div id="party-presets" class="party-presets"></div>
   </div>
@@ -487,6 +482,9 @@
     <div class="card party-preset-card" onclick="loadPartyPreset('zakum')"><div class="card-header"><span style="font-weight:600;">Zakum</span><span class="badge badge-green">6 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop recommended · Dark Knight · Any DPS x4. Flexible comp.</span></div>
     <div class="card party-preset-card" onclick="loadPartyPreset('pinkbean')"><div class="card-header"><span style="font-weight:600;">Pink Bean</span><span class="badge badge-purple">6 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop (mandatory) · Dark Knight (mandatory) · Night Lord · Bowmaster · High-funded DPS x2</span></div>
     <div class="card party-preset-card" onclick="loadPartyPreset('papulatus')"><div class="card-header"><span style="font-weight:600;">Papulatus</span><span class="badge badge-yellow">6 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop recommended · Any DPS. Very flexible at appropriate level.</span></div>
+    <div class="card party-preset-card" onclick="loadPartyPreset('dunas-v2')"><div class="card-header"><span style="font-weight:600;">Dunas v2</span><span class="badge badge-purple">3 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop (mandatory) · Dark Knight (mandatory) · Night Lord — pin guards, All Cures.</span></div>
+    <div class="card party-preset-card" onclick="loadPartyPreset('dunas')"><div class="card-header"><span style="font-weight:600;">Dunas v1</span><span class="badge badge-purple">3 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop · Dark Knight (HB) · Bowmaster — endgame NT trio.</span></div>
+    <div class="card party-preset-card" onclick="loadPartyPreset('vergamot')"><div class="card-header"><span style="font-weight:600;">Vergamot</span><span class="badge badge-purple">3 players</span></div><span style="font-size:13px;color:var(--muted);">Bishop · Dark Knight · Night Lord — mid NT daily.</span></div>
   </div>
 </div>
 

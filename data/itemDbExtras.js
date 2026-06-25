@@ -29,6 +29,7 @@ Object.assign(ITEM_DB, {
   'documents': { verdict: 'keep', reason: 'Quest / skill unlock item. Do not vendor if questing.', tags: ['quest', 'etc'] },
   'squid ink': { verdict: 'vendor', reason: 'Common Aqua Road drop. Vendor unless questing.', tags: ['mob drop', 'etc'] },
   'pure water': { verdict: 'vendor', reason: 'Common etc drop. Vendor to NPC.', tags: ['mob drop', 'etc'] },
+  'white scroll fragment': { verdict: 'keep', reason: 'Dunas v2 drop — craft white scrolls. Never vendor.', tags: ['boss drop', 'scroll', 'endgame'] },
 });
 
 /** Merge Sylafia PRICE_DB entries not already in ITEM_DB with sensible defaults. */

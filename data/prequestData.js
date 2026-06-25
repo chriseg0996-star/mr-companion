@@ -79,13 +79,16 @@ const PREQUESTS = [
       { id: 'nt7', text: 'Optional — Castellan Toad (130+)', detail: 'Separate questline in Akihabara after NT unlock. Party of 3, one run per day.' },
       { id: 'nt8', text: 'Optional — Vergamot expedition (145)', detail: 'Ponicher quests in NT. Good mesos between PB and Dunas.' },
       { id: 'nt9', text: 'Optional — Dunas expedition (152)', detail: 'Akihabara Command Room. Hardest standard NT boss — see Bosses tab.' },
+      { id: 'nt10', text: 'Optional — Nibergen (158)', detail: 'Cradle to the Future questline in Tokyo Skies. Party of 3, 141+ to start jq.' },
+      { id: 'nt11', text: 'Optional — Dunas v2 (164)', detail: 'I\'m Going to Stop It! chain → Adult Dida. Drops White Scroll Fragments.' },
     ],
     tips: [
       'Do HT prequest first if you hit 120 — then NT for leveling.',
       'NT mobs hit hard — bring potions and decent gear.',
       'Great mesos while leveling here.',
       'Supplement with daily Horntail runs.',
-      'NT bosses (Toad → Vergamot → Dunas) are daily income after PB — see forum guide for jq details.',
+      'NT boss order: Toad → Vergamot → Dunas → Nibergen → Dunas v2 — see forum guide for jq details.',
+      'Auf Haven expedition (Royal Guard, Core Blaze) is post-NT endgame — not covered here yet.',
     ],
   },
   {

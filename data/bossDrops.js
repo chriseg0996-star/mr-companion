@@ -75,6 +75,17 @@ const BOSS_DROP_TABLES = {
     { item: 'Ores & etc', rate: 'Common', note: 'Vendor ores' },
     { item: 'Mesos', rate: 'Guaranteed', note: 'Strong daily meso source' },
   ],
+  nibergen: [
+    { item: 'Scrolls', rate: 'Common', note: 'Never vendor scrolls' },
+    { item: 'Equipment drops', rate: 'Uncommon', note: 'Check FM' },
+    { item: 'Mesos', rate: 'Guaranteed', note: 'Good EXP + meso boss' },
+  ],
+  'dunas-v2': [
+    { item: 'White Scroll Fragment', rate: 'Uncommon', note: 'Valuable — never vendor' },
+    { item: 'High-tier scrolls', rate: 'Common', note: 'Never vendor scrolls' },
+    { item: 'Equipment drops', rate: 'Uncommon', note: 'Endgame gear' },
+    { item: 'Mesos', rate: 'Guaranteed', note: 'Top NT income' },
+  ],
 };
 
 const LEVEL_MILESTONES = [
@@ -96,4 +107,6 @@ const LEVEL_MILESTONES = [
   { level: 140, icon: '👑', title: 'Pink Bean', detail: 'Start Temple of Time prequest immediately.', page: 'prequests', prequest: 'pinkbean' },
   { level: 145, icon: '🤖', title: 'Vergamot (NT boss)', detail: 'Neo Tokyo expedition after PB — daily mesos.', page: 'bosses', boss: 'vergamot' },
   { level: 152, icon: '👾', title: 'Dunas (NT boss)', detail: 'Hardest standard NT boss — party of 3.', page: 'bosses', boss: 'dunas' },
+  { level: 158, icon: '🌌', title: 'Nibergen (NT boss)', detail: 'Tokyo Skies — strong EXP, party of 3.', page: 'bosses', boss: 'nibergen' },
+  { level: 164, icon: '⚔️', title: 'Dunas v2 (NT boss)', detail: 'Shibuya — White Scroll Fragments.', page: 'bosses', boss: 'dunas-v2' },
 ];

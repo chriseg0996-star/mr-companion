@@ -2066,16 +2066,29 @@ function savePartyMembers() {
 
 partyMembers = loadPartyMembers();
 
+function getPartyMaxSlots() {
+  return PARTY_BOSS_RULES?.[partyBossTarget]?.maxSlots || 6;
+}
+
 function initPartyBuilder() {
   partyMembers = loadPartyMembers();
   const sel = document.getElementById('party-boss-target');
-  if (sel) {
+  if (sel && typeof PARTY_BOSS_RULES !== 'undefined') {
+    sel.innerHTML = Object.entries(PARTY_BOSS_RULES).map(([id, r]) =>
+      `<option value="${id}">${r.label}</option>`
+    ).join('');
     partyBossTarget = localStorage.getItem('mr-party-boss') || 'horntail';
+    if (!PARTY_BOSS_RULES[partyBossTarget]) partyBossTarget = 'horntail';
     sel.value = partyBossTarget;
     sel.addEventListener('change', () => {
       partyBossTarget = sel.value;
       localStorage.setItem('mr-party-boss', partyBossTarget);
-      analyzeParty();
+      const max = getPartyMaxSlots();
+      if (partyMembers.length > max) {
+        partyMembers = partyMembers.slice(0, max);
+        savePartyMembers();
+      }
+      renderPartySlots();
     });
   }
   if (!partyMembers.length) {
@@ -2112,8 +2125,13 @@ function loadPartyPreset(id) {
 }
 
 function renderPartySlots() {
+  const max = getPartyMaxSlots();
+  if (partyMembers.length > max) {
+    partyMembers = partyMembers.slice(0, max);
+    savePartyMembers();
+  }
   const grid = document.getElementById('party-slots');
-  grid.innerHTML = Array(6).fill(0).map((_, i) => {
+  grid.innerHTML = Array(max).fill(0).map((_, i) => {
     const m = partyMembers[i];
     return `
       <div class="party-slot ${m ? 'filled' : ''}" onclick="${m ? `removeFromParty(${i})` : ''}">
@@ -2129,7 +2147,8 @@ function renderPartySlots() {
 
 function addToParty() {
   const cls = document.getElementById('party-class-select').value;
-  if (!cls || partyMembers.length >= 6) return;
+  const max = getPartyMaxSlots();
+  if (!cls || partyMembers.length >= max) return;
   partyMembers.push(cls);
   savePartyMembers();
   renderPartySlots();
@@ -2189,10 +2208,14 @@ function analyzeParty() {
     else goods.push('✓ Dark Knight present');
   }
 
-  if (partyMembers.length < 6) warnings.push(`ℹ️ ${6 - partyMembers.length} empty slot(s) — add more DPS`);
+  if (partyMembers.length < getPartyMaxSlots()) {
+    const max = getPartyMaxSlots();
+    warnings.push(`ℹ️ ${max - partyMembers.length} empty slot(s) — add more DPS`);
+  }
 
+  const maxSlots = getPartyMaxSlots();
   rec.innerHTML = `
-    <div style="margin-bottom:8px;font-size:13px;font-weight:600;">${rules?.label || 'Party'} Analysis (${partyMembers.length}/6)</div>
+    <div style="margin-bottom:8px;font-size:13px;font-weight:600;">${rules?.label || 'Party'} Analysis (${partyMembers.length}/${maxSlots})</div>
     ${goods.map(g => `<div style="font-size:13px;color:var(--green);margin-bottom:4px;">${g}</div>`).join('')}
     ${warnings.map(w => `<div style="font-size:13px;color:var(--yellow);margin-bottom:4px;">${w}</div>`).join('')}
     ${rules?.notes ? `<ul class="drop-list" style="margin-top:10px;font-size:12px;">${rules.notes.map(n => `<li>${n}</li>`).join('')}</ul>` : ''}

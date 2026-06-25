@@ -19,23 +19,46 @@ const PARTY_PRESETS = {
     label: 'Papulatus',
     classes: ['Bishop', 'Dark Knight', 'Bowmaster', 'Night Lord', 'Hero', 'Corsair'],
   },
+  toad: {
+    label: 'NT — Toad',
+    classes: ['Bishop', 'Night Lord', 'Hero'],
+  },
+  vergamot: {
+    label: 'NT — Vergamot',
+    classes: ['Bishop', 'Dark Knight', 'Night Lord'],
+  },
+  dunas: {
+    label: 'NT — Dunas',
+    classes: ['Bishop', 'Dark Knight', 'Bowmaster'],
+  },
+  nibergen: {
+    label: 'NT — Nibergen',
+    classes: ['Bishop', 'Dark Knight', 'Night Lord'],
+  },
+  'dunas-v2': {
+    label: 'NT — Dunas v2',
+    classes: ['Bishop', 'Dark Knight', 'Night Lord'],
+  },
 };
 
 const PARTY_BOSS_RULES = {
   zakum: {
     label: 'Zakum',
+    maxSlots: 6,
     bishop: 'recommended',
     dk: 'recommended',
     notes: ['Flexible comp — Bishop and DK strongly recommended', 'Any 4 DPS works for early runs'],
   },
   papulatus: {
     label: 'Papulatus',
+    maxSlots: 6,
     bishop: 'recommended',
     dk: false,
     notes: ['Very flexible at 85+', 'Kill mini clocks in Phase 1'],
   },
   horntail: {
     label: 'Horntail',
+    maxSlots: 6,
     bishop: 'required',
     dk: 'required',
     nlMin: 1,
@@ -44,12 +67,50 @@ const PARTY_BOSS_RULES = {
   },
   pinkbean: {
     label: 'Pink Bean',
+    maxSlots: 6,
     bishop: 'required',
     dk: 'required',
     nl: 'recommended',
     bm: 'recommended',
     shadower: 'recommended',
     notes: ['Hardest boss — full funding required', 'Smokescreen helps survive mechanics'],
+  },
+  toad: {
+    label: 'Castellan Toad',
+    maxSlots: 3,
+    bishop: 'recommended',
+    dk: false,
+    notes: ['Party of 3 required to enter', 'Easiest NT boss — Bishop + 2 DPS', 'One run per day'],
+  },
+  vergamot: {
+    label: 'Vergamot',
+    maxSlots: 3,
+    bishop: 'recommended',
+    dk: 'recommended',
+    notes: ['Party of 3 — Bishop heal + DK Hyper Body', 'Mid-tier NT daily boss'],
+  },
+  dunas: {
+    label: 'Dunas v1',
+    maxSlots: 3,
+    bishop: 'recommended',
+    dk: 'required',
+    notes: ['Party of 3 — DK Hyper Body for 15k+ touch', 'Endgame-funded DPS required'],
+  },
+  nibergen: {
+    label: 'Nibergen',
+    maxSlots: 3,
+    bishop: 'recommended',
+    dk: 'recommended',
+    nl: 'recommended',
+    notes: ['Party of 3 — 11k+ HP recommended', 'Good EXP boss at 158'],
+  },
+  'dunas-v2': {
+    label: 'Dunas v2',
+    maxSlots: 3,
+    bishop: 'required',
+    dk: 'required',
+    nl: 'recommended',
+    notes: ['Party of 3 — 12k+ HP to tank body hits', 'Split ship + body; pin Imperial Guards', 'All Cures for dispel/stun/darkness'],
   },
 };
 

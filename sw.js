@@ -1,4 +1,4 @@
-const CACHE = 'mr-companion-v5';
+const CACHE = 'mr-companion-v6';
 const PRECACHE = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const PRECACHE = [
   './data/classSkillTables.js',
   './data/classGear.js',
   './data/bossDrops.js',
+  './data/externalLinks.js',
   './data/mobGlossary.js',
   './data/priceData.js',
   './data/scrollPrices.js',

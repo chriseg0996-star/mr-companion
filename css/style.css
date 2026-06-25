@@ -1307,6 +1307,57 @@ kbd {
 .drop-table-note { font-size: 12px; color: var(--muted); }
 
 .check-boss-time { font-size: 11px; color: var(--muted); font-weight: 400; }
+.boss-ready { color: #4ade80; font-weight: 600; }
+.boss-cooldown { color: var(--gold); font-weight: 500; }
+
+.boss-respawn-banner {
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.boss-respawn-banner.ready {
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  color: #4ade80;
+}
+
+.boss-respawn-banner.cooldown {
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  color: var(--muted);
+}
+
+.external-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.external-link-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.external-link-card:hover {
+  border-color: var(--accent);
+  background: var(--bg3);
+}
+
+.external-link-icon { font-size: 22px; flex-shrink: 0; }
+.external-link-body { flex: 1; min-width: 0; }
+.external-link-label { display: block; font-size: 14px; font-weight: 600; }
+.external-link-desc { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+.external-link-arrow { color: var(--muted); font-size: 14px; }
 
 /* PARTY BUILDER */
 .party-slot {

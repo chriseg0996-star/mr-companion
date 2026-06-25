@@ -12,11 +12,41 @@ const PAGE_TITLES = {
 };
 
 const QUIZ_CLASS_IDS = {
-  'Dark Knight': 'dark-knight', Bishop: 'bishop', 'Night Lord': 'night-lord',
-  Bowmaster: 'bowmaster', Shadower: 'shadower', Buccaneer: 'buccaneer',
+  'Dark Knight': 'dark-knight', Hero: 'hero', Paladin: 'paladin',
+  Bishop: 'bishop', 'Fire/Poison Arch Mage': 'fp-arch-mage', 'Ice/Lightning Arch Mage': 'il-arch-mage',
+  'Night Lord': 'night-lord', Shadower: 'shadower',
+  Bowmaster: 'bowmaster', Marksman: 'marksman',
+  Buccaneer: 'buccaneer', Corsair: 'corsair',
 };
 
-function showPage(id, btn) {
+function setRoute(page, sub) {
+  const hash = sub ? `${page}/${encodeURIComponent(sub)}` : page;
+  const next = `#${hash}`;
+  if (location.hash !== next) history.replaceState(null, '', next);
+}
+
+function parseHash() {
+  const h = location.hash.replace(/^#/, '').trim();
+  if (!h) return null;
+  const slash = h.indexOf('/');
+  if (slash === -1) return { page: h, sub: null };
+  return { page: h.slice(0, slash), sub: decodeURIComponent(h.slice(slash + 1)) };
+}
+
+function initRouteFromHash() {
+  const r = parseHash();
+  if (!r?.page || !document.getElementById('page-' + r.page)) return;
+  showPage(r.page, null, true);
+  if (!r.sub) return;
+  const sub = r.sub.replace(/\+/g, ' ');
+  if (r.page === 'bosses') showBoss(r.sub, true);
+  else if (r.page === 'prequests') openPrequest(r.sub, true);
+  else if (r.page === 'classes') openClassGuide(r.sub, true);
+  else if (r.page === 'items') checkItem(sub);
+  else if (r.page === 'pqs') openPQ(r.sub, true);
+}
+
+function showPage(id, btn, skipHash) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
@@ -27,6 +57,7 @@ function showPage(id, btn) {
   }
   document.title = (PAGE_TITLES[id] || 'Guide') + ' — MR Companion';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (!skipHash) setRoute(id);
 }
 
 // ══════════════════════════════════════════════
@@ -286,11 +317,43 @@ function formatBossRunTime(id) {
   if (!iso) return '';
   const d = new Date(iso);
   const now = new Date();
-  if (d.toDateString() === now.toDateString()) return ' · marked today';
-  const days = Math.floor((now - d) / 86400000);
-  if (days === 1) return ' · yesterday';
-  if (days < 7) return ` · ${days}d ago`;
-  return ` · ${d.toLocaleDateString()}`;
+  let timeNote = '';
+  if (d.toDateString() === now.toDateString()) timeNote = ' · marked today';
+  else {
+    const days = Math.floor((now - d) / 86400000);
+    if (days === 1) timeNote = ' · yesterday';
+    else if (days < 7) timeNote = ` · ${days}d ago`;
+    else timeNote = ` · ${d.toLocaleDateString()}`;
+  }
+  const respawn = getBossRespawnStatus(id);
+  if (respawn) timeNote += respawn.ready ? ' · <span class="boss-ready">ready</span>' : ` · <span class="boss-cooldown">in ${respawn.label}</span>`;
+  return timeNote;
+}
+
+function getBossRespawnStatus(checklistId) {
+  const hours = BOSS_RESPAWN_HOURS?.[checklistId];
+  if (!hours) return null;
+  const iso = localStorage.getItem(`mr-boss-run-${checklistId}`);
+  if (!iso) return { ready: true, label: '' };
+  const remaining = hours * 3600000 - (Date.now() - new Date(iso).getTime());
+  if (remaining <= 0) return { ready: true, label: '' };
+  const h = Math.floor(remaining / 3600000);
+  const m = Math.floor((remaining % 3600000) / 60000);
+  return { ready: false, label: h > 0 ? `${h}h ${m}m` : `${m}m` };
+}
+
+function maybeResetDailies() {
+  const today = new Date().toDateString();
+  const last = localStorage.getItem('mr-checklist-date');
+  if (last === today) return;
+  const state = loadCheckState();
+  CHECKLIST.filter(i => i.cat === 'Daily').forEach(i => {
+    delete state[i.id];
+    if (i.boss) localStorage.removeItem(`mr-boss-run-${i.id}`);
+  });
+  localStorage.setItem('mr-checklist', JSON.stringify(state));
+  localStorage.setItem('mr-checklist-date', today);
+  checkState = state;
 }
 
 function renderHomeProgress() {
@@ -356,6 +419,22 @@ function renderTools() {
       <div class="guide-desc">${t.desc}</div>
     </div>
   `).join('');
+  renderExternalLinks('tools-external-links');
+}
+
+function renderExternalLinks(targetId) {
+  const el = document.getElementById(targetId);
+  if (!el || typeof EXTERNAL_LINKS === 'undefined') return;
+  el.innerHTML = EXTERNAL_LINKS.map(l => `
+    <a href="${l.url}" target="_blank" rel="noopener" class="external-link-card">
+      <span class="external-link-icon">${l.icon}</span>
+      <span class="external-link-body">
+        <span class="external-link-label">${l.label}</span>
+        <span class="external-link-desc">${l.desc}</span>
+      </span>
+      <span class="external-link-arrow">↗</span>
+    </a>
+  `).join('');
 }
 
 // ══════════════════════════════════════════════
@@ -368,8 +447,9 @@ function isPQInRange(pq, level) {
   return level >= parseInt(m[1], 10) && level <= parseInt(m[2], 10);
 }
 
-function openPQ(id) {
-  showPage('pqs');
+function openPQ(id, skipHash) {
+  showPage('pqs', null, skipHash);
+  if (!skipHash) setRoute('pqs', id);
   const el = document.getElementById('pq-' + id);
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -471,7 +551,8 @@ function resolveItemQuery(text) {
 }
 
 function openItemCheck(q) {
-  showPage('items');
+  showPage('items', null, true);
+  setRoute('items', q);
   setTimeout(() => checkItem(q), 50);
 }
 
@@ -738,7 +819,7 @@ function initItemAutocomplete() {
 }
 
 function shareGuide() {
-  const url = window.location.href.split('#')[0];
+  const url = window.location.href.split('#')[0] + (location.hash || '');
   const toast = document.getElementById('share-toast');
   const done = () => { if (toast) { toast.textContent = 'Copied!'; setTimeout(() => { toast.textContent = ''; }, 2000); } };
   if (navigator.clipboard?.writeText) {
@@ -907,6 +988,16 @@ function renderBossDropTable(bossId) {
   `;
 }
 
+function renderBossRespawnBanner(bossId) {
+  const cid = { zakum: 'zakum', papulatus: 'pap', horntail: 'ht', pinkbean: 'pb' }[bossId];
+  if (!cid) return '';
+  const status = getBossRespawnStatus(cid);
+  if (!status) return '';
+  return status.ready
+    ? '<p class="boss-respawn-banner ready">✓ Off cooldown — ready to run (based on your daily checklist mark)</p>'
+    : `<p class="boss-respawn-banner cooldown">⏳ Respawn in <strong>${status.label}</strong> since last checklist mark</p>`;
+}
+
 function renderBossPrequestProgress(bossId) {
   const pq = PREQUESTS?.find(p => p.bossId === bossId);
   if (!pq) return '';
@@ -925,7 +1016,11 @@ function renderBossPrequestProgress(bossId) {
   `;
 }
 
-function showBoss(id) {
+function showBoss(id, skipHash) {
+  if (!skipHash) {
+    showPage('bosses', null, true);
+    setRoute('bosses', id);
+  }
   const b = BOSSES.find(x => x.id === id);
   const detail = document.getElementById('boss-detail');
   detail.innerHTML = `
@@ -948,6 +1043,7 @@ function showBoss(id) {
       <div class="info-item"><div class="label">Party size</div><div class="value">${b.party}</div></div>
       <div class="info-item"><div class="label">Respawn</div><div class="value">${b.respawn}</div></div>
     </div>
+    ${renderBossRespawnBanner(b.id)}
     <div class="sep"></div>
     <h3>Boss Flow</h3>
     ${b.phases ? renderFlow(b.phases, 'phase') : ''}
@@ -1100,6 +1196,7 @@ function saveCheckState() {
 let checkState = loadCheckState();
 
 function renderChecklist() {
+  maybeResetDailies();
   const container = document.getElementById('checklist-container');
   let lastCat = '';
   let html = '';
@@ -1141,6 +1238,7 @@ function resetDailyChecklist() {
     delete checkState[i.id];
     if (i.boss) localStorage.removeItem(`mr-boss-run-${i.id}`);
   });
+  localStorage.setItem('mr-checklist-date', new Date().toDateString());
   saveCheckState();
   renderChecklist();
 }
@@ -1312,6 +1410,9 @@ function showQuizResult() {
   const guideBtn = classId
     ? `<button class="btn" style="margin-right:8px;" onclick="openClassGuide('${classId}')">Read ${best.name} Guide →</button>`
     : '';
+  const profileBtn = classId
+    ? `<button class="btn btn-ghost" style="margin-right:8px;" onclick="setProfileClass('${classId}');document.getElementById('profile-class').value='${classId}';showPage('home');">Set as my class</button>`
+    : '';
   const resultEl = document.getElementById('quiz-result');
   let actions = resultEl.querySelector('.quiz-actions');
   if (!actions) {
@@ -1319,7 +1420,7 @@ function showQuizResult() {
     actions.className = 'quiz-actions';
     resultEl.appendChild(actions);
   }
-  actions.innerHTML = `${guideBtn}<button class="btn-ghost" onclick="resetQuiz()">Retake Quiz</button>`;
+  actions.innerHTML = `${guideBtn}${profileBtn}<button class="btn-ghost" onclick="resetQuiz()">Retake Quiz</button>`;
   const icon = document.getElementById('quiz-class-icon');
   if (icon) { icon.src = best.icon; icon.alt = best.name; icon.style.display = ''; }
   document.getElementById('quiz-result').classList.add('show');
@@ -1475,8 +1576,9 @@ function renderJobAdv() {
 // ══════════════════════════════════════════════
 // PREQUESTS
 // ══════════════════════════════════════════════
-function openPrequest(id) {
-  showPage('prequests');
+function openPrequest(id, skipHash) {
+  showPage('prequests', null, skipHash);
+  if (!skipHash) setRoute('prequests', id);
   const el = document.getElementById('prequest-' + id);
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1548,9 +1650,10 @@ function renderPrequests() {
 let currentClassBranch = 'all';
 let currentClassId = null;
 
-function openClassGuide(id) {
-  showPage('classes');
-  showClass(id);
+function openClassGuide(id, skipHash) {
+  showPage('classes', null, skipHash);
+  if (!skipHash) setRoute('classes', id);
+  showClass(id, true);
 }
 
 function filterClassBranch(branch, btn) {
@@ -1595,8 +1698,9 @@ function renderClassGrid() {
   }).join('');
 }
 
-function showClass(id) {
+function showClass(id, skipRoute) {
   currentClassId = id;
+  if (!skipRoute) setRoute('classes', id);
   const c = CLASS_GUIDES[id];
   const detail = document.getElementById('class-detail');
   if (!c || !detail) return;
@@ -1899,6 +2003,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderWorldMap();
   renderLevelMilestones();
   renderChecklist();
+  renderExternalLinks('checklist-external-links');
   updateScrollStats();
   updateMesoStats();
   renderGear();
@@ -1913,4 +2018,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderQuickRefChips();
   initLevelProfile();
   initItemAutocomplete();
+  initRouteFromHash();
 });
+
+window.addEventListener('hashchange', () => initRouteFromHash());

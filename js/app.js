@@ -84,6 +84,39 @@ function initPWA() {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   });
+  initInstallPrompt();
+}
+
+let deferredInstallPrompt = null;
+
+function initInstallPrompt() {
+  const banner = document.getElementById('pwa-install-banner');
+  if (!banner) return;
+  if (localStorage.getItem('mr-pwa-dismissed') === '1') banner.classList.remove('show');
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if (localStorage.getItem('mr-pwa-dismissed') !== '1') banner.classList.add('show');
+  });
+  window.addEventListener('appinstalled', () => {
+    banner.classList.remove('show');
+    deferredInstallPrompt = null;
+  });
+}
+
+function installPWA() {
+  const banner = document.getElementById('pwa-install-banner');
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.finally(() => {
+    if (banner) banner.classList.remove('show');
+    deferredInstallPrompt = null;
+  });
+}
+
+function dismissPWA() {
+  localStorage.setItem('mr-pwa-dismissed', '1');
+  document.getElementById('pwa-install-banner')?.classList.remove('show');
 }
 
 function getProfile() {
@@ -108,6 +141,7 @@ function setProfileClass(id) {
   if (id) localStorage.setItem('mr-class', id);
   else localStorage.removeItem('mr-class');
   renderHomeNextSteps();
+  renderGear();
 }
 
 function prequestProgress(id) {
@@ -971,7 +1005,13 @@ function resetQuiz() {
 // GEAR ROADMAP
 // ══════════════════════════════════════════════
 function renderGear() {
-  document.getElementById('gear-timeline').innerHTML = GEAR_PHASES.map(p => `
+  const { classId } = getProfile();
+  const classGear = classId && CLASS_GEAR_NOTES?.[classId]
+    ? renderClassGearBlock(classId, `${CLASS_GUIDES[classId]?.name || 'Your class'} — gear priorities`)
+    : '';
+  document.getElementById('gear-timeline').innerHTML = `
+    ${classGear}
+    ${GEAR_PHASES.map(p => `
     <div class="gear-phase">
       <div class="gear-phase-title">${p.title}</div>
       ${p.items.map(item => `
@@ -984,7 +1024,26 @@ function renderGear() {
         </div>
       `).join('')}
     </div>
-  `).join('');
+  `).join('')}`;
+}
+
+function renderClassGearBlock(classId, title) {
+  const items = CLASS_GEAR_NOTES?.[classId];
+  if (!items?.length) return '';
+  return `
+    <div class="card class-gear-card" style="margin-bottom:20px;">
+      <div class="card-header"><h2>${title}</h2><span class="badge badge-yellow">Class-specific</span></div>
+      ${items.map(item => `
+        <div class="gear-item">
+          <span class="gear-priority ${item.priority}">${item.priority.toUpperCase()}</span>
+          <div>
+            <div style="font-weight:600;margin-bottom:2px;">${item.item}</div>
+            <div style="font-size:13px;color:var(--muted);">${item.note}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
 }
 
 // ══════════════════════════════════════════════
@@ -999,13 +1058,14 @@ function isStepDone(key) {
 function toggleStep(key, rerender) {
   localStorage.setItem(key, isStepDone(key) ? '0' : '1');
   if (rerender === 'job') renderJobAdv();
-  else if (rerender === 'prequest') { renderPrequests(); renderHomeNextSteps(); }
+  else if (rerender === 'prequest') { renderPrequests(); renderPrequestOverview(); renderHomeNextSteps(); }
 }
 
 function renderCheckableSteps(steps, prefix, rerender) {
   return steps.map((s, i) => {
     const key = stepKey(prefix, s.id);
     const done = isStepDone(key);
+    const mobs = s.farmMobs || (s.drops ? [s.drops] : []);
     return `
       <div class="quest-step ${done ? 'done' : ''}" onclick="toggleStep('${key}', '${rerender}')">
         <div class="quest-step-check">${done ? '✓' : i + 1}</div>
@@ -1013,6 +1073,7 @@ function renderCheckableSteps(steps, prefix, rerender) {
           <div class="quest-step-text">${s.text}</div>
           ${s.drops ? `<div class="quest-step-drops">Drops: ${s.drops}</div>` : ''}
           ${s.detail ? `<div class="quest-step-detail">${s.detail}</div>` : ''}
+          ${s.mapImage ? `<div class="quest-step-map" onclick="event.stopPropagation()">${renderMapScene('field', mobs, s.mapImage)}</div>` : ''}
         </div>
       </div>`;
   }).join('');
@@ -1092,7 +1153,32 @@ function openPrequest(id) {
   }
 }
 
+function renderPrequestOverview() {
+  const el = document.getElementById('prequest-overview');
+  if (!el || typeof PREQUESTS === 'undefined') return;
+  el.innerHTML = `
+    <div class="prequest-track">
+      ${PREQUESTS.map(pq => {
+        const { done, total } = prequestProgress(pq.id);
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        const complete = total > 0 && done === total;
+        return `
+          <button type="button" class="prequest-track-item${complete ? ' complete' : ''}" onclick="openPrequest('${pq.id}')">
+            <div class="prequest-track-top">
+              <span class="prequest-track-name">${pq.short}</span>
+              <span class="prequest-track-lv">Lv ${pq.startLevel}+</span>
+            </div>
+            <div class="prequest-track-bar"><div style="width:${pct}%"></div></div>
+            <div class="prequest-track-stats">${done}/${total} steps${complete ? ' ✓' : ''}</div>
+          </button>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
 function renderPrequests() {
+  renderPrequestOverview();
   const el = document.getElementById('prequest-list');
   if (!el || typeof PREQUESTS === 'undefined') return;
   el.innerHTML = PREQUESTS.map(pq => {
@@ -1234,6 +1320,11 @@ function showClass(id) {
     <p style="font-size:13px;color:var(--muted);">${c.partyValue}</p>
     <h3 style="margin-top:16px;">Common Mistakes</h3>
     <ul class="drop-list">${c.mistakes.map(m => `<li>${m}</li>`).join('')}</ul>
+    ${CLASS_GEAR_NOTES?.[id] ? `
+    <div class="sep"></div>
+    <h3>Gear Priorities</h3>
+    ${renderClassGearBlock(id, 'What to fund first')}
+    ` : ''}
     <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn btn-sm" onclick="showPage('jobadv')">Job Advancements →</button>
       <button class="btn btn-sm btn-ghost" onclick="showPage('gear')">Gear Roadmap →</button>
@@ -1318,23 +1409,44 @@ function analyzeParty() {
 // ══════════════════════════════════════════════
 // MOB GLOSSARY
 // ══════════════════════════════════════════════
+let glossaryCategory = 'all';
+
+function initGlossaryFilters() {
+  const el = document.getElementById('glossary-filters');
+  if (!el || typeof GLOSSARY_CATEGORIES === 'undefined') return;
+  el.innerHTML = GLOSSARY_CATEGORIES.map(c => `
+    <button class="filter-btn${glossaryCategory === c.id ? ' active' : ''}" onclick="filterGlossary('${c.id}', this)">${c.label}</button>
+  `).join('');
+}
+
+function filterGlossary(cat, btn) {
+  glossaryCategory = cat;
+  document.querySelectorAll('#glossary-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderGlossary();
+}
+
 function renderGlossary() {
   const el = document.getElementById('glossary-list');
   const q = (document.getElementById('glossary-search')?.value || '').trim().toLowerCase();
   if (!el || typeof MOB_GLOSSARY === 'undefined') return;
-  const mobs = MOB_GLOSSARY.filter(m =>
-    !q || m.name.toLowerCase().includes(q) || m.area.toLowerCase().includes(q) || m.tip.toLowerCase().includes(q)
-  );
+  if (!document.getElementById('glossary-filters')?.innerHTML) initGlossaryFilters();
+  const mobs = MOB_GLOSSARY.filter(m => {
+    if (glossaryCategory !== 'all' && m.category !== glossaryCategory) return false;
+    return !q || m.name.toLowerCase().includes(q) || m.area.toLowerCase().includes(q) || m.tip.toLowerCase().includes(q) || (m.drops || '').toLowerCase().includes(q);
+  });
   el.innerHTML = mobs.map(m => `
     <div class="card glossary-card">
       <div class="card-header">
         <h2>${m.name}</h2>
         <span class="badge badge-blue">Lv ${m.level}</span>
       </div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">📍 ${m.area}</p>
+      ${m.mapImage ? `<div class="glossary-map">${renderMapScene('field', m.drops ? [m.drops] : [], m.mapImage)}</div>` : ''}
+      <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">📍 ${m.area}${m.drops ? ` · <span style="color:var(--gold);">Drops: ${m.drops}</span>` : ''}</p>
       <p style="font-size:14px;">${m.tip}</p>
+      ${m.prequest ? `<button class="btn btn-sm btn-ghost" style="margin-top:10px;" onclick="openPrequest('${m.prequest}')">Open ${(PREQUESTS?.find(p => p.id === m.prequest)?.short || m.prequest)} prequest →</button>` : ''}
     </div>
-  `).join('') || `<p style="color:var(--muted);">No mobs match "${q}".</p>`;
+  `).join('') || `<p style="color:var(--muted);">No mobs match your filters.</p>`;
 }
 
 // ══════════════════════════════════════════════
@@ -1358,7 +1470,7 @@ function buildSearchIndex() {
   BOSSES.forEach(b => items.push({ type: 'Boss', label: b.name, sub: b.location, action: () => { showPage('bosses'); showBoss(b.id); } }));
   Object.keys(ITEM_DB).forEach(k => items.push({ type: 'Item', label: k, sub: ITEM_DB[k].verdict, action: () => { showPage('items'); checkItem(k); } }));
   if (typeof MOB_GLOSSARY !== 'undefined') {
-    MOB_GLOSSARY.forEach(m => items.push({ type: 'Mob', label: m.name, sub: m.area, action: () => showPage('glossary') }));
+    MOB_GLOSSARY.forEach(m => items.push({ type: 'Mob', label: m.name, sub: m.area, action: () => { showPage('glossary'); setTimeout(renderGlossary, 50); } }));
   }
   LEVELS.forEach(l => l.spots.forEach(s => {
     items.push({ type: 'Training', label: s.name, sub: `Lv ${l.range}`, action: () => showPage('leveling') });

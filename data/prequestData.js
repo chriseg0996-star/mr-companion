@@ -15,12 +15,12 @@ const PREQUESTS = [
     requirements: ['Level 50+ to start', 'Can complete most steps before 70', 'Party of 1–6 for the actual boss'],
     steps: [
       { id: 'z1', text: 'Talk to Adobis in El Nath', detail: 'Adobis is near the Zakum quest area in El Nath. Start the questline here.' },
-      { id: 'z2', text: 'Collect 30 Gold Teeth', drops: 'Zombie Lupin', detail: 'Drop from Zombie Lupins in El Nath area. Farm until you have 30.' },
-      { id: 'z3', text: 'Collect 30 Scorpion Stings', drops: 'Scorpion', detail: 'Drop from Scorpions in the desert/El Nath outskirts maps.' },
-      { id: 'z4', text: 'Collect 50 Lion King Certificates', drops: 'Lioner', detail: 'Drop from Lioners and related mobs. This step takes the longest — be patient.' },
+      { id: 'z2', text: 'Collect 30 Gold Teeth', drops: 'Zombie Lupin', farmMobs: ['Zombie Lupin'], mapImage: 'assets/images/maps/coolie-zombies.png', detail: 'Drop from Zombie Lupins in El Nath area. Farm until you have 30.' },
+      { id: 'z3', text: 'Collect 30 Scorpion Stings', drops: 'Scorpion', farmMobs: ['Scorpion'], mapImage: 'assets/images/maps/coolie-zombies.png', detail: 'Drop from Scorpions in the desert/El Nath outskirts maps.' },
+      { id: 'z4', text: 'Collect 50 Lion King Certificates', drops: 'Lioner', farmMobs: ['Lioner'], mapImage: 'assets/images/maps/gallopera.png', detail: 'Drop from Lioners and related mobs. This step takes the longest — be patient.' },
       { id: 'z5', text: 'Return all items to Adobis', detail: 'He grants access to the Cave of Life.' },
-      { id: 'z6', text: 'Enter Cave of Life and light all 5 torches', detail: 'Each torch requires a party to coordinate. You can enter with a party to light them together.' },
-      { id: 'z7', text: 'Summon Zakum with the Eye of Fire', detail: 'Once torches are lit, the boss can be summoned. Bring a party and potions.' },
+      { id: 'z6', text: 'Enter Cave of Life and light all 5 torches', mapImage: 'assets/images/maps/zakum-arena.png', detail: 'Each torch requires a party to coordinate. You can enter with a party to light them together.' },
+      { id: 'z7', text: 'Summon Zakum with the Eye of Fire', mapImage: 'assets/images/maps/zakum-arena.png', detail: 'Once torches are lit, the boss can be summoned. Bring a party and potions.' },
     ],
     tips: [
       'Start collecting drops while leveling in El Nath — do not wait until 70.',
@@ -43,10 +43,10 @@ const PREQUESTS = [
     requirements: ['Level 85+ recommended', 'Access to Ludibrium', 'Decent range for boss (~3,500+)'],
     steps: [
       { id: 'p1', text: 'Talk to Tory in Ludibrium', detail: 'Starts the "Fixing the Clocktower" questline.' },
-      { id: 'p2', text: 'Collect clock parts from Ludibrium mobs', detail: 'Quest will specify which mobs and items. Farm in Ludibrium and clocktower area.' },
+      { id: 'p2', text: 'Collect clock parts from Ludibrium mobs', farmMobs: ['Clocktower mobs'], mapImage: 'assets/images/maps/papulatus-arena.png', detail: 'Quest will specify which mobs and items. Farm in Ludibrium and clocktower area.' },
       { id: 'p3', text: 'Complete each quest stage Tory gives', detail: 'Follow dialogue — multiple turn-in steps.' },
       { id: 'p4', text: 'Talk to Grandpa Clock', detail: 'After quest chain, Grandpa Clock gives the entry pass.' },
-      { id: 'p5', text: 'Enter Papulatus room via Ludibrium clocktower bottom', detail: 'Use the pass to enter. Party up before going in.' },
+      { id: 'p5', text: 'Enter Papulatus room via Ludibrium clocktower bottom', mapImage: 'assets/images/maps/papulatus-arena.png', detail: 'Use the pass to enter. Party up before going in.' },
       { id: 'p6', text: 'Kill mini clocks during fight', detail: 'They heal Papulatus — prioritize them in Phase 1.' },
     ],
     tips: [
@@ -71,9 +71,9 @@ const PREQUESTS = [
     steps: [
       { id: 'nt1', text: 'Go to Kerning City', detail: 'Neo Tokyo prequest starts in Kerning — talk to the quest NPCs there.' },
       { id: 'nt2', text: 'Accept the Neo Tokyo questline', detail: 'Follow the chain of quests — multiple NPC dialogues.' },
-      { id: 'nt3', text: 'Complete required kill and collection tasks', detail: 'Quest will send you to specific maps and mobs.' },
+      { id: 'nt3', text: 'Complete required kill and collection tasks', mapImage: 'assets/images/maps/neo-tokyo.png', farmMobs: ['NT quest mobs'], detail: 'Quest will send you to specific maps and mobs.' },
       { id: 'nt4', text: 'Finish the storyline quests', detail: 'Several chapters — work through them in order.' },
-      { id: 'nt5', text: 'Gain access to Neo Tokyo maps', detail: 'Once complete, NT maps unlock for training.' },
+      { id: 'nt5', text: 'Gain access to Neo Tokyo maps', mapImage: 'assets/images/maps/neo-tokyo.png', detail: 'Once complete, NT maps unlock for training.' },
       { id: 'nt6', text: 'Train in NT until 140+ then start Pink Bean prequest', detail: 'Best EXP in game at this range.' },
     ],
     tips: [
@@ -98,11 +98,11 @@ const PREQUESTS = [
     steps: [
       { id: 'ht1', text: 'Travel to Leafre', detail: 'Through Minar Forest from Orbis direction.' },
       { id: 'ht2', text: 'Talk to Eurek the Alchemist', detail: 'Starts the Dragon Research questline.' },
-      { id: 'ht3', text: 'Collect items from Leafre mobs', detail: 'Quest specifies drops — farm in Dragon Forest area.' },
+      { id: 'ht3', text: 'Collect items from Leafre mobs', farmMobs: ['Dragon Forest mobs'], mapImage: 'assets/images/maps/leafre-newts.png', detail: 'Quest specifies drops — farm in Dragon Forest area.' },
       { id: 'ht4', text: 'Complete all Dragon Research quest stages', detail: 'Multiple turn-ins — do not skip steps.' },
       { id: 'ht5', text: 'Receive Necklace of Strength', detail: 'This is your entry ticket to Horntail.' },
       { id: 'ht6', text: 'Form a party: Bishop + DK mandatory', detail: 'Standard comp: Bishop, DK, 2x NL, BM, flex DPS.' },
-      { id: 'ht7', text: 'Kill left head → right head → main body', detail: 'Watch for seduce on main body. Pot aggressively.' },
+      { id: 'ht7', text: 'Kill left head → right head → main body', mapImage: 'assets/images/maps/horntail-arena.png', detail: 'Watch for seduce on main body. Pot aggressively.' },
     ],
     tips: [
       'Complete prequest THE DAY you hit 120 — do not delay.',
@@ -126,11 +126,11 @@ const PREQUESTS = [
     steps: [
       { id: 'pb1', text: 'Start at level 140 in Leafre', detail: 'Use Dimensional Mirror in Leafre to access Temple of Time quests.' },
       { id: 'pb2', text: 'Complete Path of Time quests in order', detail: 'Long chain — work through each chapter sequentially. Do not skip.' },
-      { id: 'pb3', text: 'Clear each Temple of Time stage', detail: 'Combat and puzzle stages — bring potions.' },
+      { id: 'pb3', text: 'Clear each Temple of Time stage', mapImage: 'assets/images/maps/pink-bean-temple.png', detail: 'Combat and puzzle stages — bring potions.' },
       { id: 'pb4', text: 'Unlock Pink Bean access', detail: 'Final quest grants entry to the boss.' },
       { id: 'pb5', text: 'Form endgame party', detail: 'Bishop + DK mandatory. NL, BM, funded DPS.' },
       { id: 'pb6', text: 'Kill all 4 statues simultaneously', detail: 'If staggered, they revive each other.' },
-      { id: 'pb7', text: 'Defeat Pink Bean phases', detail: 'Bring 300+ Power Elixirs. Assign dispel/rebuff roles.' },
+      { id: 'pb7', text: 'Defeat Pink Bean phases', mapImage: 'assets/images/maps/pink-bean-temple.png', detail: 'Bring 300+ Power Elixirs. Assign dispel/rebuff roles.' },
     ],
     tips: [
       'Start questline the day you hit 140.',

@@ -48,6 +48,13 @@
 <div id="page-home" class="page active">
   <h1>Welcome to MapleRoyals</h1>
   <p class="subtitle">A beginner-friendly guide for The Clinic — everything you need to understand v83, from your first mob to endgame bosses.</p>
+  <div id="pwa-install-banner" class="pwa-install-banner">
+    <div class="pwa-install-inner">
+      <span>📲 Install MR Companion for offline access</span>
+      <button class="btn btn-sm" onclick="installPWA()">Install</button>
+      <button class="btn-ghost btn-sm" onclick="dismissPWA()">Not now</button>
+    </div>
+  </div>
   <div class="card profile-card" id="profile-card">
     <div class="card-header"><h2>My Character</h2><span class="badge badge-blue">Saved locally</span></div>
     <div class="profile-fields">
@@ -110,6 +117,7 @@
 <div id="page-glossary" class="page">
   <h1>Mob Glossary</h1>
   <p class="subtitle">Quick reference for mobs you'll see in leveling and prequest guides.</p>
+  <div class="filter-bar" id="glossary-filters"></div>
   <input type="text" id="glossary-search" placeholder="Search mobs..." style="width:100%;max-width:400px;margin-bottom:16px;" oninput="renderGlossary()">
   <div id="glossary-list" class="glossary-list"></div>
 </div>
@@ -349,6 +357,7 @@
 <div id="page-prequests" class="page">
   <h1>Prequest Guide</h1>
   <p class="subtitle">Step-by-step walkthroughs to unlock bosses and Neo Tokyo. Check off steps as you complete them.</p>
+  <div id="prequest-overview" class="prequest-overview"></div>
   <div id="prequest-list"></div>
 </div>
 
@@ -409,6 +418,7 @@
 <script src="data/prequestData.js"></script>
 <script src="data/classGuides.js"></script>
 <script src="data/classSkillTables.js"></script>
+<script src="data/classGear.js"></script>
 <script src="data/mobGlossary.js"></script>
 <script src="data/priceData.js"></script>
 <script src="js/app.js"></script>

@@ -586,7 +586,9 @@ function renderNextMilestoneCard(level) {
   if (!next) return '<p style="font-size:13px;color:var(--muted);">You\'ve hit all major milestones — focus on daily bosses and gear.</p>';
   const action = next.prequest
     ? `openPrequest('${next.prequest}')`
-    : `showPage('${next.page}')`;
+    : next.boss
+      ? `showPage('bosses');showBoss('${next.boss}')`
+      : `showPage('${next.page}')`;
   return `
     <p style="font-size:14px;font-weight:600;margin:0 0 4px;">${next.icon} Lv ${next.level} — ${next.title}</p>
     <p style="font-size:13px;color:var(--muted);margin:0 0 10px;">${next.detail}</p>
@@ -754,6 +756,9 @@ const ITEM_QUERY_PATTERNS = [
   [/spirit of fantasy/i, 'spirit of fantasy theme park'],
   [/stormcaster/i, 'stormcaster gloves'],
   [/dark scroll/i, 'dark scroll'],
+  [/miniature pianus/i, 'miniature pianus'],
+  [/mastery book/i, 'mastery book 30'],
+  [/vip zak/i, 'vip zakum helmet'],
 ];
 
 function resolveItemQuery(text) {
@@ -1250,7 +1255,8 @@ function showBoss(id, skipHash) {
   }
   const b = BOSSES.find(x => x.id === id);
   const detail = document.getElementById('boss-detail');
-  const prequestId = getBossPrequest(id)?.id || b.prequestId || id;
+  const pq = getBossPrequest(id);
+  const prequestId = pq?.id || b.prequestId || id;
   detail.innerHTML = `
     <div class="boss-detail-top">
       <img src="${b.image}" alt="${b.name}" class="boss-detail-img" onerror="this.style.display='none'">
@@ -1279,13 +1285,15 @@ function showBoss(id, skipHash) {
     <h3>Arena Map</h3>
     ${renderMapScene(b.mapTheme || 'cave', b.phases || [b.name], b.mapImage || null)}
     <div class="sep"></div>
-    ${renderBossPrequestProgress(b.id)}
+    ${pq ? renderBossPrequestProgress(b.id) : ''}
+    ${pq ? `
     <h3>Prequest Walkthrough</h3>
     <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">
       <a href="#" onclick="openPrequest('${prequestId}');return false;" style="color:var(--blue);">Open full step-by-step prequest guide →</a>
     </p>
     <div class="sep"></div>
-    <h3>Prequest Summary</h3>
+    ` : ''}
+    <h3>${pq ? 'Prequest Summary' : 'How to Access'}</h3>
     <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">${b.prequest}</p>
     <h3>Drops</h3>
     <ul class="drop-list">${b.drops.map(d => `<li>${itemLink(d)}</li>`).join('')}</ul>
@@ -1377,7 +1385,11 @@ function renderLevelMilestones() {
       ${current ? `<p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Latest: <strong>${current.icon} Lv ${current.level} — ${current.title}</strong></p>` : ''}
       <div class="milestone-list">
         ${upcoming.length ? upcoming.map(m => {
-          const action = m.prequest ? `openPrequest('${m.prequest}')` : `showPage('${m.page}')`;
+          const action = m.prequest
+            ? `openPrequest('${m.prequest}')`
+            : m.boss
+              ? `showPage('bosses');showBoss('${m.boss}')`
+              : `showPage('${m.page}')`;
           return `
             <button type="button" class="milestone-item" onclick="${action}">
               <span class="milestone-lv">Lv ${m.level}</span>

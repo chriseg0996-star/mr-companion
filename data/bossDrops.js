@@ -47,6 +47,17 @@ const BOSS_DROP_TABLES = {
     { item: 'Scrolls', rate: 'Common', note: 'Never vendor scrolls' },
     { item: 'Mesos', rate: 'Guaranteed', note: 'Solid demi-boss income' },
   ],
+  pianus: [
+    { item: 'Miniature Pianus', itemKey: 'miniature pianus', rate: 'Uncommon', note: 'For Hero\'s Will / Ninja Ambush' },
+    { item: 'Mastery Book 20', itemKey: 'mastery book 20', rate: 'Rare', note: 'Skill-dependent value' },
+    { item: 'Mastery Book 30', itemKey: 'mastery book 30', rate: 'Rare', note: 'Right Pianus — high value' },
+    { item: 'Equipment & scrolls', rate: 'Common', note: 'Never vendor scrolls' },
+  ],
+  'jr-balrog': [
+    { item: 'Scrolls', rate: 'Common', note: 'ATT/DEF scrolls' },
+    { item: 'Equipment', rate: 'Uncommon', note: 'Check FM' },
+    { item: 'Ores', rate: 'Common', note: 'Vendor ores' },
+  ],
 };
 
 const LEVEL_MILESTONES = [
@@ -59,9 +70,11 @@ const LEVEL_MILESTONES = [
   { level: 51, icon: '👥', title: 'OPQ unlocked', detail: 'Best EXP from 51–70.', page: 'pqs' },
   { level: 70, icon: '🎖️', title: '4th Job', detail: 'Final advancement — read your class guide.', page: 'classes' },
   { level: 70, icon: '🐙', title: 'Krexel prequest', detail: 'Start Ralph questline in Singapore. Lantern is tradable.', page: 'prequests', prequest: 'krexel' },
+  { level: 80, icon: '🔥', title: 'Jr. Balrog (area boss)', detail: 'No prequest — Cursed Sanctuary, ~3h respawn.', page: 'bosses', boss: 'jr-balrog' },
   { level: 85, icon: '🕐', title: 'Papulatus', detail: 'Start clocktower prequest. Daily pendant upgrade.', page: 'prequests', prequest: 'papulatus' },
   { level: 85, icon: '🎡', title: 'Scarlion / Targa', detail: 'Start Lam questline in Malaysia. Helmets at 140.', page: 'prequests', prequest: 'scar-targa' },
   { level: 90, icon: '🏰', title: 'Crimsonwood Keep', detail: 'Start keystone prequest. CWKPQ for mastery books.', page: 'prequests', prequest: 'cwk' },
+  { level: 110, icon: '🐟', title: 'Pianus (area boss)', detail: 'No prequest — sweep Aqua Road channels. Drops mastery books.', page: 'bosses', boss: 'pianus' },
   { level: 120, icon: '🐉', title: 'Horntail + Neo Tokyo', detail: 'HT prequest first, then NT for training.', page: 'prequests', prequest: 'horntail' },
   { level: 140, icon: '👑', title: 'Pink Bean', detail: 'Start Temple of Time prequest immediately.', page: 'prequests', prequest: 'pinkbean' },
 ];

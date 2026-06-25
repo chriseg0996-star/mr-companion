@@ -285,6 +285,56 @@ const BOSSES = [
     mapImage: 'assets/images/maps/gallopera.png',
     checklistId: 'targa',
   },
+  {
+    id: 'pianus',
+    name: 'Pianus',
+    tier: 'demi',
+    level: '110',
+    respawn: '24h (right) · 36h (left)',
+    party: '1–6',
+    hpReq: '5,500+ HP (touch)',
+    dmgReq: '4,500+ magic avoid',
+    location: 'Aqua Road — Cave of Pianus',
+    noPrequest: true,
+    image: 'assets/images/maps/world-map.png',
+    drops: ['Miniature Pianus', 'Mastery Book 20/30', 'Equipment', 'Scrolls'],
+    prequest: 'No prequest. Channel spawn area boss — sweep Aqua Road channels. Left and Right Pianus have separate timers.',
+    tips: [
+      'One of the most camped bosses on Royals — be ready to compete',
+      'Pianus bomb hits ~10k — stand on platforms when possible',
+      'Drops Miniature Pianus for Hero\'s Will / Ninja Ambush quests',
+      'Mastery Book 30 from Right Pianus is valuable for many 4th jobs',
+      'Right respawns faster (24h) than Left (36h)',
+      'Pair with Deep Sea Gorge training while waiting for spawn',
+    ],
+    phases: ['Find live spawn (channel sweep)', 'Avoid bomb AoE', 'Kill Left or Right', 'Loot books & etc'],
+    mapTheme: 'cave',
+    mapImage: 'assets/images/maps/world-map.png',
+  },
+  {
+    id: 'jr-balrog',
+    name: 'Jr. Balrog',
+    tier: 'demi',
+    level: '80',
+    respawn: '~3 hours',
+    party: '1–6',
+    hpReq: '2,700+ magic',
+    dmgReq: 'Mid-range party',
+    location: 'Victoria — Cursed Sanctuary',
+    noPrequest: true,
+    image: 'assets/images/maps/coolie-zombies.png',
+    drops: ['Equipment', 'Scrolls', 'Ores', 'Mesos'],
+    prequest: 'No prequest. Area boss in the Cursed Sanctuary dungeon — check channels every few hours.',
+    tips: [
+      'Good intro to area bosses before Pianus',
+      '3-hour respawn — easier to find than Pianus',
+      'Magic attacks hit ~2.7k — bring pots',
+      'Often soloable with decent funding at 80+',
+    ],
+    phases: ['Enter Cursed Sanctuary', 'Find spawn', 'Kill Jr. Balrog', 'Loot'],
+    mapTheme: 'cave',
+    mapImage: 'assets/images/maps/coolie-zombies.png',
+  },
 ];
 
 const WORLD_MAP = [
@@ -320,10 +370,11 @@ const LEVELS = [
   ]},
   { range: '70 – 85', label: 'Orbis — Stairway', theme: 'orbis', icon: '🌤️', spots: [
     { name: 'Galloperas', type: 'solo', mapStyle: 'sky', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera', 'Dual Birk'], detail: 'Orbis Stairway to the Sky. Best EXP and mesos at this range. Maps can be crowded.' },
-    { name: 'Coolie Zombies', type: 'solo', mapStyle: 'graveyard', mapImage: 'assets/images/maps/coolie-zombies.png', mobs: ['Coolie Zombies'], detail: 'Slower but less contested than Galloperas.' }
+    { name: 'Coolie Zombies', type: 'solo', mapStyle: 'graveyard', mapImage: 'assets/images/maps/coolie-zombies.png', mobs: ['Coolie Zombies'], detail: 'Slower but less contested than Galloperas.' },
+    { name: 'Jr. Balrog (area boss)', type: 'party', mapStyle: 'cave', mapImage: 'assets/images/maps/coolie-zombies.png', mobs: ['Jr. Balrog'], detail: 'At 80+, check Cursed Sanctuary channels every few hours. See Bosses → Jr. Balrog.' }
   ]},
   { range: '85 – 100', label: 'Orbis / Pap Prequest', theme: 'ludibrium', icon: '🕐', spots: [
-    { name: 'Galloperas (Stairway to the Sky)', type: 'solo', mapStyle: 'sky', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera'], detail: 'Still top EXP here. Start Papulatus prequest in Ludibrium at 85.' },
+    { name: 'Galloperas (Stairway to the Sky)', type: 'solo', mapStyle: 'sky', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera'], detail: 'Still top EXP here. At 110+, hunt Pianus in Aqua Road channels between trains.' },
     { name: 'Papulatus Prequest', type: 'solo', mapStyle: 'clock', mapImage: 'assets/images/maps/papulatus-arena.png', mobs: ['Ludibrium mobs'], detail: 'Complete clocktower questline before your first Pap run. See Bosses tab.' },
     { name: 'CWK Keystone (lv 90+)', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/world-map.png', mobs: ['Crimsonwood mobs'], detail: 'At 90, start the Crimsonwood Keystone chain in Masteria/NLC. Unlocks CWKPQ expeditions.' },
     { name: 'Scarlion/Targa prequest (lv 85+)', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera', 'Vikerola', 'Rodeo'], detail: 'Start Lam\'s questline in Malaysia. Farm Spirits for demi-boss helm runs at 140.' }

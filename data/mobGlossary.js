@@ -26,7 +26,8 @@ const MOB_GLOSSARY = [
   { name: 'Krexel', area: 'Singapore — Ulu City', level: '140', category: 'boss', prequest: 'krexel', tip: 'Two runs/day. Soul Lantern + Mallet required. Lantern is tradable.', mapImage: 'assets/images/maps/world-map.png' },
   { name: 'Scarlion / Targa', area: 'Malaysia — Fantasy Theme Park', level: '140', category: 'boss', prequest: 'scar-targa', drops: 'Scarlion/Targa Helmet', tip: 'Party of 3. Use Spirit of Fantasy Theme Park at Spooky World.', mapImage: 'assets/images/maps/gallopera.png' },
   { name: 'Captain Latanica', area: 'Singapore — Ghost Ship', level: '70+', category: 'prequest', prequest: 'krexel', drops: 'Soul Lantern', tip: 'Krexel prequest boss. Lantern tradable — buy in FM to skip.', mapImage: 'assets/images/maps/world-map.png' },
-  { name: 'Twisted Masters (CWK)', area: 'Crimsonwood Keep', level: '90+', category: 'boss', prequest: 'cwk', tip: 'Five bosses in CWKPQ. Melees bottom, ranged top. Margana weak to Holy.', mapImage: 'assets/images/maps/world-map.png' },
+  { name: 'Pianus', area: 'Aqua Road — Cave of Pianus', level: '110', category: 'boss', tip: 'Channel spawn boss. 24h/36h respawn. Drops Miniature Pianus & mastery books.', mapImage: 'assets/images/maps/world-map.png' },
+  { name: 'Jr. Balrog', area: 'Cursed Sanctuary', level: '80', category: 'boss', tip: 'Area boss — 3h respawn. Good practice before Pianus.', mapImage: 'assets/images/maps/coolie-zombies.png' },
   { name: 'Crimsonwood Mobs', area: 'Masteria — Crimsonwood', level: '90+', category: 'prequest', prequest: 'cwk', drops: 'Crimson Hearts', tip: 'Farm Crimson Hearts for expedition signup. Hearts are tradeable.', mapImage: 'assets/images/maps/world-map.png' },
 ];
 

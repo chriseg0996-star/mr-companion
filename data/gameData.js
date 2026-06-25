@@ -47,6 +47,11 @@ const ITEM_DB = {
   'sauna robe': { verdict: 'fm', reason: 'Popular mage armor. Sell in FM if not a mage.', tags: ['armor', 'mage'] },
   'brown overall': { verdict: 'vendor', reason: 'Basic equipment with no scroll value. Vendor.', tags: ['armor', 'starter'] },
   'red katana': { verdict: 'fm', reason: 'Decent thief weapon. Check FM price before vending.', tags: ['weapon', 'thief'] },
+  // Prequest items
+  'gold tooth': { verdict: 'keep', reason: 'Zakum prequest drop. Collect 30 for Adobis.', tags: ['prequest', 'zakum'] },
+  'scorpion sting': { verdict: 'keep', reason: 'Zakum prequest drop. Collect 30 for Adobis.', tags: ['prequest', 'zakum'] },
+  'lion king certificate': { verdict: 'keep', reason: 'Zakum prequest drop. Collect 50 — longest farm step.', tags: ['prequest', 'zakum'] },
+  'eye of fire': { verdict: 'keep', reason: 'Summons Zakum after torches are lit. Do not sell.', tags: ['prequest', 'zakum', 'consumable'] },
 };
 
 const BOSSES = [

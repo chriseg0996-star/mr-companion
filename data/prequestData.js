@@ -15,12 +15,12 @@ const PREQUESTS = [
     requirements: ['Level 50+ to start', 'Can complete most steps before 70', 'Party of 1–6 for the actual boss'],
     steps: [
       { id: 'z1', text: 'Talk to Adobis in El Nath', npc: 'Adobis', locationHint: 'El Nath — near Zakum quest area', detail: 'Adobis is near the Zakum quest area in El Nath. Start the questline here.' },
-      { id: 'z2', text: 'Collect 30 Gold Teeth', drops: 'Zombie Lupin', farmMobs: ['Zombie Lupin'], mapImage: 'assets/images/maps/coolie-zombies.png', detail: 'Drop from Zombie Lupins in El Nath area. Farm until you have 30.' },
-      { id: 'z3', text: 'Collect 30 Scorpion Stings', drops: 'Scorpion', farmMobs: ['Scorpion'], mapImage: 'assets/images/maps/coolie-zombies.png', detail: 'Drop from Scorpions in the desert/El Nath outskirts maps.' },
-      { id: 'z4', text: 'Collect 50 Lion King Certificates', drops: 'Lioner', farmMobs: ['Lioner'], mapImage: 'assets/images/maps/gallopera.png', detail: 'Drop from Lioners and related mobs. This step takes the longest — be patient.' },
+      { id: 'z2', text: 'Collect 30 Gold Teeth', drops: 'Gold Teeth', farmMobs: ['Zombie Lupin'], mapImage: 'assets/images/maps/coolie-zombies.png', detail: 'Drop from Zombie Lupins in El Nath area. Farm until you have 30.' },
+      { id: 'z3', text: 'Collect 30 Scorpion Stings', drops: 'Scorpion Stings', farmMobs: ['Scorpion'], mapImage: 'assets/images/maps/coolie-zombies.png', detail: 'Drop from Scorpions in the desert/El Nath outskirts maps.' },
+      { id: 'z4', text: 'Collect 50 Lion King Certificates', drops: 'Lion King Certificates', farmMobs: ['Lioner'], mapImage: 'assets/images/maps/gallopera.png', detail: 'Drop from Lioners and related mobs. This step takes the longest — be patient.' },
       { id: 'z5', text: 'Return all items to Adobis', detail: 'He grants access to the Cave of Life.' },
       { id: 'z6', text: 'Enter Cave of Life and light all 5 torches', mapImage: 'assets/images/maps/zakum-arena.png', detail: 'Each torch requires a party to coordinate. You can enter with a party to light them together.' },
-      { id: 'z7', text: 'Summon Zakum with the Eye of Fire', mapImage: 'assets/images/maps/zakum-arena.png', detail: 'Once torches are lit, the boss can be summoned. Bring a party and potions.' },
+      { id: 'z7', text: 'Summon Zakum with the Eye of Fire', drops: 'Eye of Fire', mapImage: 'assets/images/maps/zakum-arena.png', detail: 'Once torches are lit, the boss can be summoned. Bring a party and potions.' },
     ],
     tips: [
       'Start collecting drops while leveling in El Nath — do not wait until 70.',
@@ -42,9 +42,9 @@ const PREQUESTS = [
     summary: 'Fix the Ludibrium clocktower to earn entry to Papulatus. Best pendant in mid-game.',
     requirements: ['Level 85+ recommended', 'Access to Ludibrium', 'Decent range for boss (~3,500+)'],
     steps: [
-      { id: 'p1', text: 'Talk to Tory in Ludibrium', npc: 'Tory', locationHint: 'Ludibrium town', detail: 'Starts the "Fixing the Clocktower" questline.' },
-      { id: 'p2', text: 'Collect clock parts from Ludibrium mobs', farmMobs: ['Clocktower mobs'], mapImage: 'assets/images/maps/papulatus-arena.png', detail: 'Quest will specify which mobs and items. Farm in Ludibrium and clocktower area.' },
-      { id: 'p3', text: 'Complete each quest stage Tory gives', npc: 'Tory', detail: 'Follow dialogue — multiple turn-in steps.' },
+      { id: 'p1', text: 'Talk to Tory in Ludibrium', npc: 'Tory', locationHint: 'Ludibrium town', mapImage: 'assets/images/maps/ludibrium-pq.png', detail: 'Starts the "Fixing the Clocktower" questline.' },
+      { id: 'p2', text: 'Collect clock parts from Ludibrium mobs', farmMobs: ['Clocktower mobs'], mapImage: 'assets/images/maps/ludibrium-pq.png', detail: 'Quest will specify which mobs and items. Farm in Ludibrium and clocktower area.' },
+      { id: 'p3', text: 'Complete each quest stage Tory gives', npc: 'Tory', mapImage: 'assets/images/maps/ludibrium-pq.png', detail: 'Follow dialogue — multiple turn-in steps.' },
       { id: 'p4', text: 'Talk to Grandpa Clock', npc: 'Grandpa Clock', locationHint: 'Ludibrium Clocktower', detail: 'After quest chain, Grandpa Clock gives the entry pass.' },
       { id: 'p5', text: 'Enter Papulatus room via Ludibrium clocktower bottom', mapImage: 'assets/images/maps/papulatus-arena.png', detail: 'Use the pass to enter. Party up before going in.' },
       { id: 'p6', text: 'Kill mini clocks during fight', detail: 'They heal Papulatus — prioritize them in Phase 1.' },
@@ -124,7 +124,7 @@ const PREQUESTS = [
     summary: 'Path of Time questline unlocks Pink Bean — hardest boss, BiS hat/suit/cape.',
     requirements: ['Level 140+', 'High funding (~20k+ range)', 'Bishop + DK mandatory'],
     steps: [
-      { id: 'pb1', text: 'Start at level 140 in Leafre', npc: 'Dimensional Mirror', locationHint: 'Leafre Town', detail: 'Use Dimensional Mirror in Leafre to access Temple of Time quests.' },
+      { id: 'pb1', text: 'Start at level 140 in Leafre', npc: 'Dimensional Mirror', locationHint: 'Leafre Town', mapImage: 'assets/images/maps/leafre-newts.png', detail: 'Use Dimensional Mirror in Leafre to access Temple of Time quests.' },
       { id: 'pb2', text: 'Complete Path of Time quests in order', locationHint: 'Temple of Time', detail: 'Long chain — work through each chapter sequentially. Do not skip.' },
       { id: 'pb3', text: 'Clear each Temple of Time stage', mapImage: 'assets/images/maps/pink-bean-temple.png', detail: 'Combat and puzzle stages — bring potions.' },
       { id: 'pb4', text: 'Unlock Pink Bean access', detail: 'Final quest grants entry to the boss.' },

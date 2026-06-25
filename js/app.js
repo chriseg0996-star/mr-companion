@@ -185,21 +185,27 @@ function getServerDateString() {
 
 function getClassLinks(id) {
   const c = CLASS_GUIDES[id];
-  const q = CLASS_FORUM_SEARCH?.[id];
   const links = [];
-  if (q) {
-    links.push({
-      label: `${c?.name || 'Class'} — forum search`,
-      url: `${CLASS_FORUM_URL}search/?q=${q}`,
-    });
+  const thread = CLASS_FORUM_THREADS?.[id];
+  if (thread) {
+    links.push({ label: thread.label, url: thread.url, primary: true });
+  } else {
+    const q = CLASS_FORUM_SEARCH?.[id];
+    if (q) {
+      links.push({
+        label: `${c?.name || 'Class'} — forum search`,
+        url: `${CLASS_FORUM_URL}search/?q=${q}`,
+      });
+    }
   }
   const wikiSlug = CLASS_WIKI_SLUG?.[id];
   if (wikiSlug) {
     links.push({
-      label: `${c?.name || 'Class'} — Wiki page`,
+      label: `${c?.name || 'Class'} — Wiki`,
       url: `${CLASS_WIKI_URL}/index.php/${wikiSlug}`,
     });
   }
+  links.push({ label: 'All Class Guides', url: CLASS_FORUM_URL });
   (c?.links || []).forEach(l => {
     if (!links.some(x => x.url === l.url)) links.push(l);
   });
@@ -713,6 +719,10 @@ const ITEM_QUERY_PATTERNS = [
   [/tobis?/i, 'tobis'],
   [/power elixir/i, 'power elixir'],
   [/sauna robe/i, 'sauna robe'],
+  [/gold teeth?/i, 'gold tooth'],
+  [/scorpion stings?/i, 'scorpion sting'],
+  [/lion king certificates?/i, 'lion king certificate'],
+  [/eye of fire/i, 'eye of fire'],
 ];
 
 function resolveItemQuery(text) {
@@ -1679,7 +1689,8 @@ function renderCheckableSteps(steps, prefix, rerender) {
         <div class="quest-step-body">
           <div class="quest-step-text">${s.text}</div>
           ${s.npc ? `<div class="quest-step-npc">🧭 <strong>${s.npc}</strong>${s.locationHint ? ` · ${s.locationHint}` : ''}</div>` : ''}
-          ${s.drops ? `<div class="quest-step-drops">Drops: ${itemLink(s.drops, resolveItemQuery(s.drops))}</div>` : ''}
+          ${s.farmMobs?.length ? `<div class="quest-step-mobs">Farm: ${s.farmMobs.join(', ')}</div>` : ''}
+          ${s.drops ? `<div class="quest-step-drops">Item: ${itemLink(s.drops, resolveItemQuery(s.drops))}</div>` : ''}
           ${s.detail ? `<div class="quest-step-detail">${s.detail}</div>` : ''}
           ${s.mapImage ? `<div class="quest-step-map" onclick="event.stopPropagation()">${renderMapScene('field', mobs, s.mapImage)}</div>` : ''}
         </div>
@@ -1945,8 +1956,18 @@ function showClass(id, skipRoute) {
     </div>
     <div class="sep"></div>
     <h3>Official Resources</h3>
-    <div style="font-size:13px;line-height:2.2;">
-      ${getClassLinks(id).map(l => `<a href="${l.url}" target="_blank" rel="noopener" style="color:var(--blue);display:block;">${l.label} →</a>`).join('')}
+    <div class="class-resources">
+      ${(() => {
+        const links = getClassLinks(id);
+        const primary = links.find(l => l.primary);
+        const rest = links.filter(l => !l.primary);
+        return `
+          ${primary ? `<a href="${primary.url}" target="_blank" rel="noopener" class="btn btn-sm class-guide-btn">📖 ${primary.label}</a>` : ''}
+          <div class="class-resource-links">
+            ${rest.map(l => `<a href="${l.url}" target="_blank" rel="noopener">${l.label} →</a>`).join('')}
+          </div>
+        `;
+      })()}
     </div>
   `;
   detail.classList.add('show');

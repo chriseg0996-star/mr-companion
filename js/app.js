@@ -144,6 +144,7 @@ function setProfileLevel(v) {
   if (pl) pl.value = v || '';
   highlightLevel();
   renderHomeNextSteps();
+  renderHomeProgress();
 }
 
 function setProfileClass(id) {
@@ -254,6 +255,7 @@ function initProfile() {
   levelInput.addEventListener('input', () => setProfileLevel(levelInput.value));
   classSelect.addEventListener('change', () => setProfileClass(classSelect.value));
   renderHomeNextSteps();
+  renderHomeProgress();
 }
 
 function renderHome() {
@@ -265,6 +267,77 @@ function renderHome() {
     </div>
   `).join('');
   renderHomeNextSteps();
+  renderHomeProgress();
+}
+
+function getPrequestOverallProgress() {
+  if (typeof PREQUESTS === 'undefined') return { done: 0, total: 0 };
+  let done = 0, total = 0;
+  PREQUESTS.forEach(pq => {
+    const p = prequestProgress(pq.id);
+    done += p.done;
+    total += p.total;
+  });
+  return { done, total };
+}
+
+function formatBossRunTime(id) {
+  const iso = localStorage.getItem(`mr-boss-run-${id}`);
+  if (!iso) return '';
+  const d = new Date(iso);
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) return ' · marked today';
+  const days = Math.floor((now - d) / 86400000);
+  if (days === 1) return ' · yesterday';
+  if (days < 7) return ` · ${days}d ago`;
+  return ` · ${d.toLocaleDateString()}`;
+}
+
+function renderHomeProgress() {
+  const el = document.getElementById('home-progress');
+  if (!el) return;
+  const { level } = getProfile();
+  if (!level) { el.innerHTML = ''; return; }
+
+  const pq = getPrequestOverallProgress();
+  const pqPct = pq.total ? Math.round((pq.done / pq.total) * 100) : 0;
+  const dailyItems = CHECKLIST.filter(i => i.cat === 'Daily');
+  const dailyDone = dailyItems.filter(i => checkState[i.id]).length;
+  const bossRuns = CHECKLIST.filter(i => i.boss && checkState[i.id]).length;
+  const bossTotal = CHECKLIST.filter(i => i.boss).length;
+
+  el.innerHTML = `
+    <div class="home-progress-grid">
+      <div class="card home-progress-card">
+        <div class="card-header"><h2>Prequests</h2><span class="badge badge-yellow">${pq.done}/${pq.total}</span></div>
+        <div class="prequest-track-bar"><div style="width:${pqPct}%"></div></div>
+        <button type="button" class="btn btn-sm btn-ghost" style="margin-top:10px;" onclick="showPage('prequests')">View all →</button>
+      </div>
+      <div class="card home-progress-card">
+        <div class="card-header"><h2>Today's Dailies</h2><span class="badge badge-green">${dailyDone}/${dailyItems.length}</span></div>
+        <p style="font-size:13px;color:var(--muted);margin:0;">Boss runs marked: ${bossRuns}/${bossTotal}</p>
+        <button type="button" class="btn btn-sm btn-ghost" style="margin-top:10px;" onclick="showPage('checklist')">Open checklist →</button>
+      </div>
+      <div class="card home-progress-card">
+        <div class="card-header"><h2>Next Milestone</h2></div>
+        ${renderNextMilestoneCard(level)}
+      </div>
+    </div>
+  `;
+}
+
+function renderNextMilestoneCard(level) {
+  if (typeof LEVEL_MILESTONES === 'undefined') return '<p style="color:var(--muted);font-size:13px;">—</p>';
+  const next = LEVEL_MILESTONES.find(m => m.level > level);
+  if (!next) return '<p style="font-size:13px;color:var(--muted);">You\'ve hit all major milestones — focus on daily bosses and gear.</p>';
+  const action = next.prequest
+    ? `openPrequest('${next.prequest}')`
+    : `showPage('${next.page}')`;
+  return `
+    <p style="font-size:14px;font-weight:600;margin:0 0 4px;">${next.icon} Lv ${next.level} — ${next.title}</p>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 10px;">${next.detail}</p>
+    <button type="button" class="btn btn-sm" onclick="${action}">Go →</button>
+  `;
 }
 
 function renderTools() {
@@ -288,10 +361,50 @@ function renderTools() {
 // ══════════════════════════════════════════════
 // PQs
 // ══════════════════════════════════════════════
+function isPQInRange(pq, level) {
+  if (!level) return false;
+  const m = pq.level.match(/(\d+)\s*[–-]\s*(\d+)/);
+  if (!m) return false;
+  return level >= parseInt(m[1], 10) && level <= parseInt(m[2], 10);
+}
+
+function openPQ(id) {
+  showPage('pqs');
+  const el = document.getElementById('pq-' + id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.add('prequest-highlight');
+    setTimeout(() => el.classList.remove('prequest-highlight'), 2000);
+  }
+}
+
+function renderPQOverview() {
+  const el = document.getElementById('pq-overview');
+  if (!el || typeof PQS === 'undefined') return;
+  const { level } = getProfile();
+  const levelInput = parseInt(document.getElementById('level-filter')?.value) || level;
+  el.innerHTML = `
+    <div class="pq-track">
+      ${PQS.map(pq => {
+        const recommended = isPQInRange(pq, levelInput);
+        return `
+          <button type="button" class="pq-track-item${recommended ? ' recommended' : ''}" onclick="openPQ('${pq.id}')">
+            <span class="pq-track-short">${pq.short}</span>
+            <span class="pq-track-lv">Lv ${pq.level}</span>
+            <span class="pq-track-party">${pq.party}</span>
+            ${recommended ? '<span class="pq-track-badge">Best for you</span>' : ''}
+          </button>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
 function renderPQs() {
+  renderPQOverview();
   const priorityBadge = { high: 'badge-green', medium: 'badge-yellow', optional: 'badge-blue' };
   document.getElementById('pq-list').innerHTML = PQS.map(pq => `
-    <div class="card pq-card">
+    <div class="card pq-card" id="pq-${pq.id}">
       <div class="card-header">
         <h2>${pq.name} <span style="color:var(--muted);font-weight:400;font-size:13px;">(${pq.short})</span></h2>
         <span class="badge ${priorityBadge[pq.priority]}">${pq.priority}</span>
@@ -771,6 +884,29 @@ function renderBosses(filter = 'all') {
   `).join('');
 }
 
+function renderBossDropTable(bossId) {
+  const table = BOSS_DROP_TABLES?.[bossId];
+  if (!table?.length) return '';
+  return `
+    <h3>Drop Table</h3>
+    <p class="section-hint" style="margin:0 0 12px;">Tap an item to check keep/vendor advice and FM price.</p>
+    <div class="drop-table-wrap">
+      <table class="drop-table">
+        <thead><tr><th>Drop</th><th>Rate</th><th>Notes</th></tr></thead>
+        <tbody>
+          ${table.map(row => `
+            <tr>
+              <td>${gearItemLabel(row.item, row.itemKey)}</td>
+              <td><span class="drop-rate">${row.rate}</span></td>
+              <td class="drop-table-note">${row.note}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
 function renderBossPrequestProgress(bossId) {
   const pq = PREQUESTS?.find(p => p.bossId === bossId);
   if (!pq) return '';
@@ -829,6 +965,7 @@ function showBoss(id) {
     <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">${b.prequest}</p>
     <h3>Drops</h3>
     <ul class="drop-list">${b.drops.map(d => `<li>${itemLink(d)}</li>`).join('')}</ul>
+    ${renderBossDropTable(b.id)}
     <div class="sep"></div>
     <h3>Tips</h3>
     <ul class="drop-list">${b.tips.map(t => `<li>${t}</li>`).join('')}</ul>
@@ -888,8 +1025,50 @@ function renderLevels() {
 }
 
 function highlightLevel() {
+  const lf = document.getElementById('level-filter');
+  const pl = document.getElementById('profile-level');
+  if (lf && pl && lf.value !== pl.value) setProfileLevel(lf.value);
   renderLevels();
   renderWorldMap();
+  renderLevelMilestones();
+  renderPQOverview();
+}
+
+function renderLevelMilestones() {
+  const el = document.getElementById('level-milestones');
+  if (!el || typeof LEVEL_MILESTONES === 'undefined') return;
+  const myLevel = parseInt(document.getElementById('level-filter')?.value) || getProfile().level || 0;
+  if (!myLevel) { el.innerHTML = ''; return; }
+
+  const completed = LEVEL_MILESTONES.filter(m => m.level <= myLevel);
+  const upcoming = LEVEL_MILESTONES.filter(m => m.level > myLevel).slice(0, 3);
+  const current = completed[completed.length - 1];
+
+  el.innerHTML = `
+    <div class="milestone-panel card">
+      <div class="card-header">
+        <h2>Level Milestones</h2>
+        <span class="badge badge-blue">Lv ${myLevel}</span>
+      </div>
+      ${current ? `<p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Latest: <strong>${current.icon} Lv ${current.level} — ${current.title}</strong></p>` : ''}
+      <div class="milestone-list">
+        ${upcoming.length ? upcoming.map(m => {
+          const action = m.prequest ? `openPrequest('${m.prequest}')` : `showPage('${m.page}')`;
+          return `
+            <button type="button" class="milestone-item" onclick="${action}">
+              <span class="milestone-lv">Lv ${m.level}</span>
+              <span class="milestone-icon">${m.icon}</span>
+              <span class="milestone-body">
+                <span class="milestone-title">${m.title}</span>
+                <span class="milestone-detail">${m.detail}</span>
+              </span>
+              <span class="milestone-arrow">→</span>
+            </button>
+          `;
+        }).join('') : '<p style="font-size:13px;color:var(--muted);margin:0;">All major milestones complete — endgame grind time.</p>'}
+      </div>
+    </div>
+  `;
 }
 
 function filterLevelType(type, btn) {
@@ -907,7 +1086,18 @@ function toggleLevel(i) {
 // ══════════════════════════════════════════════
 // CHECKLIST
 // ══════════════════════════════════════════════
-let checkState = {};
+function loadCheckState() {
+  try {
+    const raw = localStorage.getItem('mr-checklist');
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function saveCheckState() {
+  localStorage.setItem('mr-checklist', JSON.stringify(checkState));
+}
+
+let checkState = loadCheckState();
 
 function renderChecklist() {
   const container = document.getElementById('checklist-container');
@@ -919,10 +1109,11 @@ function renderChecklist() {
       lastCat = item.cat;
     }
     const done = checkState[item.id];
+    const bossNote = item.boss ? formatBossRunTime(item.id) : '';
     html += `
       <div class="check-item ${done ? 'done' : ''}" onclick="toggleCheck('${item.id}')">
         <div class="check-box">${done ? '✓' : ''}</div>
-        <span class="check-label">${item.label}</span>
+        <span class="check-label">${item.label}${bossNote ? `<span class="check-boss-time">${bossNote}</span>` : ''}</span>
       </div>
     `;
   });
@@ -931,15 +1122,33 @@ function renderChecklist() {
   const total = CHECKLIST.length;
   document.getElementById('check-bar').style.width = (done / total * 100) + '%';
   document.getElementById('check-count').textContent = `${done} / ${total} complete`;
+  renderHomeProgress();
 }
 
 function toggleCheck(id) {
   checkState[id] = !checkState[id];
+  const item = CHECKLIST.find(i => i.id === id);
+  if (item?.boss) {
+    if (checkState[id]) localStorage.setItem(`mr-boss-run-${id}`, new Date().toISOString());
+    else localStorage.removeItem(`mr-boss-run-${id}`);
+  }
+  saveCheckState();
+  renderChecklist();
+}
+
+function resetDailyChecklist() {
+  CHECKLIST.filter(i => i.cat === 'Daily').forEach(i => {
+    delete checkState[i.id];
+    if (i.boss) localStorage.removeItem(`mr-boss-run-${i.id}`);
+  });
+  saveCheckState();
   renderChecklist();
 }
 
 function resetChecklist() {
   checkState = {};
+  CHECKLIST.filter(i => i.boss).forEach(i => localStorage.removeItem(`mr-boss-run-${i.id}`));
+  saveCheckState();
   renderChecklist();
 }
 
@@ -963,12 +1172,22 @@ function calcHPWash() {
 // ══════════════════════════════════════════════
 // SCROLL TRACKER
 // ══════════════════════════════════════════════
-let scrollLog = [];
+function loadScrollLog() {
+  try { return JSON.parse(localStorage.getItem('mr-scroll-log') || '[]'); }
+  catch { return []; }
+}
+
+function saveScrollLog() {
+  localStorage.setItem('mr-scroll-log', JSON.stringify(scrollLog.slice(0, 100)));
+}
+
+let scrollLog = loadScrollLog();
 
 function logScroll(success) {
   const item = document.getElementById('scroll-item').value || 'Unknown item';
   const type = document.getElementById('scroll-type').value;
   scrollLog.unshift({ item, type, success, time: new Date().toLocaleTimeString() });
+  saveScrollLog();
   updateScrollStats();
 }
 
@@ -996,19 +1215,30 @@ function updateScrollStats() {
 
 function clearScrolls() {
   scrollLog = [];
+  saveScrollLog();
   updateScrollStats();
 }
 
 // ══════════════════════════════════════════════
 // MESO TRACKER
 // ══════════════════════════════════════════════
-let mesoLog = [];
+function loadMesoLog() {
+  try { return JSON.parse(localStorage.getItem('mr-meso-log') || '[]'); }
+  catch { return []; }
+}
+
+function saveMesoLog() {
+  localStorage.setItem('mr-meso-log', JSON.stringify(mesoLog.slice(0, 100)));
+}
+
+let mesoLog = loadMesoLog();
 
 function logMeso(income) {
   const amount = parseInt(document.getElementById('meso-amount').value) || 0;
   const source = document.getElementById('meso-source').value || 'Unknown';
   if (!amount) return;
   mesoLog.unshift({ amount, source, income, time: new Date().toLocaleTimeString() });
+  saveMesoLog();
   updateMesoStats();
   document.getElementById('meso-amount').value = '';
   document.getElementById('meso-source').value = '';
@@ -1037,6 +1267,7 @@ function updateMesoStats() {
 
 function clearMesos() {
   mesoLog = [];
+  saveMesoLog();
   updateMesoStats();
 }
 
@@ -1158,7 +1389,7 @@ function isStepDone(key) {
 function toggleStep(key, rerender) {
   localStorage.setItem(key, isStepDone(key) ? '0' : '1');
   if (rerender === 'job') renderJobAdv();
-  else if (rerender === 'prequest') { renderPrequests(); renderPrequestOverview(); renderHomeNextSteps(); }
+  else if (rerender === 'prequest') { renderPrequests(); renderPrequestOverview(); renderHomeNextSteps(); renderHomeProgress(); }
 }
 
 function renderCheckableSteps(steps, prefix, rerender) {
@@ -1666,7 +1897,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBosses('all');
   renderLevels();
   renderWorldMap();
+  renderLevelMilestones();
   renderChecklist();
+  updateScrollStats();
+  updateMesoStats();
   renderGear();
   renderQuiz();
   renderJobAdv();

@@ -72,6 +72,7 @@
     <p class="section-hint" style="margin:12px 0 0;">Used to highlight your leveling zone and suggest what to do next. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to search anything.</p>
   </div>
   <div id="home-next-steps" class="home-next-steps"></div>
+  <div id="home-progress" class="home-progress"></div>
   <div class="guide-grid" id="guide-grid"></div>
   <hr class="divider">
   <h2>New Player Path</h2>
@@ -105,6 +106,7 @@
 <div id="page-pqs" class="page">
   <h1>Party Quest Guide</h1>
   <p class="subtitle">PQs are the fastest way to level on MapleRoyals. Find a party in channel, enter the portal, and clear stages together.</p>
+  <div id="pq-overview" class="pq-overview"></div>
   <div id="pq-list"></div>
 </div>
 
@@ -215,6 +217,7 @@
   <div id="world-map-hero" class="world-map-hero"></div>
   <div id="world-map" class="world-map"></div>
   <h2 style="margin-top:28px;">Training Spots</h2>
+  <div id="level-milestones" class="level-milestones"></div>
   <div id="level-list"></div>
 </div>
 
@@ -224,7 +227,10 @@
   <div class="check-progress"><div class="check-progress-bar" id="check-bar" style="width:0%"></div></div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
     <span id="check-count" style="font-size:13px;color:var(--muted);">0 / 0 complete</span>
-    <button class="btn-ghost" onclick="resetChecklist()" style="font-size:12px;padding:6px 14px;">Reset All</button>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-ghost" onclick="resetDailyChecklist()" style="font-size:12px;padding:6px 14px;">Reset Dailies</button>
+      <button class="btn-ghost" onclick="resetChecklist()" style="font-size:12px;padding:6px 14px;">Reset All</button>
+    </div>
   </div>
   <div id="checklist-container"></div>
 </div>
@@ -426,6 +432,7 @@
 <script src="data/classGear.js"></script>
 <script src="data/mobGlossary.js"></script>
 <script src="data/priceData.js"></script>
+<script src="data/bossDrops.js"></script>
 <script src="data/scrollPrices.js"></script>
 <script src="js/app.js"></script>
 </body>

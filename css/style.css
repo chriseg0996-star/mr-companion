@@ -1185,6 +1185,129 @@ kbd {
   padding: 0 4px;
 }
 
+.home-progress { margin-bottom: 24px; }
+
+.home-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.home-progress-card .prequest-track-bar { margin-top: 4px; }
+
+.pq-overview { margin-bottom: 24px; }
+
+.pq-track {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.pq-track-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color 0.15s;
+}
+
+.pq-track-item:hover { border-color: var(--accent); }
+.pq-track-item.recommended { border-color: rgba(74, 222, 128, 0.45); background: rgba(74, 222, 128, 0.05); }
+
+.pq-track-short { font-weight: 700; font-size: 15px; }
+.pq-track-lv { font-size: 11px; color: var(--muted); }
+.pq-track-party { font-size: 10px; color: var(--muted); }
+.pq-track-badge { font-size: 10px; color: #4ade80; font-weight: 600; margin-top: 4px; }
+
+.level-milestones { margin-bottom: 20px; }
+
+.milestone-panel { padding: 0; overflow: hidden; }
+
+.milestone-list { display: flex; flex-direction: column; gap: 8px; }
+
+.milestone-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+
+.milestone-item:hover { border-color: var(--accent); }
+
+.milestone-lv {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 42px;
+}
+
+.milestone-icon { font-size: 18px; }
+
+.milestone-body { flex: 1; min-width: 0; }
+
+.milestone-title { display: block; font-size: 13px; font-weight: 600; }
+.milestone-detail { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+.milestone-arrow { color: var(--muted); font-size: 14px; }
+
+.drop-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  margin-bottom: 8px;
+}
+
+.drop-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.drop-table th,
+.drop-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.drop-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.drop-table tr:last-child td { border-bottom: none; }
+
+.drop-rate {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.drop-table-note { font-size: 12px; color: var(--muted); }
+
+.check-boss-time { font-size: 11px; color: var(--muted); font-weight: 400; }
+
 /* PARTY BUILDER */
 .party-slot {
   background: var(--bg2);

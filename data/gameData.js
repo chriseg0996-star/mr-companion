@@ -340,12 +340,13 @@ const GUIDE_SECTIONS = [
 
 const CHECKLIST = [
   { cat: 'Daily', label: 'Vote on all sites (royals.ms/vote)', id: 'vote' },
-  { cat: 'Daily', label: 'Run Zakum', id: 'zakum' },
-  { cat: 'Daily', label: 'Run Horntail (lv 120+)', id: 'ht' },
+  { cat: 'Daily', label: 'Run Zakum', id: 'zakum', boss: true },
+  { cat: 'Daily', label: 'Run Papulatus (lv 85+)', id: 'pap', boss: true },
+  { cat: 'Daily', label: 'Run Horntail (lv 120+)', id: 'ht', boss: true },
   { cat: 'Daily', label: 'Farm mesos at training spot', id: 'farm' },
   { cat: 'Daily', label: 'Check Free Market prices', id: 'fm' },
   { cat: 'Daily', label: 'Complete daily quests', id: 'daily-q' },
-  { cat: 'Weekly', label: 'Run Pink Bean (lv 140+)', id: 'pb' },
+  { cat: 'Weekly', label: 'Run Pink Bean (lv 140+)', id: 'pb', boss: true },
   { cat: 'Weekly', label: 'Complete Monster Book collections', id: 'mb' },
   { cat: 'Weekly', label: 'Restock potions', id: 'pots' },
   { cat: 'Weekly', label: 'Check HP wash progress', id: 'hpw' },

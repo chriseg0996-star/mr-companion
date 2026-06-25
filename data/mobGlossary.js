@@ -23,6 +23,9 @@ const MOB_GLOSSARY = [
   { name: 'Papulatus', area: 'Ludibrium Clocktower', level: '85+', category: 'boss', tip: 'Kill mini clocks in Phase 1 — they heal the boss. Pendant is BiS until HT.', mapImage: 'assets/images/maps/papulatus-arena.png' },
   { name: 'Horntail', area: 'Leafre — Cave of Life', level: '120+', category: 'boss', tip: 'Left head → right head → body. Bishop + DK mandatory. Seduce on body.', mapImage: 'assets/images/maps/horntail-arena.png' },
   { name: 'Pink Bean', area: 'Temple of Time', level: '140+', category: 'boss', tip: 'Kill all 4 statues at once. Hardest boss — Hat and Suit are BiS.', mapImage: 'assets/images/maps/pink-bean-temple.png' },
+  { name: 'Krexel', area: 'Singapore — Ulu City', level: '140', category: 'boss', prequest: 'krexel', tip: 'Two runs/day. Soul Lantern + Mallet required. Lantern is tradable.', mapImage: 'assets/images/maps/world-map.png' },
+  { name: 'Scarlion / Targa', area: 'Malaysia — Fantasy Theme Park', level: '140', category: 'boss', prequest: 'scar-targa', drops: 'Scarlion/Targa Helmet', tip: 'Party of 3. Use Spirit of Fantasy Theme Park at Spooky World.', mapImage: 'assets/images/maps/gallopera.png' },
+  { name: 'Captain Latanica', area: 'Singapore — Ghost Ship', level: '70+', category: 'prequest', prequest: 'krexel', drops: 'Soul Lantern', tip: 'Krexel prequest boss. Lantern tradable — buy in FM to skip.', mapImage: 'assets/images/maps/world-map.png' },
   { name: 'Twisted Masters (CWK)', area: 'Crimsonwood Keep', level: '90+', category: 'boss', prequest: 'cwk', tip: 'Five bosses in CWKPQ. Melees bottom, ranged top. Margana weak to Holy.', mapImage: 'assets/images/maps/world-map.png' },
   { name: 'Crimsonwood Mobs', area: 'Masteria — Crimsonwood', level: '90+', category: 'prequest', prequest: 'cwk', drops: 'Crimson Hearts', tip: 'Farm Crimson Hearts for expedition signup. Hearts are tradeable.', mapImage: 'assets/images/maps/world-map.png' },
 ];

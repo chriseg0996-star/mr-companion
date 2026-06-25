@@ -66,6 +66,20 @@ const ITEM_DB = {
   'gelt chocolate': { verdict: 'fm', reason: 'PQ/boss consumable. Sells well in FM.', tags: ['consumable'] },
   'heartstopper': { verdict: 'keep', reason: 'Strong attack buff for boss runs. Stock before HT/PB.', tags: ['consumable', 'bossing'] },
   'demon elixir': { verdict: 'keep', reason: 'Strong attack potion. Use for bossing, not training.', tags: ['consumable', 'bossing'] },
+  // Demi-boss drops & summon items
+  'scarlion helmet': { verdict: 'keep', reason: 'Strong helm from Scarlion. Keep or scroll — check FM if duplicate.', tags: ['boss drop', 'helmet', 'demi-boss'] },
+  'targa helmet': { verdict: 'fm', reason: 'Popular helm with solid FM value. Keep your best one.', tags: ['boss drop', 'helmet', 'demi-boss'] },
+  'soul lantern': { verdict: 'keep', reason: 'Krexel entry item. Tradable — buy instead of Latanica if cheap.', tags: ['prequest', 'krexel', 'tradeable'] },
+  'mallet': { verdict: 'keep', reason: 'Required with Soul Lantern to enter Krexel. From Ulu City questline.', tags: ['prequest', 'krexel'] },
+  'spirit of fantasy theme park': { verdict: 'keep', reason: 'Summons Scarlion/Targa at Spooky World. Farm from Lam\'s repeatable quest.', tags: ['prequest', 'consumable'] },
+  // More scrolls & gear
+  'dark scroll': { verdict: 'keep', reason: 'Valuable scroll — never vendor. Use or sell in FM.', tags: ['scroll', 'rare'] },
+  'scroll for shield': { verdict: 'keep', reason: 'All scrolls have value. Never vendor.', tags: ['scroll', 'shield'] },
+  'scroll for shoes': { verdict: 'keep', reason: 'Speed/Jump scrolls sell well in FM.', tags: ['scroll', 'shoes'] },
+  'stormcaster gloves': { verdict: 'keep', reason: 'Endgame gloves — never vendor. Check Sylafia for FM price.', tags: ['gloves', 'endgame'] },
+  'brown work gloves': { verdict: 'fm', reason: 'Scroll target like Work Gloves. Keep if high ATT.', tags: ['gloves', 'scroll target'] },
+  'zombie mushmom helmet': { verdict: 'fm', reason: 'Common NL farming drop. Decent FM for starters.', tags: ['helmet', 'thief'] },
+  'taru spirit': { verdict: 'fm', reason: 'LPQ material. Sell in FM or to NPC.', tags: ['pq drop', 'material'] },
 };
 
 const BOSSES = [
@@ -194,6 +208,83 @@ const BOSSES = [
     mapImage: 'assets/images/maps/world-map.png',
     checklistId: 'cwk',
   },
+  {
+    id: 'krexel',
+    name: 'Krexel',
+    tier: 'demi',
+    level: '140 (prequest from 70)',
+    respawn: '2 runs per day',
+    party: '1–6',
+    hpReq: '2,500+ HP',
+    dmgReq: 'Mid-funded party',
+    location: 'Singapore — Ulu City',
+    prequestId: 'krexel',
+    image: 'assets/images/maps/world-map.png',
+    drops: ['Scrolls', 'Equipment', 'Ores', 'Mesos'],
+    prequest: 'Ralph the Wanderer questline in Boat Quay → Soul Lantern from Captain Latanica (tradable) → Ulu City quests with Commando Jim for the Mallet.',
+    tips: [
+      'Prequest starts at level 70 — good side project while leveling',
+      'Soul Lantern is tradable (~6–9m) — skip Latanica if you can afford it',
+      'Bring Bishop for heal — boss room is tight',
+      'Two attempts per day once unlocked',
+      'Solid mesos and scroll income between Pap and Horntail',
+    ],
+    phases: ['Enter with Lantern + Mallet', 'Clear adds', 'Kill Krexel', 'Loot'],
+    mapTheme: 'city',
+    mapImage: 'assets/images/maps/world-map.png',
+    checklistId: 'krexel',
+  },
+  {
+    id: 'scarlion',
+    name: 'Scarlion',
+    tier: 'demi',
+    level: '140 (prequest from 85)',
+    respawn: '2 runs per day',
+    party: '3 to enter',
+    hpReq: '8,000+ HP',
+    dmgReq: 'Funded party',
+    location: 'Malaysia — Fantasy Theme Park',
+    prequestId: 'scar-targa',
+    image: 'assets/images/maps/gallopera.png',
+    drops: ['Scarlion Helmet', 'Scrolls', 'Mesos'],
+    prequest: 'Complete Lam\'s questline in Kampung Village. Farm Spirits of Fantasy Theme Park to summon at Spooky World.',
+    tips: [
+      'Share prequest with Targa — same Lam chain',
+      'Final repeatable quest at 90 gives summon items',
+      'Party of 3 required to enter boss map',
+      'Can run Scarlion and Targa same day (2 each)',
+      'Helmets are strong upgrades before HT gear',
+    ],
+    phases: ['Use Spirit at Spooky World', 'Enter with party of 3', 'Kill Scarlion', 'Loot helmet'],
+    mapTheme: 'field',
+    mapImage: 'assets/images/maps/gallopera.png',
+    checklistId: 'scar',
+  },
+  {
+    id: 'targa',
+    name: 'Targa',
+    tier: 'demi',
+    level: '140 (prequest from 85)',
+    respawn: '2 runs per day',
+    party: '3 to enter',
+    hpReq: '8,000+ HP',
+    dmgReq: 'Funded party',
+    location: 'Malaysia — Fantasy Theme Park',
+    prequestId: 'scar-targa',
+    image: 'assets/images/maps/gallopera.png',
+    drops: ['Targa Helmet', 'Scrolls', 'Mesos'],
+    prequest: 'Same prequest as Scarlion — talk to Lam in Kampung Village, Malaysia.',
+    tips: [
+      'Summon with Spirit of Fantasy Theme Park at Spooky World',
+      'Often run back-to-back with Scarlion in same party',
+      'Targa Helmet is a popular FM item — check prices',
+      'Farm quest mats at Fantasy Theme Park while leveling 85–100',
+    ],
+    phases: ['Use Spirit at Spooky World', 'Enter with party of 3', 'Kill Targa', 'Loot helmet'],
+    mapTheme: 'field',
+    mapImage: 'assets/images/maps/gallopera.png',
+    checklistId: 'targa',
+  },
 ];
 
 const WORLD_MAP = [
@@ -208,7 +299,7 @@ const WORLD_MAP = [
 
 const LEVELS = [
   { range: '1 – 10', label: 'Maple Island', theme: 'island', icon: '🏝️', spots: [
-    { name: 'Tutorial Quests', type: 'solo', mapStyle: 'beach', mapImage: 'assets/images/maps/maple-island.png', mobs: ['Snails', 'Blue Snails', 'Shrooms'], detail: 'Complete all tutorial quests on Maple Island — talk to every NPC with a quest icon. Enough EXP to hit 10 without grinding. Take the boat from South Perry to Lith Harbor when done.' }
+    { name: 'Tutorial Quests', type: 'solo', mapStyle: 'beach', mapImage: 'assets/images/maps/maple-island.png', mobs: ['Snails', 'Blue Snails', 'Shrooms'], detail: 'Complete all tutorial quests on Maple Island — talk to every NPC with a quest icon. Enough EXP to hit 10 without grinding. Take the boat from South Perry to Lith Harbor when done. (Map preview is approximate — follow in-game quest markers.)' }
   ]},
   { range: '10 – 20', label: 'Henesys Area', theme: 'victoria', icon: '🌳', spots: [
     { name: 'Pig Beach', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/pig-beach.png', mobs: ['Pigs', 'Ribbon Pigs'], detail: 'East of Henesys. Easy grind, good for beginners learning your class skills.' },
@@ -234,11 +325,13 @@ const LEVELS = [
   { range: '85 – 100', label: 'Orbis / Pap Prequest', theme: 'ludibrium', icon: '🕐', spots: [
     { name: 'Galloperas (Stairway to the Sky)', type: 'solo', mapStyle: 'sky', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera'], detail: 'Still top EXP here. Start Papulatus prequest in Ludibrium at 85.' },
     { name: 'Papulatus Prequest', type: 'solo', mapStyle: 'clock', mapImage: 'assets/images/maps/papulatus-arena.png', mobs: ['Ludibrium mobs'], detail: 'Complete clocktower questline before your first Pap run. See Bosses tab.' },
-    { name: 'CWK Keystone (lv 90+)', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/world-map.png', mobs: ['Crimsonwood mobs'], detail: 'At 90, start the Crimsonwood Keystone chain in Masteria/NLC. Unlocks CWKPQ expeditions.' }
+    { name: 'CWK Keystone (lv 90+)', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/world-map.png', mobs: ['Crimsonwood mobs'], detail: 'At 90, start the Crimsonwood Keystone chain in Masteria/NLC. Unlocks CWKPQ expeditions.' },
+    { name: 'Scarlion/Targa prequest (lv 85+)', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera', 'Vikerola', 'Rodeo'], detail: 'Start Lam\'s questline in Malaysia. Farm Spirits for demi-boss helm runs at 140.' }
   ]},
   { range: '100 – 120', label: 'Leafre', theme: 'leafre', icon: '🐉', spots: [
     { name: 'Petristation / Newts', type: 'solo', mapStyle: 'forest', mapImage: 'assets/images/maps/leafre-newts.png', mobs: ['Red Wyvern', 'Blue Wyvern', 'Dark Wyvern'], detail: 'Dragon Forest. Newts give top-tier solo EXP. Start Horntail prequest at 120.' },
-    { name: 'Skelegons (Party)', type: 'party', mapStyle: 'cave', mapImage: 'assets/images/maps/leafre-dragons.png', mobs: ['Skelegon', 'Skelosaurus'], detail: 'Best EXP per hour with a strong party. Requires good damage and a Bishop for HS.' }
+    { name: 'Skelegons (Party)', type: 'party', mapStyle: 'cave', mapImage: 'assets/images/maps/leafre-dragons.png', mobs: ['Skelegon', 'Skelosaurus'], detail: 'Best EXP per hour with a strong party. Requires good damage and a Bishop for HS.' },
+    { name: 'Krexel (demi-boss)', type: 'party', mapStyle: 'city', mapImage: 'assets/images/maps/world-map.png', mobs: ['Krexel'], detail: 'If prequest done — 2 runs/day in Ulu City. Good mesos between Pap and HT. See Bosses → Krexel.' }
   ]},
   { range: '120 – 140', label: 'Neo Tokyo + Horntail', theme: 'neotokyo', icon: '🏙️', spots: [
     { name: 'Neo Tokyo (after prequest)', type: 'solo', mapStyle: 'city', mapImage: 'assets/images/maps/neo-tokyo.png', mobs: ['Yakuza Member', 'Gangster', 'Boss encounters'], detail: 'Start prequest in Kerning City. Best training in game at this range once unlocked.' },
@@ -406,7 +499,7 @@ const GUIDE_SECTIONS = [
   { id: 'leveling', icon: '📈', title: 'Leveling Guide', desc: 'Where to train from level 1 to 200 — maps, mobs, and when to run PQs.' },
   { id: 'pqs', icon: '👥', title: 'Party Quests', desc: 'KPQ through CWKPQ — how to run them, rewards, and when they are best.' },
   { id: 'prequests', icon: '📜', title: 'Prequests', desc: 'Zakum, Pap, HT, PB, CWK keystone, and Neo Tokyo unlock chains.' },
-  { id: 'bosses', icon: '💀', title: 'Boss Guides', desc: 'Zakum, Pap, Horntail, Pink Bean, and Crimsonwood Keep — reqs, drops, tips.' },
+  { id: 'bosses', icon: '💀', title: 'Boss Guides', desc: 'Daily bosses, demi-bosses, and CWK — prequests, HP reqs, drops, and tips.' },
   { id: 'classes', icon: '⚔️', title: 'Class Guides', desc: 'Full guide for every 4th job — skills, leveling, bossing, and party role.' },
   { id: 'items', icon: '🎒', title: 'Item Guide', desc: 'What to keep, sell in FM, or vendor. Search any drop you are unsure about.' },
   { id: 'jobadv', icon: '🎖️', title: 'Job Advancements', desc: 'Every job change from level 8/10 to 120 — quests, NPCs, and skill priorities.' },
@@ -422,7 +515,8 @@ const CHECKLIST = [
   { cat: 'Daily', label: 'Farm mesos at training spot', id: 'farm' },
   { cat: 'Daily', label: 'Check Free Market prices', id: 'fm' },
   { cat: 'Daily', label: 'Complete daily quests', id: 'daily-q' },
-  { cat: 'Weekly', label: 'Run CWKPQ (lv 90+, 2/day)', id: 'cwk' },
+  { cat: 'Weekly', label: 'Run Krexel (lv 70+ prequest, 2/day)', id: 'krexel' },
+  { cat: 'Weekly', label: 'Run Scarlion / Targa (lv 85+, 2/day each)', id: 'scar' },
   { cat: 'Weekly', label: 'Run Pink Bean (lv 140+)', id: 'pb', boss: true },
   { cat: 'Weekly', label: 'Complete Monster Book collections', id: 'mb' },
   { cat: 'Weekly', label: 'Restock potions', id: 'pots' },

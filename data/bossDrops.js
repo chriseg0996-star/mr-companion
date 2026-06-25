@@ -31,6 +31,22 @@ const BOSS_DROP_TABLES = {
     { item: 'Elemental Wand / Staff', rate: 'Bonus armory', note: 'Wand 6–8, Staff 7 — check FM' },
     { item: 'CWK Cloaks & Goggles', rate: 'Bonus armory', note: 'Crimsonheart Cloak, Spectrum Goggles' },
   ],
+  krexel: [
+    { item: 'Scrolls', rate: 'Common', note: 'ATT/DEF scrolls — never vendor' },
+    { item: 'Equipment drops', rate: 'Uncommon', note: 'Check FM before selling' },
+    { item: 'Ores & etc', rate: 'Common', note: 'Vendor ores, keep scrolls' },
+    { item: 'Mesos', rate: 'Guaranteed', note: 'Good income for mid-game' },
+  ],
+  scarlion: [
+    { item: 'Scarlion Helmet', itemKey: 'scarlion helmet', rate: 'Rare', note: 'Strong helm — keep or scroll' },
+    { item: 'Scrolls', rate: 'Common', note: 'Never vendor scrolls' },
+    { item: 'Mesos', rate: 'Guaranteed', note: 'Solid demi-boss income' },
+  ],
+  targa: [
+    { item: 'Targa Helmet', itemKey: 'targa helmet', rate: 'Rare', note: 'Popular FM helm — check price' },
+    { item: 'Scrolls', rate: 'Common', note: 'Never vendor scrolls' },
+    { item: 'Mesos', rate: 'Guaranteed', note: 'Solid demi-boss income' },
+  ],
 };
 
 const LEVEL_MILESTONES = [
@@ -42,7 +58,9 @@ const LEVEL_MILESTONES = [
   { level: 50, icon: '💀', title: 'Zakum + 3rd job', detail: 'Start Zakum prequest. Third job advancement.', page: 'prequests', prequest: 'zakum' },
   { level: 51, icon: '👥', title: 'OPQ unlocked', detail: 'Best EXP from 51–70.', page: 'pqs' },
   { level: 70, icon: '🎖️', title: '4th Job', detail: 'Final advancement — read your class guide.', page: 'classes' },
+  { level: 70, icon: '🐙', title: 'Krexel prequest', detail: 'Start Ralph questline in Singapore. Lantern is tradable.', page: 'prequests', prequest: 'krexel' },
   { level: 85, icon: '🕐', title: 'Papulatus', detail: 'Start clocktower prequest. Daily pendant upgrade.', page: 'prequests', prequest: 'papulatus' },
+  { level: 85, icon: '🎡', title: 'Scarlion / Targa', detail: 'Start Lam questline in Malaysia. Helmets at 140.', page: 'prequests', prequest: 'scar-targa' },
   { level: 90, icon: '🏰', title: 'Crimsonwood Keep', detail: 'Start keystone prequest. CWKPQ for mastery books.', page: 'prequests', prequest: 'cwk' },
   { level: 120, icon: '🐉', title: 'Horntail + Neo Tokyo', detail: 'HT prequest first, then NT for training.', page: 'prequests', prequest: 'horntail' },
   { level: 140, icon: '👑', title: 'Pink Bean', detail: 'Start Temple of Time prequest immediately.', page: 'prequests', prequest: 'pinkbean' },

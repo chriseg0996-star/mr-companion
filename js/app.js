@@ -357,9 +357,15 @@ function renderHomeNextSteps() {
     const z = prequestProgress('zakum');
     if (z.done < z.total) steps.push({ icon: '💀', text: 'Zakum prequest in progress', action: () => openPrequest('zakum'), label: `${z.done}/${z.total} steps` });
   }
+  if (level >= 70) {
+    const kr = prequestProgress('krexel');
+    if (kr.done < kr.total) steps.push({ icon: '🐙', text: 'Krexel prequest (Singapore)', action: () => openPrequest('krexel'), label: `${kr.done}/${kr.total} steps` });
+  }
   if (level >= 85) {
     const p = prequestProgress('papulatus');
     if (p.done < p.total) steps.push({ icon: '🕐', text: 'Papulatus prequest', action: () => openPrequest('papulatus'), label: `${p.done}/${p.total} steps` });
+    const st = prequestProgress('scar-targa');
+    if (st.done < st.total) steps.push({ icon: '🎡', text: 'Scarlion/Targa prequest', action: () => openPrequest('scar-targa'), label: `${st.done}/${st.total} steps` });
   }
   if (level >= 90) {
     const cwk = prequestProgress('cwk');
@@ -742,6 +748,12 @@ const ITEM_QUERY_PATTERNS = [
   [/green bandana/i, 'green bandana'],
   [/heartstopper/i, 'heartstopper'],
   [/zakum cape/i, 'zakum cape'],
+  [/scarlion helmet/i, 'scarlion helmet'],
+  [/targa helmet/i, 'targa helmet'],
+  [/soul lantern/i, 'soul lantern'],
+  [/spirit of fantasy/i, 'spirit of fantasy theme park'],
+  [/stormcaster/i, 'stormcaster gloves'],
+  [/dark scroll/i, 'dark scroll'],
 ];
 
 function resolveItemQuery(text) {
@@ -1136,25 +1148,36 @@ function jumpToZone(i) {
   }
 }
 
+function getBossPrequest(bossId) {
+  const b = BOSSES.find(x => x.id === bossId);
+  const pid = b?.prequestId || bossId;
+  return PREQUESTS?.find(p => p.id === pid || p.bossId === bossId);
+}
+
 function renderBossProgression() {
   const el = document.getElementById('boss-progression');
   if (!el) return;
-  el.innerHTML = `
-    <div class="flow-track flow-bosses">
-      ${BOSSES.map((b, i) => `
+  const main = BOSSES.filter(b => b.tier !== 'demi');
+  const demi = BOSSES.filter(b => b.tier === 'demi');
+  const renderTrack = (list, startIdx = 0) => list.map((b, i) => `
         <div class="flow-step boss-node" onclick="showBoss('${b.id}')">
-          <div class="flow-dot boss-dot tier-${b.tier}">${i + 1}</div>
+          <div class="flow-dot boss-dot tier-${b.tier}">${startIdx + i + 1}</div>
           <div class="flow-label">${b.name}</div>
-          <div class="flow-sublabel">Lv ${b.level.split('+')[0]}+</div>
+          <div class="flow-sublabel">Lv ${b.level.split('+')[0].replace(/[^\d]/g, '') || '?'}+</div>
         </div>
-        ${i < BOSSES.length - 1 ? '<div class="flow-line"></div>' : ''}
-      `).join('')}
-    </div>
+        ${i < list.length - 1 ? '<div class="flow-line"></div>' : ''}
+      `).join('');
+  el.innerHTML = `
+    <div class="flow-track flow-bosses">${renderTrack(main)}</div>
+    ${demi.length ? `
+      <p class="section-hint" style="margin:16px 0 8px;">Demi-bosses — optional gear & mesos between Pap and Horntail</p>
+      <div class="flow-track flow-bosses flow-bosses--demi">${renderTrack(demi, main.length)}</div>
+    ` : ''}
   `;
 }
 function renderBosses(filter = 'all') {
   const grid = document.getElementById('boss-grid');
-  const tierColors = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple' };
+  const tierColors = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple', demi: 'badge-blue' };
   const filtered = BOSSES.filter(b => filter === 'all' || b.tier === filter);
   grid.innerHTML = filtered.map(b => `
     <div class="boss-card boss-card--${b.tier}" onclick="showBoss('${b.id}')">
@@ -1203,7 +1226,7 @@ function renderBossRespawnBanner(bossId) {
 }
 
 function renderBossPrequestProgress(bossId) {
-  const pq = PREQUESTS?.find(p => p.bossId === bossId);
+  const pq = getBossPrequest(bossId);
   if (!pq) return '';
   const { done, total } = prequestProgress(pq.id);
   const pct = total ? Math.round((done / total) * 100) : 0;
@@ -1227,6 +1250,7 @@ function showBoss(id, skipHash) {
   }
   const b = BOSSES.find(x => x.id === id);
   const detail = document.getElementById('boss-detail');
+  const prequestId = getBossPrequest(id)?.id || b.prequestId || id;
   detail.innerHTML = `
     <div class="boss-detail-top">
       <img src="${b.image}" alt="${b.name}" class="boss-detail-img" onerror="this.style.display='none'">
@@ -1258,7 +1282,7 @@ function showBoss(id, skipHash) {
     ${renderBossPrequestProgress(b.id)}
     <h3>Prequest Walkthrough</h3>
     <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">
-      <a href="#" onclick="openPrequest('${b.id}');return false;" style="color:var(--blue);">Open full step-by-step prequest guide →</a>
+      <a href="#" onclick="openPrequest('${prequestId}');return false;" style="color:var(--blue);">Open full step-by-step prequest guide →</a>
     </p>
     <div class="sep"></div>
     <h3>Prequest Summary</h3>

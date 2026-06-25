@@ -122,6 +122,7 @@ function priceCredit() {
 function checkItem(prefill) {
   const input = document.getElementById('item-search');
   if (prefill) input.value = prefill;
+  hideItemSuggestions();
   const q = input.value.trim().toLowerCase();
   const box = document.getElementById('item-result');
   if (!q) return;
@@ -173,6 +174,152 @@ function renderPopularPrices() {
   }).join('');
 }
 
+let itemSearchIndex = null;
+let suggestionActive = -1;
+
+function getItemSearchIndex() {
+  if (itemSearchIndex) return itemSearchIndex;
+  const map = new Map();
+  for (const k of Object.keys(ITEM_DB)) {
+    map.set(k, {
+      key: k,
+      verdict: ITEM_DB[k].verdict,
+      price: typeof PRICE_DB !== 'undefined' ? PRICE_DB[k]?.price : null,
+    });
+  }
+  if (typeof PRICE_DB !== 'undefined') {
+    for (const k of Object.keys(PRICE_DB)) {
+      if (!map.has(k)) {
+        map.set(k, { key: k, verdict: null, price: PRICE_DB[k].price });
+      } else if (!map.get(k).price) {
+        map.get(k).price = PRICE_DB[k].price;
+      }
+    }
+  }
+  itemSearchIndex = [...map.values()];
+  return itemSearchIndex;
+}
+
+function scoreItemMatch(name, q) {
+  const n = name.toLowerCase();
+  const ql = q.toLowerCase().trim();
+  if (!ql) return -1;
+  if (n === ql) return 100;
+  if (n.startsWith(ql)) return 80;
+  if (n.split(/\s+/).some(w => w.startsWith(ql))) return 60;
+  if (n.includes(ql)) return 40;
+  return -1;
+}
+
+function getItemSuggestions(q, limit = 8) {
+  const ql = q.trim().toLowerCase();
+  if (ql.length < 1) return [];
+  return getItemSearchIndex()
+    .map(entry => ({ ...entry, score: scoreItemMatch(entry.key, ql) }))
+    .filter(e => e.score >= 0)
+    .sort((a, b) => b.score - a.score || a.key.localeCompare(b.key))
+    .slice(0, limit);
+}
+
+function suggestionMeta(entry) {
+  if (entry.verdict) {
+    const labels = { keep: 'Keep', fm: 'FM', vendor: 'Vendor' };
+    return `<span class="suggest-badge suggest-${entry.verdict}">${labels[entry.verdict]}</span>`;
+  }
+  if (entry.price) return `<span class="suggest-price">${entry.price}</span>`;
+  return '';
+}
+
+function hideItemSuggestions() {
+  const list = document.getElementById('item-suggestions');
+  const input = document.getElementById('item-search');
+  if (!list) return;
+  list.hidden = true;
+  list.innerHTML = '';
+  suggestionActive = -1;
+  if (input) input.setAttribute('aria-expanded', 'false');
+}
+
+function renderItemSuggestions(q) {
+  const list = document.getElementById('item-suggestions');
+  const input = document.getElementById('item-search');
+  if (!list || !input) return;
+
+  const matches = getItemSuggestions(q);
+  if (!matches.length) {
+    hideItemSuggestions();
+    return;
+  }
+
+  list.innerHTML = matches.map((entry, i) => `
+    <li class="item-suggest-item${i === suggestionActive ? ' active' : ''}"
+        role="option"
+        data-key="${entry.key.replace(/"/g, '&quot;')}"
+        onclick="selectItemSuggestion('${entry.key.replace(/'/g, "\\'")}')">
+      <span class="suggest-name">${entry.key}</span>
+      ${suggestionMeta(entry)}
+    </li>
+  `).join('');
+  list.hidden = false;
+  input.setAttribute('aria-expanded', 'true');
+}
+
+function selectItemSuggestion(key) {
+  const input = document.getElementById('item-search');
+  if (input) input.value = key;
+  hideItemSuggestions();
+  checkItem();
+}
+
+function setSuggestionActive(index) {
+  const list = document.getElementById('item-suggestions');
+  if (!list || list.hidden) return;
+  const items = list.querySelectorAll('.item-suggest-item');
+  if (!items.length) return;
+  suggestionActive = Math.max(0, Math.min(index, items.length - 1));
+  items.forEach((el, i) => el.classList.toggle('active', i === suggestionActive));
+  items[suggestionActive].scrollIntoView({ block: 'nearest' });
+}
+
+function initItemAutocomplete() {
+  const input = document.getElementById('item-search');
+  const list = document.getElementById('item-suggestions');
+  if (!input || !list) return;
+
+  input.addEventListener('input', () => {
+    suggestionActive = -1;
+    renderItemSuggestions(input.value);
+  });
+
+  input.addEventListener('keydown', e => {
+    const open = !list.hidden && list.children.length;
+    if (e.key === 'ArrowDown' && open) {
+      e.preventDefault();
+      setSuggestionActive(suggestionActive + 1);
+    } else if (e.key === 'ArrowUp' && open) {
+      e.preventDefault();
+      setSuggestionActive(suggestionActive <= 0 ? list.children.length - 1 : suggestionActive - 1);
+    } else if (e.key === 'Enter') {
+      if (open && suggestionActive >= 0) {
+        e.preventDefault();
+        selectItemSuggestion(list.children[suggestionActive].dataset.key);
+      } else {
+        checkItem();
+      }
+    } else if (e.key === 'Escape') {
+      hideItemSuggestions();
+    }
+  });
+
+  input.addEventListener('focus', () => {
+    if (input.value.trim()) renderItemSuggestions(input.value);
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.item-search-wrap')) hideItemSuggestions();
+  });
+}
+
 function shareGuide() {
   const url = window.location.href.split('#')[0];
   const toast = document.getElementById('share-toast');
@@ -199,8 +346,7 @@ function initLevelProfile() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const input = document.getElementById('item-search');
-  if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter') checkItem(); });
+  initItemAutocomplete();
 });
 
 // ══════════════════════════════════════════════

@@ -87,8 +87,11 @@
 <div id="page-items" class="page">
   <h1>Item Guide</h1>
   <p class="subtitle">Dropped something and not sure what to do? Search it — keep, sell in FM, or vendor to NPC. FM prices from Sylafia's guide.</p>
-  <div style="display:flex;gap:8px;margin-bottom:16px;">
-    <input type="text" id="item-search" placeholder="e.g. Zakum Helmet, Work Gloves, Chaos Scroll...">
+  <div class="item-search-row">
+    <div class="item-search-wrap">
+      <input type="text" id="item-search" placeholder="e.g. Zakum Helmet, Work Gloves, Chaos Scroll..." autocomplete="off" aria-autocomplete="list" aria-controls="item-suggestions" aria-expanded="false">
+      <ul id="item-suggestions" class="item-suggestions" role="listbox" hidden></ul>
+    </div>
     <button class="btn" onclick="checkItem()">Check</button>
   </div>
   <div id="item-result" class="result-box"></div>

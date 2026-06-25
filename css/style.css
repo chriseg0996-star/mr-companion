@@ -343,6 +343,71 @@ button.btn-ghost:hover {
 }
 
 /* ITEM CHECKER */
+.item-search-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+.item-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.item-search-wrap input {
+  width: 100%;
+}
+.item-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  max-height: 280px;
+  overflow-y: auto;
+}
+.item-suggest-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-transform: capitalize;
+  font-size: 14px;
+  transition: background 0.12s;
+}
+.item-suggest-item:hover,
+.item-suggest-item.active {
+  background: var(--bg3);
+}
+.suggest-name { flex: 1; min-width: 0; }
+.suggest-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+.suggest-keep { color: var(--green); background: rgba(74, 222, 128, 0.1); }
+.suggest-fm { color: var(--gold); background: rgba(255, 200, 87, 0.1); }
+.suggest-vendor { color: var(--red); background: rgba(248, 113, 113, 0.1); }
+.suggest-price {
+  flex-shrink: 0;
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
 .item-result-header { font-family: var(--display); font-size: 22px; font-weight: 700; margin-bottom: 8px; }
 .item-result-name { font-size: 14px; color: var(--muted); text-transform: capitalize; margin-bottom: 12px; }
 .verdict-keep { color: var(--green); }

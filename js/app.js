@@ -132,7 +132,15 @@ const MAP_PLATFORMS = {
   temple:   [{ w: 70, l: 15, b: 20 }, { w: 40, l: 42, b: 38 }, { w: 70, l: 68, b: 20 }],
 };
 
-function renderMapScene(style, mobs = []) {
+function renderMapScene(style, mobs = [], mapImage = null) {
+  if (mapImage) {
+    return `
+      <div class="map-scene map-scene--photo">
+        <img src="${mapImage}" alt="Map" class="map-scene-img" onerror="this.parentElement.classList.add('map-scene--fallback');this.remove()">
+        ${mobs.length ? `<div class="map-mob-labels">${mobs.map(m => `<span class="mob-chip">${m}</span>`).join('')}</div>` : ''}
+      </div>
+    `;
+  }
   const platforms = MAP_PLATFORMS[style] || MAP_PLATFORMS.field;
   const mobPositions = platforms.slice(0, Math.min(mobs.length, platforms.length));
   return `
@@ -305,7 +313,7 @@ function renderLevels() {
       <div class="level-body ${isCurrent ? 'open' : ''}" id="level-${i}">
         ${spots.map(s => `
           <div class="spot spot-card">
-            ${renderMapScene(s.mapStyle || 'field', s.mobs || [])}
+            ${renderMapScene(s.mapStyle || 'field', s.mobs || [], s.mapImage || null)}
             <div class="spot-name">${s.name} <span class="badge ${s.type === 'party' ? 'badge-blue' : 'badge-green'}" style="font-size:10px;margin-left:6px;">${s.type}</span></div>
             ${s.mobs ? `<div class="spot-mobs">${s.mobs.map(m => `<span class="mob-chip">${m}</span>`).join('')}</div>` : ''}
             <div class="spot-detail">${s.detail}</div>

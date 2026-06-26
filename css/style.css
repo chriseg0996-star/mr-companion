@@ -1251,8 +1251,6 @@ body.boss-detail-open { overflow: hidden; }
 
 .level-spot {
   position: relative;
-  display: flex;
-  gap: 12px;
   padding: 12px;
   background: var(--bg3);
   border: 1px solid var(--border);
@@ -1278,19 +1276,7 @@ body.boss-detail-open { overflow: hidden; }
   border-radius: 4px;
 }
 
-.level-spot-map {
-  flex-shrink: 0;
-  width: 88px;
-}
-
-.level-spot-map .map-scene {
-  height: 56px;
-  width: 88px;
-  margin: 0;
-  border-radius: 6px;
-}
-
-.level-spot-body { flex: 1; min-width: 0; }
+.level-spot-body { min-width: 0; }
 
 .level-spot-head {
   display: flex;
@@ -1333,9 +1319,6 @@ body.boss-detail-open { overflow: hidden; }
 
 @media (max-width: 479px) {
   .level-band { flex: 1 1 calc(25% - 6px); min-width: 52px; }
-  .level-spot { flex-direction: column; }
-  .level-spot-map { width: 100%; }
-  .level-spot-map .map-scene { width: 100%; height: 72px; }
 }
 
 @media (min-width: 640px) {
@@ -2516,6 +2499,16 @@ kbd {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.site-footer-version {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  opacity: 0.65;
+  text-transform: none;
 }
 
 .site-footer-links {

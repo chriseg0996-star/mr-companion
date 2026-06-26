@@ -539,7 +539,6 @@ function renderPQs() {
         <h2>${pq.name} <span style="color:var(--muted);font-weight:400;font-size:13px;">(${pq.short})</span></h2>
         <span class="badge ${priorityBadge[pq.priority]}">${pq.priority}</span>
       </div>
-      ${renderMapScene(pq.mapTheme || 'pq', [], pq.mapImage || null)}
       <h3>Stage Layout</h3>
       ${pq.stages ? renderFlow(pq.stages, 'pq') : ''}
       <div class="info-grid" style="margin-bottom:12px;">
@@ -960,27 +959,8 @@ const MAP_PLATFORMS = {
   temple:   [{ w: 70, l: 15, b: 20 }, { w: 40, l: 42, b: 38 }, { w: 70, l: 68, b: 20 }],
 };
 
-function renderMapScene(style, mobs = [], mapImage = null) {
-  if (mapImage) {
-    return `
-      <div class="map-scene map-scene--photo">
-        <img src="${mapImage}" alt="Map" class="map-scene-img" onerror="this.parentElement.classList.add('map-scene--fallback');this.remove()">
-        ${mobs.length ? `<div class="map-mob-labels">${mobs.map(m => `<span class="mob-chip">${m}</span>`).join('')}</div>` : ''}
-      </div>
-    `;
-  }
-  const platforms = MAP_PLATFORMS[style] || MAP_PLATFORMS.field;
-  const mobPositions = platforms.slice(0, Math.min(mobs.length, platforms.length));
-  return `
-    <div class="map-scene map-scene--${style}">
-      <div class="map-scene-grid"></div>
-      ${platforms.map(p => `<div class="map-platform" style="left:${p.l}%;width:${p.w}%;bottom:${p.b}%"></div>`).join('')}
-      ${mobPositions.map((p, i) => `
-        <div class="map-mob" style="left:${p.l + p.w / 2 - 2}%;bottom:${p.b + 6}%" title="${mobs[i] || ''}"></div>
-      `).join('')}
-      <div class="map-scene-label">${style}</div>
-    </div>
-  `;
+function renderMapScene() {
+  return '';
 }
 
 function renderFlow(steps, type = 'phase') {
@@ -1096,7 +1076,6 @@ function renderBosses() {
   });
   grid.innerHTML = filtered.map(b => `
     <div class="boss-card boss-card--${b.tier}" onclick="showBoss('${b.id}')">
-      <img src="${b.image}" alt="" class="boss-img" onerror="this.style.display='none'">
       <div class="boss-card-body">
         <div class="boss-card-row">
           <h2>${b.name}</h2>
@@ -1182,7 +1161,6 @@ function showBoss(id, skipHash) {
   const prequestId = pq?.id || b.prequestId || id;
   detail.innerHTML = `
     <div class="boss-detail-top">
-      <img src="${b.image}" alt="${b.name}" class="boss-detail-img" onerror="this.style.display='none'">
       <div class="boss-detail-head">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
           <div>
@@ -1204,9 +1182,6 @@ function showBoss(id, skipHash) {
     <div class="sep"></div>
     <h3>Boss Flow</h3>
     ${b.phases ? renderFlow(b.phases, 'phase') : ''}
-    <div class="sep"></div>
-    <h3>Arena Map</h3>
-    ${renderMapScene(b.mapTheme || 'cave', b.phases || [b.name], b.mapImage || null)}
     <div class="sep"></div>
     ${pq ? renderBossPrequestProgress(b.id) : ''}
     ${pq ? `
@@ -1305,7 +1280,6 @@ function renderLevelSpots(spots) {
   return spots.map(s => `
     <article class="level-spot ${s.recommended ? 'level-spot--recommended' : ''}">
       ${s.recommended ? '<span class="level-spot-rec">Best pick</span>' : ''}
-      ${s.mapImage ? `<div class="level-spot-map">${renderMapScene(s.mapStyle || 'field', s.mobs || [], s.mapImage)}</div>` : ''}
       <div class="level-spot-body">
         <div class="level-spot-head">
           <h3 class="level-spot-name">${s.name}</h3>
@@ -1883,7 +1857,7 @@ function showQuizResult() {
   }
   actions.innerHTML = `${guideBtn}<button class="btn-ghost" onclick="resetQuiz()">Retake Quiz</button>`;
   const icon = document.getElementById('quiz-class-icon');
-  if (icon) { icon.src = best.icon; icon.alt = best.name; icon.style.display = ''; }
+  if (icon) icon.style.display = 'none';
   document.getElementById('quiz-result').classList.add('show');
 }
 
@@ -1967,7 +1941,6 @@ function renderCheckableSteps(steps, prefix, rerender) {
           ${s.farmMobs?.length ? `<div class="quest-step-mobs">Farm: ${s.farmMobs.join(', ')}</div>` : ''}
           ${s.drops ? `<div class="quest-step-drops">Item: ${itemLink(s.drops, resolveItemQuery(s.drops))}</div>` : ''}
           ${s.detail ? `<div class="quest-step-detail">${s.detail}</div>` : ''}
-          ${s.mapImage ? `<div class="quest-step-map" onclick="event.stopPropagation()">${renderMapScene('field', mobs, s.mapImage)}</div>` : ''}
         </div>
       </div>`;
   }).join('');
@@ -2064,7 +2037,6 @@ function renderPrequestDetailHtml(pq) {
         </div>
       </div>
     </div>
-    ${pq.mapImage ? renderMapScene('field', [], pq.mapImage) : ''}
     <p style="font-size:13px;color:var(--muted);margin:12px 0;">${pq.summary}</p>
     <div class="info-grid" style="margin-bottom:14px;">
       <div class="info-item"><div class="label">Recommend</div><div class="value" style="font-size:12px;">${pq.recommendLevel}</div></div>
@@ -2184,7 +2156,6 @@ function renderClassGrid() {
     const diffColor = c.difficulty.includes('Beginner') ? 'badge-green' : c.difficulty.includes('Hard') ? 'badge-red' : 'badge-yellow';
     return `
       <div class="class-card ${currentClassId === id ? 'active' : ''}" onclick="showClass('${id}')">
-        <img src="${c.icon}" alt="" class="class-card-icon" onerror="this.style.display='none'">
         <div class="class-card-name">${c.name}</div>
         <div class="class-card-role">${c.role}</div>
         <span class="badge ${diffColor}" style="font-size:10px;margin-top:6px;">${c.difficulty}</span>
@@ -2202,7 +2173,6 @@ function showClass(id, skipRoute) {
   renderClassGrid();
   detail.innerHTML = `
     <div class="class-detail-top">
-      <img src="${c.icon}" alt="" class="class-detail-icon" onerror="this.style.display='none'">
       <div>
         <h2>${c.name}</h2>
         <p style="font-size:13px;color:var(--muted);margin:4px 0;">${c.path}</p>
@@ -2487,7 +2457,6 @@ function renderGlossary() {
         <h2>${m.name}</h2>
         <span class="badge badge-blue">Lv ${m.level}</span>
       </div>
-      ${m.mapImage || m.mapStyle ? `<div class="glossary-map">${renderMapScene(m.mapStyle || 'field', m.drops ? [m.drops] : [], m.mapImage || null)}</div>` : ''}
       <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">📍 ${m.area}${m.drops ? ` · <span style="color:var(--gold);">Drops: ${m.drops}</span>` : ''}</p>
       <p style="font-size:14px;">${m.tip}</p>
       ${m.prequest ? `<button class="btn btn-sm btn-ghost" style="margin-top:10px;" onclick="openPrequest('${m.prequest}')">Open ${(PREQUESTS?.find(p => p.id === m.prequest)?.short || m.prequest)} prequest →</button>` : ''}
@@ -2620,6 +2589,8 @@ function initGlobalSearch() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const verEl = document.getElementById('site-version');
+  if (verEl && typeof APP_VERSION !== 'undefined') verEl.textContent = `v${APP_VERSION}`;
   initNav();
   renderHome();
   initPWA();

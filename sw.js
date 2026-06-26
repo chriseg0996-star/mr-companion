@@ -1,8 +1,10 @@
-const CACHE = 'mr-companion-v53';
+importScripts('./js/version.js');
+const CACHE = `mr-companion-v${APP_VERSION}`;
 const PRECACHE = [
   './',
   './index.html',
   './css/style.css',
+  './js/version.js',
   './js/app.js',
   './manifest.webmanifest',
   './data/gameData.js',

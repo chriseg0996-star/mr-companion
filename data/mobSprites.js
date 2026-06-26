@@ -1,42 +1,48 @@
-// Mob sprite IDs (GMS 62) — icons via maplestory.io
-const MOB_SPRITE_GMS = 62;
-const MOB_SPRITE_API = `https://maplestory.io/api/gms/${MOB_SPRITE_GMS}/mob`;
-
+// Mob sprites via maplestory.io — { gms, id } verified against API mob names
 const MOB_SPRITE_SKIP = new Set([
   'pq monsters', 'boss encounters', 'ludibrium mobs', 'crimsonwood mobs',
+  'horned mushroom', 'horned mushrooms', 'green snail', 'green snails',
+  'yakuza member', 'gangster', 'boss encounters',
 ]);
 
-const MOB_SPRITE_URL_OVERRIDES = {
-  dunas: 'https://maplestory.io/api/gms/83/mob/8220010/render/stand',
-  'pink bean': 'https://maplestory.io/api/gms/83/mob/8820001/render/stand',
-  krexel: 'https://maplestory.io/api/gms/92/mob/9420520/render/stand',
-};
-
-const MOB_SPRITE_IDS = {
-  snail: 100100, snails: 100100,
-  'blue snail': 100101, 'blue snails': 100101,
-  'green snail': 100130, 'green snails': 100130,
-  mushroom: 2110200, mushrooms: 2110200,
-  'orange mushroom': 2110200, 'orange mushrooms': 2110200,
-  'green mushroom': 1110100,
-  slime: 2100100, slimes: 2100100,
-  pig: 1210100, pigs: 1210100,
-  'ribbon pig': 1210101, 'ribbon pigs': 1210101,
-  'zombie mushroom': 2230101, 'zombie mushrooms': 2230101,
-  'horned mushroom': 2230100, 'horned mushrooms': 2230100,
-  'coolie zombie': 5120500, 'coolie zombies': 5120500,
-  'miner zombie': 5120501, 'miner zombies': 5120501,
-  gallopera: 3230405,
-  'dual birk': 8140111,
-  'jr. balrog': 8130100,
-  'red wyvern': 8150300,
-  'blue wyvern': 8150301,
-  'dark wyvern': 8150302,
-  skelegon: 8190003,
-  skelosaurus: 8190004,
-  horntail: 8810018,
-  toad: 9420000,
-  robo: 4230111,
+const MOB_SPRITE_ENTRIES = {
+  snail: { gms: 62, id: 100100 },
+  snails: { gms: 62, id: 100100 },
+  'blue snail': { gms: 62, id: 100101 },
+  'blue snails': { gms: 62, id: 100101 },
+  slime: { gms: 62, id: 210100 },
+  slimes: { gms: 62, id: 210100 },
+  mushroom: { gms: 62, id: 1210102 },
+  mushrooms: { gms: 62, id: 1210102 },
+  'orange mushroom': { gms: 62, id: 1210102 },
+  'orange mushrooms': { gms: 62, id: 1210102 },
+  'green mushroom': { gms: 62, id: 1110100 },
+  pig: { gms: 62, id: 1210100 },
+  pigs: { gms: 62, id: 1210100 },
+  'ribbon pig': { gms: 62, id: 1210101 },
+  'ribbon pigs': { gms: 62, id: 1210101 },
+  'zombie mushroom': { gms: 62, id: 2230101 },
+  'zombie mushrooms': { gms: 62, id: 2230101 },
+  'coolie zombie': { gms: 62, id: 5130107 },
+  'coolie zombies': { gms: 62, id: 5130107 },
+  'miner zombie': { gms: 83, id: 5130108 },
+  'miner zombies': { gms: 83, id: 5130108 },
+  gallopera: { gms: 83, id: 9420540 },
+  'dual birk': { gms: 62, id: 8140111 },
+  vikerola: { gms: 83, id: 9420539 },
+  rodeo: { gms: 83, id: 9420533 },
+  'jr. balrog': { gms: 62, id: 8130100 },
+  'red wyvern': { gms: 62, id: 8150300 },
+  'blue wyvern': { gms: 62, id: 8150301 },
+  'dark wyvern': { gms: 62, id: 8150302 },
+  skelegon: { gms: 62, id: 8190003 },
+  skelosaurus: { gms: 62, id: 8190004 },
+  horntail: { gms: 62, id: 8810018 },
+  toad: { gms: 62, id: 9420000 },
+  robo: { gms: 62, id: 4230111 },
+  dunas: { gms: 83, id: 8220010 },
+  'pink bean': { gms: 83, id: 8820001 },
+  krexel: { gms: 92, id: 9420520 },
 };
 
 function normalizeMobSpriteKey(name) {
@@ -46,10 +52,9 @@ function normalizeMobSpriteKey(name) {
 function getMobSpriteUrl(name) {
   const key = normalizeMobSpriteKey(name);
   if (MOB_SPRITE_SKIP.has(key)) return null;
-  if (MOB_SPRITE_URL_OVERRIDES[key]) return MOB_SPRITE_URL_OVERRIDES[key];
-  const id = MOB_SPRITE_IDS[key];
-  if (!id) return null;
-  return `${MOB_SPRITE_API}/${id}/render/stand`;
+  const entry = MOB_SPRITE_ENTRIES[key];
+  if (!entry) return null;
+  return `https://maplestory.io/api/gms/${entry.gms}/mob/${entry.id}/render/stand`;
 }
 
 function collectMobSprites(mobNames) {

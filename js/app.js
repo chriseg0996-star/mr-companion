@@ -1290,39 +1290,24 @@ function renderMobSpriteRail(mobs) {
 }
 
 function renderLevelSpots(spots) {
-  return spots.map(s => {
-    const spotMobs = typeof collectMobSprites === 'function' ? collectMobSprites(s.mobs || []) : [];
-    return `
+  return spots.map(s => `
     <article class="level-spot ${s.recommended ? 'level-spot--recommended' : ''}">
-      <div class="level-spot-layout">
-        <div class="level-spot-content">
-          <div class="level-spot-head">
-            <h3 class="level-spot-name">${s.name}</h3>
-            ${s.recommended ? '<span class="level-spot-rec">★ Best</span>' : ''}
-            <span class="badge ${s.type === 'party' ? 'badge-blue' : 'badge-green'}">${s.type}</span>
-          </div>
-          ${s.mobs?.length ? `<div class="level-spot-mob-grid">${s.mobs.map(m => `<span class="level-mob-pill">${m}</span>`).join('')}</div>` : ''}
-          ${s.location || s.exp ? `
-            <div class="level-spot-meta">
-              ${s.location ? `<span class="level-spot-loc">📍 ${s.location}</span>` : ''}
-              ${s.exp ? `<span class="level-spot-exp">⚡ ${s.exp}</span>` : ''}
-            </div>
-          ` : ''}
-          ${s.tip ? `<p class="level-spot-tip">${s.tip}</p>` : ''}
-          ${s.detail ? `<p class="level-spot-detail">${s.detail}</p>` : ''}
-        </div>
-        ${spotMobs.length ? `
-          <div class="level-spot-mobs-col" aria-hidden="true">
-            ${spotMobs.map(m => `
-              <img class="level-mob-sprite level-mob-sprite--sm" src="${m.url}" alt="" width="44" height="44" loading="lazy"
-                title="${m.name}" onerror="this.remove()">
-            `).join('')}
-          </div>
-        ` : ''}
+      <div class="level-spot-head">
+        <h3 class="level-spot-name">${s.name}</h3>
+        ${s.recommended ? '<span class="level-spot-rec">★ Best</span>' : ''}
+        <span class="badge ${s.type === 'party' ? 'badge-blue' : 'badge-green'}">${s.type}</span>
       </div>
+      ${s.mobs?.length ? `<div class="level-spot-mob-grid">${s.mobs.map(m => `<span class="level-mob-pill">${m}</span>`).join('')}</div>` : ''}
+      ${s.location || s.exp ? `
+        <div class="level-spot-meta">
+          ${s.location ? `<span class="level-spot-loc">📍 ${s.location}</span>` : ''}
+          ${s.exp ? `<span class="level-spot-exp">⚡ ${s.exp}</span>` : ''}
+        </div>
+      ` : ''}
+      ${s.tip ? `<p class="level-spot-tip">${s.tip}</p>` : ''}
+      ${s.detail ? `<p class="level-spot-detail">${s.detail}</p>` : ''}
     </article>
-  `;
-  }).join('');
+  `).join('');
 }
 
 function renderLevelBands() {

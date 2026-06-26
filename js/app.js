@@ -869,31 +869,53 @@ function checkItem(prefill) {
   if (prefill) box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function renderPopularPrices() {
-  const el = document.getElementById('popular-prices');
-  if (!el || typeof PRICE_DB === 'undefined') return;
-  el.innerHTML = POPULAR_PRICE_KEYS.filter(k => PRICE_DB[k]).map(k => {
+function renderPriceRows(keys) {
+  return keys.filter(k => PRICE_DB[k]).map(k => {
     const p = PRICE_DB[k];
-    return `<button type="button" class="price-card" onclick="checkItem('${k.replace(/'/g, "\\'")}')">
-      <span class="price-card-name">${k}</span>
-      <span class="price-card-value">${p.price}</span>
+    return `<button type="button" class="price-row" onclick="checkItem('${k.replace(/'/g, "\\'")}')">
+      <span class="price-row-name">${k}</span>
+      <span class="price-row-value">${p.price}</span>
     </button>`;
   }).join('');
 }
 
-function renderScrollPrices() {
-  const el = document.getElementById('scroll-prices');
+let allScrollPriceKeys = [];
+
+function renderPopularPrices() {
+  const el = document.getElementById('popular-prices');
   if (!el || typeof PRICE_DB === 'undefined') return;
-  const keys = Object.keys(PRICE_DB)
+  el.innerHTML = renderPriceRows(POPULAR_PRICE_KEYS);
+}
+
+function renderScrollPrices() {
+  if (typeof PRICE_DB === 'undefined') return;
+  allScrollPriceKeys = Object.keys(PRICE_DB)
     .filter(k => PRICE_DB[k].category === 'scroll')
     .sort((a, b) => a.localeCompare(b));
-  el.innerHTML = keys.map(k => {
-    const p = PRICE_DB[k];
-    return `<button type="button" class="price-card price-card--scroll" onclick="checkItem('${k.replace(/'/g, "\\'")}')">
-      <span class="price-card-name">${k}</span>
-      <span class="price-card-value">${p.price}</span>
-    </button>`;
-  }).join('');
+
+  const top = document.getElementById('scroll-prices-top');
+  if (top) {
+    const keys = (typeof SCROLL_PRICE_KEYS !== 'undefined' ? SCROLL_PRICE_KEYS : allScrollPriceKeys.slice(0, 12));
+    top.innerHTML = renderPriceRows(keys);
+  }
+
+  const summary = document.getElementById('scroll-prices-summary');
+  if (summary) summary.textContent = `All scroll prices (${allScrollPriceKeys.length})`;
+
+  const filter = document.getElementById('scroll-price-filter');
+  filterScrollPrices(filter?.value || '');
+}
+
+function filterScrollPrices(query) {
+  const el = document.getElementById('scroll-prices');
+  if (!el || typeof PRICE_DB === 'undefined') return;
+  const q = (query || '').trim().toLowerCase();
+  const keys = q
+    ? allScrollPriceKeys.filter(k => k.includes(q))
+    : allScrollPriceKeys;
+  el.innerHTML = keys.length
+    ? renderPriceRows(keys)
+    : '<p style="padding:8px 10px;font-size:13px;color:var(--muted);">No scrolls match.</p>';
 }
 
 function updateItemsPageMeta() {

@@ -197,11 +197,16 @@
   <hr class="divider">
   <h2>Popular FM Prices</h2>
   <p class="section-hint">Tap an item to search. Prices from <a href="https://docs.google.com/spreadsheets/d/1B3sxmpaW7RGrQAAxAyeR-xS4mdKCTTs_DzgV0qo2p_8/edit" target="_blank" rel="noopener">Sylafia's Price Guide</a> — always double-check before selling.</p>
-  <div id="popular-prices" class="price-grid"></div>
+  <div id="popular-prices" class="price-list price-list--cols"></div>
   <hr class="divider">
   <h2>Scroll FM Prices</h2>
-  <p class="section-hint">All scrolls in Sylafia's guide — tap to check keep/vendor advice.</p>
-  <div id="scroll-prices" class="price-grid price-grid--scrolls"></div>
+  <p class="section-hint">Common scrolls — tap to check keep/vendor advice.</p>
+  <div id="scroll-prices-top" class="price-list price-list--cols"></div>
+  <details class="price-expand-wrap">
+    <summary id="scroll-prices-summary">All scroll prices</summary>
+    <input type="text" id="scroll-price-filter" class="price-filter" placeholder="Filter scrolls…" oninput="filterScrollPrices(this.value)" autocomplete="off">
+    <div id="scroll-prices" class="price-list price-list--cols"></div>
+  </details>
   <hr class="divider">
   <h2>Quick Reference</h2>
   <div class="grid2">

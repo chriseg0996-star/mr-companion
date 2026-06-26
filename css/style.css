@@ -686,6 +686,95 @@ button.btn-ghost:hover {
 .price-credit a { color: var(--blue); }
 
 .section-hint { font-size: 12px; color: var(--muted); margin: -4px 0 12px; }
+
+.price-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.price-list--cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2px 10px;
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 10px;
+  background: var(--bg2);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font);
+  text-align: left;
+  transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+
+.price-row:hover {
+  background: var(--bg3);
+  border-color: var(--border);
+}
+
+.price-row-name {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.price-row-value {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.price-expand-wrap {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg2);
+}
+
+.price-expand-wrap summary {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.price-expand-wrap summary::-webkit-details-marker { display: none; }
+.price-expand-wrap summary::before { content: '▸ '; color: var(--accent); }
+.price-expand-wrap[open] summary::before { content: '▾ '; }
+
+.price-expand-wrap .price-list {
+  padding: 0 8px 10px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.price-filter {
+  display: block;
+  width: calc(100% - 16px);
+  margin: 0 8px 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* legacy card grid (PQ phases etc.) */
 .price-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 8px; }
 .price-grid--scrolls { max-height: 420px; overflow-y: auto; padding-right: 4px; }
 .price-card {

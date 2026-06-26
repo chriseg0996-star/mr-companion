@@ -69,8 +69,10 @@ function initRouteFromHash() {
 
 function showPage(id, btn, skipHash) {
   if (id !== 'prequests') closePrequestDetail(true);
+  const pageEl = document.getElementById('page-' + id);
+  if (!pageEl) return;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
+  pageEl.classList.add('active');
   updateNavActive(id, btn);
   closeNavDrawer();
   closeNavDropdowns();
@@ -1124,6 +1126,11 @@ function getActiveBoss() {
 }
 
 function selectBoss(id, skipHash) {
+  if (!BOSSES.some(b => b.id === id)) {
+    const fallback = getFilteredBosses()[0];
+    if (!fallback) return;
+    id = fallback.id;
+  }
   selectedBossId = id;
   renderBossing();
   if (!skipHash) {
@@ -2718,7 +2725,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTools();
   renderForumGuides();
   renderPQs();
-  renderBossProgression();
   initBossRegionFilters();
   renderBosses();
   renderLevels();

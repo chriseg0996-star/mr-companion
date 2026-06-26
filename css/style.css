@@ -912,7 +912,12 @@ button.btn-ghost:hover {
   color: var(--tier-color, var(--accent));
 }
 
-.boss-detail { min-height: 120px; margin-bottom: 16px; }
+.boss-detail-host {
+  min-height: 120px;
+  margin-bottom: 16px;
+  width: 100%;
+  max-width: none;
+}
 
 .boss-detail-empty {
   margin: 0;
@@ -1165,8 +1170,7 @@ button.btn-ghost:hover {
 .guide-overlay[hidden],
 .boss-detail-overlay[hidden] { display: none !important; }
 
-.guide-panel,
-.boss-detail {
+.guide-panel {
   width: 100%;
   max-width: 680px;
   max-height: min(88vh, 920px);
@@ -1184,8 +1188,7 @@ button.btn-ghost:hover {
 body.guide-modal-open,
 body.boss-detail-open { overflow: hidden; }
 
-.guide-panel h2,
-.boss-detail h2 { font-size: 20px; margin-bottom: 4px; -webkit-text-fill-color: var(--text); }
+.guide-panel h2 { font-size: 20px; margin-bottom: 4px; -webkit-text-fill-color: var(--text); }
 
 .boss-detail-top { display: flex; gap: 18px; align-items: flex-start; margin-bottom: 18px; }
 

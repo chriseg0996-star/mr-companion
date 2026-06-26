@@ -258,8 +258,33 @@ function renderSkillTable(id) {
 
 function initPWA() {
   if (!('serviceWorker' in navigator)) return;
+  let reloadOnControllerChange = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!reloadOnControllerChange) return;
+    reloadOnControllerChange = false;
+    location.reload();
+  });
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    const swUrl = typeof APP_VERSION !== 'undefined' ? `./sw.js?v=${APP_VERSION}` : './sw.js';
+    navigator.serviceWorker.register(swUrl, { updateViaCache: 'none' })
+      .then(reg => {
+        reg.update();
+        if (reg.waiting) {
+          reloadOnControllerChange = true;
+          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+        reg.addEventListener('updatefound', () => {
+          const installing = reg.installing;
+          if (!installing) return;
+          installing.addEventListener('statechange', () => {
+            if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+              reloadOnControllerChange = true;
+              installing.postMessage({ type: 'SKIP_WAITING' });
+            }
+          });
+        });
+      })
+      .catch(() => {});
   });
   initInstallPrompt();
 }

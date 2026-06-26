@@ -36,18 +36,25 @@ self.addEventListener('activate', e => {
   );
 });
 
+self.addEventListener('message', e => {
+  if (e.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
+  // Cross-origin assets (e.g. maplestory.io mob sprites) — browser handles directly.
+  if (url.origin !== self.location.origin) return;
+
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      const fetched = fetch(e.request).then(res => {
-        if (res.ok && e.request.url.startsWith(self.location.origin)) {
+    fetch(e.request)
+      .then(res => {
+        if (res.ok) {
           const copy = res.clone();
           caches.open(CACHE).then(c => c.put(e.request, copy));
         }
         return res;
-      }).catch(() => cached);
-      return cached || fetched;
-    })
+      })
+      .catch(() => caches.match(e.request))
   );
 });

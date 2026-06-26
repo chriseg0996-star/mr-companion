@@ -19,6 +19,7 @@ const PRECACHE = [
   './data/partyData.js',
   './data/externalLinks.js',
   './data/mobGlossary.js',
+  './data/mobSprites.js',
   './data/priceData.js',
   './data/scrollPrices.js',
   './data/leechingData.js',

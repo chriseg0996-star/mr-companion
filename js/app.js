@@ -1276,25 +1276,53 @@ function getPQsForBand(l) {
   return PQS.filter(pq => isPQInRange(pq, mid));
 }
 
+function renderMobSpriteRail(mobs) {
+  if (!mobs?.length) return '';
+  return `<aside class="level-detail-mob-rail" aria-label="Farm mobs">
+    ${mobs.map(m => `
+      <figure class="level-mob-figure">
+        <img class="level-mob-sprite" src="${m.url}" alt="" width="52" height="52" loading="lazy"
+          onerror="this.closest('.level-mob-figure')?.remove()">
+        <figcaption class="level-mob-caption">${m.name}</figcaption>
+      </figure>
+    `).join('')}
+  </aside>`;
+}
+
 function renderLevelSpots(spots) {
-  return spots.map(s => `
+  return spots.map(s => {
+    const spotMobs = typeof collectMobSprites === 'function' ? collectMobSprites(s.mobs || []) : [];
+    return `
     <article class="level-spot ${s.recommended ? 'level-spot--recommended' : ''}">
-      ${s.recommended ? '<span class="level-spot-rec">★ Best</span>' : ''}
-      <div class="level-spot-head">
-        <h3 class="level-spot-name">${s.name}</h3>
-        <span class="badge ${s.type === 'party' ? 'badge-blue' : 'badge-green'}">${s.type}</span>
-      </div>
-      ${s.mobs?.length ? `<div class="level-spot-mob-grid">${s.mobs.map(m => `<span class="level-mob-pill">${m}</span>`).join('')}</div>` : ''}
-      ${s.location || s.exp ? `
-        <div class="level-spot-meta">
-          ${s.location ? `<span class="level-spot-loc">📍 ${s.location}</span>` : ''}
-          ${s.exp ? `<span class="level-spot-exp">⚡ ${s.exp}</span>` : ''}
+      <div class="level-spot-layout">
+        <div class="level-spot-content">
+          <div class="level-spot-head">
+            <h3 class="level-spot-name">${s.name}</h3>
+            ${s.recommended ? '<span class="level-spot-rec">★ Best</span>' : ''}
+            <span class="badge ${s.type === 'party' ? 'badge-blue' : 'badge-green'}">${s.type}</span>
+          </div>
+          ${s.mobs?.length ? `<div class="level-spot-mob-grid">${s.mobs.map(m => `<span class="level-mob-pill">${m}</span>`).join('')}</div>` : ''}
+          ${s.location || s.exp ? `
+            <div class="level-spot-meta">
+              ${s.location ? `<span class="level-spot-loc">📍 ${s.location}</span>` : ''}
+              ${s.exp ? `<span class="level-spot-exp">⚡ ${s.exp}</span>` : ''}
+            </div>
+          ` : ''}
+          ${s.tip ? `<p class="level-spot-tip">${s.tip}</p>` : ''}
+          ${s.detail ? `<p class="level-spot-detail">${s.detail}</p>` : ''}
         </div>
-      ` : ''}
-      ${s.tip ? `<p class="level-spot-tip">${s.tip}</p>` : ''}
-      ${s.detail ? `<details class="level-spot-more"><summary>Directions</summary><p>${s.detail}</p></details>` : ''}
+        ${spotMobs.length ? `
+          <div class="level-spot-mobs-col" aria-hidden="true">
+            ${spotMobs.map(m => `
+              <img class="level-mob-sprite level-mob-sprite--sm" src="${m.url}" alt="" width="44" height="44" loading="lazy"
+                title="${m.name}" onerror="this.remove()">
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
     </article>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function renderLevelBands() {
@@ -1335,6 +1363,7 @@ function renderLevelDetail() {
     ? LEVEL_MILESTONES.find(m => m.level > end)
     : null;
   const priorityLabel = { quests: 'Quests first', party: 'Party / PQ', solo: 'Solo grind' }[l.priority] || 'Train here';
+  const bandMobs = typeof collectSpotsMobSprites === 'function' ? collectSpotsMobSprites(spots) : [];
 
   el.innerHTML = `
     <div class="level-detail-panel level-detail-panel--${l.theme || 'field'}">
@@ -1371,30 +1400,35 @@ function renderLevelDetail() {
         </button>
       ` : ''}
 
-      <section class="level-detail-section level-detail-section--spots">
-        <div class="level-spots">${renderLevelSpots(spots)}</div>
-      </section>
+      <div class="level-detail-body${bandMobs.length ? '' : ' level-detail-body--no-rail'}">
+        <div class="level-detail-main">
+          <section class="level-detail-section level-detail-section--spots">
+            <div class="level-spots">${renderLevelSpots(spots)}</div>
+          </section>
 
-      ${pqs.length ? `
-        <section class="level-detail-section level-detail-section--pqs">
-          <div class="level-pq-row">
-            ${pqs.map(pq => `
-              <button type="button" class="level-pq-chip" onclick="openPQ('${pq.id}')">
-                <span class="level-pq-short">${pq.short}</span>
-                <span class="level-pq-lv">Lv ${pq.level}</span>
-                <span class="level-pq-party">${pq.party}</span>
-              </button>
-            `).join('')}
-          </div>
-        </section>
-      ` : ''}
+          ${pqs.length ? `
+            <section class="level-detail-section level-detail-section--pqs">
+              <div class="level-pq-row">
+                ${pqs.map(pq => `
+                  <button type="button" class="level-pq-chip" onclick="openPQ('${pq.id}')">
+                    <span class="level-pq-short">${pq.short}</span>
+                    <span class="level-pq-lv">Lv ${pq.level}</span>
+                    <span class="level-pq-party">${pq.party}</span>
+                  </button>
+                `).join('')}
+              </div>
+            </section>
+          ` : ''}
 
-      ${l.tips?.length ? `
-        <details class="level-detail-notes">
-          <summary>Tips · ${l.tips.length}</summary>
-          <ul class="level-tips-list">${l.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-        </details>
-      ` : ''}
+          ${l.tips?.length ? `
+            <section class="level-detail-section level-detail-section--tips">
+              <h3 class="level-section-title">Tips</h3>
+              <ul class="level-tips-list">${l.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+            </section>
+          ` : ''}
+        </div>
+        ${renderMobSpriteRail(bandMobs)}
+      </div>
     </div>
   `;
 }

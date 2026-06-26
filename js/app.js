@@ -1346,7 +1346,7 @@ function renderLevelBands() {
     return `
       <button type="button" class="level-band level-band--${l.theme || 'field'} ${i === active ? 'active' : ''}"
         role="tab" aria-selected="${i === active}" onclick="selectLevelBand(${i})">
-        <span class="level-band-icon">${l.icon || '🗺️'}</span>
+        <span class="level-band-icon-wrap">${typeof renderLevelZoneIcon === 'function' ? renderLevelZoneIcon(l, { size: 28 }) : `<span class="level-band-icon">${l.icon || '🗺️'}</span>`}</span>
         <span class="level-band-range">${shortRange}</span>
         <span class="level-band-label">${l.label}</span>
       </button>
@@ -1378,7 +1378,7 @@ function renderLevelDetail() {
   el.innerHTML = `
     <div class="level-detail-panel level-detail-panel--${l.theme || 'field'}">
       <header class="level-detail-header">
-        <span class="level-detail-icon" aria-hidden="true">${l.icon || '🗺️'}</span>
+        <span class="level-detail-icon-wrap">${typeof renderLevelZoneIcon === 'function' ? renderLevelZoneIcon(l, { size: 36, className: 'level-detail-icon' }) : `<span class="level-detail-icon" aria-hidden="true">${l.icon || '🗺️'}</span>`}</span>
         <div class="level-detail-titles">
           <div class="level-detail-range">Lv ${l.range}</div>
           <div class="level-detail-label">${l.label}</div>

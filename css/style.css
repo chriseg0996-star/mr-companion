@@ -1065,11 +1065,38 @@ body.boss-detail-open { overflow: hidden; }
   color: var(--zone-color, var(--accent));
 }
 
-.level-band.active .level-band-icon {
+.level-band.active .level-band-icon,
+.level-band.active .level-zone-sprite {
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--zone-color, var(--accent)) 40%, transparent));
 }
 
+.level-band-icon-wrap,
+.level-detail-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .level-band-icon { font-size: 18px; line-height: 1; }
+
+.level-zone-sprite {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+}
+
+.level-detail-icon.level-zone-sprite {
+  width: 36px;
+  height: 36px;
+}
+
+.level-band .level-zone-sprite {
+  width: 28px;
+  height: 28px;
+}
 
 .level-band-range {
   font-size: 11px;

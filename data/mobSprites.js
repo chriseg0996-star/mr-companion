@@ -43,6 +43,23 @@ const MOB_SPRITE_ENTRIES = {
   dunas: { gms: 83, id: 8220010 },
   'pink bean': { gms: 83, id: 8820001 },
   krexel: { gms: 92, id: 9420520 },
+  'tick-tock': { gms: 62, id: 4230113 },
+  pianus: { gms: 62, id: 8510000 },
+  'papulatus clock': { gms: 62, id: 8500001 },
+};
+
+// Representative mob sprite per level band (chips + detail header)
+const LEVEL_BAND_ICON_MOBS = {
+  '1 – 10': 'Blue Snail',
+  '10 – 20': 'Pig',
+  '20 – 30': 'Zombie Mushroom',
+  '30 – 50': 'Tick-Tock',
+  '50 – 70': 'Coolie Zombie',
+  '70 – 85': 'Gallopera',
+  '85 – 100': 'Papulatus Clock',
+  '100 – 120': 'Red Wyvern',
+  '120 – 140': 'Horntail',
+  '140 – 200': 'Pink Bean',
 };
 
 function normalizeMobSpriteKey(name) {
@@ -77,4 +94,17 @@ function collectSpotsMobSprites(spots) {
     if (s.mobs?.length) names.push(...s.mobs);
   }
   return collectMobSprites(names);
+}
+
+function getLevelBandIconUrl(level) {
+  const mob = level?.iconMob || LEVEL_BAND_ICON_MOBS[level?.range];
+  if (!mob) return null;
+  return getMobSpriteUrl(mob);
+}
+
+function renderLevelZoneIcon(level, { size = 28, className = 'level-band-icon' } = {}) {
+  const url = getLevelBandIconUrl(level);
+  if (!url) return `<span class="${className}">${level.icon || '🗺️'}</span>`;
+  return `<img class="${className} level-zone-sprite" src="${url}" alt="" width="${size}" height="${size}" loading="lazy"
+    onerror="this.outerHTML='<span class=&quot;${className}&quot;>${level.icon || '🗺️'}</span>'">`;
 }

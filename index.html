@@ -194,22 +194,26 @@
     <button class="btn" onclick="checkItem()">Check</button>
   </div>
   <div id="item-result" class="result-box"></div>
-  <hr class="divider">
-  <h2>Popular FM Prices</h2>
-  <p class="section-hint">Tap an item to search. Prices from <a href="https://docs.google.com/spreadsheets/d/1B3sxmpaW7RGrQAAxAyeR-xS4mdKCTTs_DzgV0qo2p_8/edit" target="_blank" rel="noopener">Sylafia's Price Guide</a> — always double-check before selling.</p>
-  <div id="popular-prices" class="price-list price-list--cols"></div>
-  <hr class="divider">
-  <h2>Scroll FM Prices</h2>
-  <p class="section-hint">Common scrolls — tap to check keep/vendor advice.</p>
-  <div id="scroll-prices-top" class="price-list price-list--cols"></div>
-  <details class="price-expand-wrap">
-    <summary id="scroll-prices-summary">All scroll prices</summary>
-    <input type="text" id="scroll-price-filter" class="price-filter" placeholder="Filter scrolls…" oninput="filterScrollPrices(this.value)" autocomplete="off">
-    <div id="scroll-prices" class="price-list price-list--cols"></div>
-  </details>
-  <hr class="divider">
-  <h2>Quick Reference</h2>
-  <div class="grid2">
+  <div class="items-prices-grid">
+    <section class="items-price-section">
+      <h2>Popular FM Prices</h2>
+      <p class="section-hint">Tap an item to search. Prices from <a href="https://docs.google.com/spreadsheets/d/1B3sxmpaW7RGrQAAxAyeR-xS4mdKCTTs_DzgV0qo2p_8/edit" target="_blank" rel="noopener">Sylafia's Price Guide</a>.</p>
+      <div id="popular-prices" class="price-grid-compact"></div>
+    </section>
+    <section class="items-price-section">
+      <h2>Scroll FM Prices</h2>
+      <p class="section-hint">Common scrolls — tap to check keep/vendor advice.</p>
+      <div id="scroll-prices-top" class="price-grid-compact"></div>
+      <details class="price-expand-wrap">
+        <summary id="scroll-prices-summary">All scroll prices</summary>
+        <input type="text" id="scroll-price-filter" class="price-filter" placeholder="Filter scrolls…" oninput="filterScrollPrices(this.value)" autocomplete="off">
+        <div id="scroll-prices" class="price-grid-compact price-grid-compact--scrolls"></div>
+      </details>
+    </section>
+  </div>
+  <details class="price-expand-wrap items-quick-ref">
+    <summary>Quick reference — keep, vendor, godly stats, links</summary>
+    <div class="grid2" style="margin-top:10px;">
     <div class="card">
       <div class="card-header"><h2>Always Keep</h2><span class="badge badge-green">KEEP</span></div>
       <div id="quick-keep-chips" class="quick-ref-chips"></div>
@@ -241,7 +245,8 @@
         <a href="https://mime.royals.ms" target="_blank" style="color:var(--blue);display:block;">📚 Royals Wiki</a>
       </div>
     </div>
-  </div>
+    </div>
+  </details>
 </div>
 
 <div id="page-bosses" class="page">

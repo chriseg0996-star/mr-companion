@@ -850,50 +850,134 @@ const WORLD_MAP = [
 ];
 
 const LEVELS = [
-  { range: '1 – 10', label: 'Maple Island', theme: 'island', icon: '🏝️', spots: [
-    { name: 'Tutorial Quests', type: 'solo', mapStyle: 'island', mapImage: 'assets/images/maps/maple-island-amherst.png', mobs: ['Snails', 'Blue Snails', 'Mushrooms'], detail: 'Complete every tutorial quest — follow the flashing quest icons on each map. You should reach level 10 without grinding. Boat from South Perry to Lith Harbor when done.' },
-    { name: 'South Perry → Lith Harbor', type: 'solo', mapStyle: 'island', mapImage: 'assets/images/maps/south-perry-dock.png', mobs: [], detail: 'After tutorial quests, take the ship at South Perry to Victoria Island. You land in Lith Harbor — start the Lith Harbor questline toward Henesys or Perion.' },
+  { range: '1 – 10', label: 'Maple Island', theme: 'island', icon: '🏝️',
+    goal: 'Complete every tutorial quest — you should hit Lv 10 without grinding.',
+    priority: 'quests',
+    tips: ['Follow flashing quest icons on each map', 'Sell snail shells to NPC for starter mesos', 'Do not grind mobs — quests give better EXP', 'Take the boat from South Perry the moment you hit Lv 10'],
+    unlocks: [
+      { lv: 8, icon: '🎖️', title: '1st job advancement', page: 'jobadv' },
+      { lv: 10, icon: '⛵', title: 'Boat to Victoria Island', page: 'leveling' },
+    ],
+    spots: [
+    { name: 'Tutorial Quests', type: 'solo', recommended: true, mapStyle: 'island', mapImage: 'assets/images/maps/maple-island-amherst.png', mobs: ['Snails', 'Blue Snails', 'Mushrooms'], detail: 'Complete every tutorial quest — follow the flashing quest icons on each map. You should reach level 10 without grinding. Boat from South Perry to Lith Harbor when done.', tip: 'Best EXP/hr at this stage — skip mob grinding entirely.' },
+    { name: 'South Perry → Lith Harbor', type: 'solo', mapStyle: 'island', mapImage: 'assets/images/maps/south-perry-dock.png', mobs: [], detail: 'After tutorial quests, take the ship at South Perry to Victoria Island. You land in Lith Harbor — start the Lith Harbor questline toward Henesys or Perion.', tip: 'Start Lith Harbor quests immediately on arrival.' },
   ]},
-  { range: '10 – 20', label: 'Henesys Area', theme: 'victoria', icon: '🌳', spots: [
-    { name: 'Pig Beach', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/pig-beach.png', mobs: ['Pigs', 'Ribbon Pigs'], detail: 'East of Henesys. Easy grind, good for beginners learning your class skills.' },
-    { name: 'Slime Tree / Mushroom Town', type: 'solo', mapStyle: 'forest', mapImage: 'assets/images/maps/slime-tree.png', mobs: ['Slimes', 'Green Snails', 'Orange Mushrooms'], detail: 'Safe solo maps. Sell drops to NPC for early mesos.' }
+  { range: '10 – 20', label: 'Henesys Area', theme: 'victoria', icon: '🌳',
+    goal: 'Learn your class skills while grinding easy mobs east of Henesys.',
+    priority: 'solo',
+    tips: ['Pig Beach is the classic safe grind', 'Sell drops to NPC — fund your first potions', 'At Lv 10, Mages and Pirates do 2nd job', 'Save mesos for scrolls once you reach Kerning'],
+    unlocks: [
+      { lv: 10, icon: '🎖️', title: '2nd job (Mage / Pirate)', page: 'jobadv' },
+    ],
+    spots: [
+    { name: 'Pig Beach', type: 'solo', recommended: true, mapStyle: 'field', mapImage: 'assets/images/maps/pig-beach.png', mobs: ['Pigs', 'Ribbon Pigs'], detail: 'East of Henesys. Easy grind, good for beginners learning your class skills.', tip: 'Low competition, good mob density.' },
+    { name: 'Slime Tree / Mushroom Town', type: 'solo', mapStyle: 'forest', mapImage: 'assets/images/maps/slime-tree.png', mobs: ['Slimes', 'Green Snails', 'Orange Mushrooms'], detail: 'Safe solo maps. Sell drops to NPC for early mesos.', tip: 'Backup if Pig Beach is crowded.' }
   ]},
-  { range: '20 – 30', label: 'Kerning City', theme: 'victoria', icon: '🏙️', spots: [
-    { name: 'Ant Tunnel I / II', type: 'solo', mapStyle: 'cave', mapImage: 'assets/images/maps/ant-tunnel.png', mobs: ['Zombie Mushrooms', 'Horned Mushrooms'], detail: 'Classic solo grind under Kerning. Good if PQs are unavailable.' },
-    { name: 'Kerning City PQ (KPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/kerning-pq.png', mobs: ['PQ monsters'], detail: 'Level 21+. Party of 4. Better EXP than solo — priority over grinding. See PQ Guide tab.' }
+  { range: '20 – 30', label: 'Kerning City', theme: 'victoria', icon: '🏙️',
+    goal: 'Run KPQ — party EXP beats solo grinding at this range.',
+    priority: 'party',
+    tips: ['KPQ unlocks at Lv 21 — find a party in Kerning channels', 'Bring pots; stage 4 boss hits hard', 'Ant Tunnel only if you cannot find a PQ party', 'Warrior/Bowman/Thief advance at Lv 30'],
+    unlocks: [
+      { lv: 21, icon: '👥', title: 'KPQ unlocked', page: 'pqs' },
+      { lv: 30, icon: '🎖️', title: '2nd job (Warrior / Bowman / Thief)', page: 'jobadv' },
+    ],
+    spots: [
+    { name: 'Kerning City PQ (KPQ)', type: 'party', recommended: true, mapStyle: 'pq', mapImage: 'assets/images/maps/kerning-pq.png', mobs: ['PQ monsters'], detail: 'Level 21+. Party of 4. Better EXP than solo — priority over grinding. See PQ Guide tab.', tip: 'Portal near construction site in Kerning.' },
+    { name: 'Ant Tunnel I / II', type: 'solo', mapStyle: 'cave', mapImage: 'assets/images/maps/ant-tunnel.png', mobs: ['Zombie Mushrooms', 'Horned Mushrooms'], detail: 'Classic solo grind under Kerning. Good if PQs are unavailable.', tip: 'Slower than KPQ — use only as fallback.' }
   ]},
-  { range: '30 – 50', label: 'Ludibrium', theme: 'ludibrium', icon: '🎠', spots: [
-    { name: 'Ludibrium PQ (LPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/ludibrium-pq.png', mobs: ['PQ monsters'], detail: 'Level 35–50. Party of 4. Best EXP and equipment rewards at this range. Run until 50.' },
-    { name: 'Carnival PQ (CPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/ludibrium-pq.png', mobs: ['PQ monsters'], detail: 'Level 30–50. 2v2 competitive PQ. Good EXP, drops Onyx Apples.' },
-    { name: 'Amoria PQ (APQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/pink-bean-temple.png', mobs: ['PQ monsters'], detail: 'Level 40+. Requires in-game marriage. Best EXP per hour at 40–50 if you have a partner.' }
+  { range: '30 – 50', label: 'Ludibrium', theme: 'ludibrium', icon: '🎠',
+    goal: 'LPQ until 50 — best EXP and gear funding in this bracket.',
+    priority: 'party',
+    tips: ['LPQ is always full on Royals — easy to find parties', 'CPQ drops Onyx Apples — sell in FM', 'APQ needs marriage at Lv 40+ for peak EXP', 'Start saving for Zakum prequest at 50'],
+    unlocks: [
+      { lv: 35, icon: '👥', title: 'LPQ unlocked', page: 'pqs' },
+      { lv: 50, icon: '💀', title: 'Zakum prequest + 3rd job', page: 'prequests', prequest: 'zakum' },
+    ],
+    spots: [
+    { name: 'Ludibrium PQ (LPQ)', type: 'party', recommended: true, mapStyle: 'pq', mapImage: 'assets/images/maps/ludibrium-pq.png', mobs: ['PQ monsters'], detail: 'Level 35–50. Party of 4. Best EXP and equipment rewards at this range. Run until 50.', tip: 'Clock tower area — run this instead of solo.' },
+    { name: 'Carnival PQ (CPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/ludibrium-pq.png', mobs: ['PQ monsters'], detail: 'Level 30–50. 2v2 competitive PQ. Good EXP, drops Onyx Apples.', tip: 'Onyx Apples = free mesos every run.' },
+    { name: 'Amoria PQ (APQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/pink-bean-temple.png', mobs: ['PQ monsters'], detail: 'Level 40+. Requires in-game marriage. Best EXP per hour at 40–50 if you have a partner.', tip: 'Highest EXP/hr here if married.' }
   ]},
-  { range: '50 – 70', label: 'Orbis / El Nath', theme: 'orbis', icon: '☁️', spots: [
-    { name: 'Orbis PQ (OPQ)', type: 'party', mapStyle: 'pq', mapImage: 'assets/images/maps/gallopera.png', mobs: ['PQ monsters'], detail: 'Level 51–70. Party of 4. Best EXP at this range. Run until 70.' },
-    { name: 'Coolie Zombies', type: 'solo', mapStyle: 'graveyard', mapImage: 'assets/images/maps/coolie-zombies.png', mobs: ['Coolie Zombies', 'Miner Zombies'], detail: 'El Nath graveyard. Solid solo alternative if no PQ party available.' }
+  { range: '50 – 70', label: 'Orbis / El Nath', theme: 'orbis', icon: '☁️',
+    goal: 'OPQ until 70, then start 4th job questline.',
+    priority: 'party',
+    tips: ['OPQ unlocks at 51 — stay in PQ until 70', '4th job at Lv 70 — read your class guide first', 'Coolie Zombies if no OPQ party', 'Start Krexel prequest chain in Singapore around 63–70'],
+    unlocks: [
+      { lv: 51, icon: '👥', title: 'OPQ unlocked', page: 'pqs' },
+      { lv: 70, icon: '🎖️', title: '4th job advancement', page: 'classes' },
+      { lv: 63, icon: '⚓', title: 'Capt. Latanica (Krexel chain)', page: 'prequests', prequest: 'latanica' },
+    ],
+    spots: [
+    { name: 'Orbis PQ (OPQ)', type: 'party', recommended: true, mapStyle: 'pq', mapImage: 'assets/images/maps/gallopera.png', mobs: ['PQ monsters'], detail: 'Level 51–70. Party of 4. Best EXP at this range. Run until 70.', tip: 'Best EXP in this entire bracket.' },
+    { name: 'Coolie Zombies', type: 'solo', mapStyle: 'graveyard', mapImage: 'assets/images/maps/coolie-zombies.png', mobs: ['Coolie Zombies', 'Miner Zombies'], detail: 'El Nath graveyard. Solid solo alternative if no PQ party available.', tip: 'Less contested than Galloperas later.' }
   ]},
-  { range: '70 – 85', label: 'Orbis — Stairway', theme: 'orbis', icon: '🌤️', spots: [
-    { name: 'Galloperas', type: 'solo', mapStyle: 'sky', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera', 'Dual Birk'], detail: 'Orbis Stairway to the Sky. Best EXP and mesos at this range. Maps can be crowded.' },
-    { name: 'Coolie Zombies', type: 'solo', mapStyle: 'graveyard', mapImage: 'assets/images/maps/coolie-zombies.png', mobs: ['Coolie Zombies'], detail: 'Slower but less contested than Galloperas.' },
-    { name: 'Jr. Balrog (area boss)', type: 'party', mapStyle: 'cave', mapImage: 'assets/images/maps/coolie-zombies.png', mobs: ['Jr. Balrog'], detail: 'At 80+, check Cursed Sanctuary channels every few hours. See Bosses → Jr. Balrog.' }
+  { range: '70 – 85', label: 'Orbis — Stairway', theme: 'orbis', icon: '🌤️',
+    goal: 'Galloperas on Stairway to the Sky — top solo EXP and mesos here.',
+    priority: 'solo',
+    tips: ['Maps get crowded — hop channels if needed', 'Farm mesos while leveling — you need funding for Pap', 'At Lv 80+, camp Jr. Balrog channels (Cursed Sanctuary)', 'Start Papulatus prequest before Lv 85'],
+    unlocks: [
+      { lv: 80, icon: '🔥', title: 'Jr. Balrog (area boss)', page: 'bosses', boss: 'jr-balrog' },
+      { lv: 85, icon: '🕐', title: 'Papulatus prequest', page: 'prequests', prequest: 'papulatus' },
+    ],
+    spots: [
+    { name: 'Galloperas', type: 'solo', recommended: true, mapStyle: 'sky', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera', 'Dual Birk'], detail: 'Orbis Stairway to the Sky. Best EXP and mesos at this range. Maps can be crowded.', tip: 'Top solo spot — bring pots and a good weapon.' },
+    { name: 'Coolie Zombies', type: 'solo', mapStyle: 'graveyard', mapImage: 'assets/images/maps/coolie-zombies.png', mobs: ['Coolie Zombies'], detail: 'Slower but less contested than Galloperas.', tip: 'Quieter alternative grind.' },
+    { name: 'Jr. Balrog (area boss)', type: 'party', mapStyle: 'cave', mapImage: 'assets/images/maps/coolie-zombies.png', mobs: ['Jr. Balrog'], detail: 'At 80+, check Cursed Sanctuary channels every few hours. See Bosses → Jr. Balrog.', tip: '~3h respawn — check multiple channels.' }
   ]},
-  { range: '85 – 100', label: 'Orbis / Pap Prequest', theme: 'ludibrium', icon: '🕐', spots: [
-    { name: 'Galloperas (Stairway to the Sky)', type: 'solo', mapStyle: 'sky', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera'], detail: 'Still top EXP here. At 110+, hunt Pianus in Aqua Road channels between trains.' },
-    { name: 'Papulatus Prequest', type: 'solo', mapStyle: 'clock', mapImage: 'assets/images/maps/papulatus-arena.png', mobs: ['Ludibrium mobs'], detail: 'Complete clocktower questline before your first Pap run. See Bosses tab.' },
-    { name: 'CWK Keystone (lv 90+)', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/world-map.png', mobs: ['Crimsonwood mobs'], detail: 'At 90, start the Crimsonwood Keystone chain in Masteria/NLC. Unlocks CWKPQ expeditions.' },
-    { name: 'Scarlion/Targa prequest (lv 85+)', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera', 'Vikerola', 'Rodeo'], detail: 'Start Lam\'s questline in Malaysia. Farm Spirits for demi-boss helm runs at 140.' }
+  { range: '85 – 100', label: 'Orbis / Pap Prequest', theme: 'ludibrium', icon: '🕐',
+    goal: 'Keep grinding Galloperas while knocking out Pap, CWK, and Scar/Targa prequests.',
+    priority: 'solo',
+    tips: ['Finish Pap prequest before first Pap run', 'CWK keystone chain starts at Lv 90 in Masteria', 'Scar/Targa prequest in Malaysia at Lv 85', 'At Lv 110 hunt Pianus between Aqua Road trains'],
+    unlocks: [
+      { lv: 85, icon: '🎡', title: 'Scarlion / Targa prequest', page: 'prequests', prequest: 'scar-targa' },
+      { lv: 90, icon: '🏰', title: 'Crimsonwood Keystone', page: 'prequests', prequest: 'cwk' },
+      { lv: 110, icon: '🐟', title: 'Pianus (area boss)', page: 'bosses', boss: 'pianus' },
+    ],
+    spots: [
+    { name: 'Galloperas (Stairway to the Sky)', type: 'solo', recommended: true, mapStyle: 'sky', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera'], detail: 'Still top EXP here. At 110+, hunt Pianus in Aqua Road channels between trains.', tip: 'Still best solo EXP in this range.' },
+    { name: 'Papulatus Prequest', type: 'solo', mapStyle: 'clock', mapImage: 'assets/images/maps/papulatus-arena.png', mobs: ['Ludibrium mobs'], detail: 'Complete clocktower questline before your first Pap run. See Bosses tab.', tip: 'Do this alongside grinding — not instead of it.' },
+    { name: 'CWK Keystone (lv 90+)', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/world-map.png', mobs: ['Crimsonwood mobs'], detail: 'At 90, start the Crimsonwood Keystone chain in Masteria/NLC. Unlocks CWKPQ expeditions.', tip: 'Unlocks mastery book farming later.' },
+    { name: 'Scarlion/Targa prequest (lv 85+)', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/gallopera.png', mobs: ['Gallopera', 'Vikerola', 'Rodeo'], detail: 'Start Lam\'s questline in Malaysia. Farm Spirits for demi-boss helm runs at 140.', tip: 'Helms at Lv 140 — start early.' }
   ]},
-  { range: '100 – 120', label: 'Leafre', theme: 'leafre', icon: '🐉', spots: [
-    { name: 'Petristation / Newts', type: 'solo', mapStyle: 'forest', mapImage: 'assets/images/maps/leafre-newts.png', mobs: ['Red Wyvern', 'Blue Wyvern', 'Dark Wyvern'], detail: 'Dragon Forest. Newts give top-tier solo EXP. Start Horntail prequest at 120.' },
-    { name: 'Skelegons (Party)', type: 'party', mapStyle: 'cave', mapImage: 'assets/images/maps/leafre-dragons.png', mobs: ['Skelegon', 'Skelosaurus'], detail: 'Best EXP per hour with a strong party. Requires good damage and a Bishop for HS.' },
-    { name: 'Krexel (demi-boss)', type: 'party', mapStyle: 'city', mapImage: 'assets/images/maps/world-map.png', mobs: ['Krexel'], detail: 'If prequest done — 2 runs/day in Ulu City. Good mesos between Pap and HT. See Bosses → Krexel.' }
+  { range: '100 – 120', label: 'Leafre', theme: 'leafre', icon: '🐉',
+    goal: 'Newts in Dragon Forest — start Horntail prequest the day you hit 120.',
+    priority: 'solo',
+    tips: ['Red/Blue/Dark Wyverns = best solo EXP', 'Skelegons need a Bishop HS + strong DPS party', 'Krexel: 2 runs/day if prequest done — great mesos', 'HT prequest takes time — start at Lv 120 immediately'],
+    unlocks: [
+      { lv: 110, icon: '🦶', title: 'Bigfoot (area boss)', page: 'bosses', boss: 'bigfoot' },
+      { lv: 115, icon: '🐦', title: 'Black Crow (area boss)', page: 'bosses', boss: 'black-crow' },
+      { lv: 120, icon: '🐉', title: 'Horntail + Neo Tokyo', page: 'prequests', prequest: 'horntail' },
+    ],
+    spots: [
+    { name: 'Petristation / Newts', type: 'solo', recommended: true, mapStyle: 'forest', mapImage: 'assets/images/maps/leafre-newts.png', mobs: ['Red Wyvern', 'Blue Wyvern', 'Dark Wyvern'], detail: 'Dragon Forest. Newts give top-tier solo EXP. Start Horntail prequest at 120.', tip: 'Best solo training until Neo Tokyo.' },
+    { name: 'Skelegons (Party)', type: 'party', mapStyle: 'cave', mapImage: 'assets/images/maps/leafre-dragons.png', mobs: ['Skelegon', 'Skelosaurus'], detail: 'Best EXP per hour with a strong party. Requires good damage and a Bishop for HS.', tip: 'Faster than solo if you have a solid party.' },
+    { name: 'Krexel (demi-boss)', type: 'party', mapStyle: 'city', mapImage: 'assets/images/maps/world-map.png', mobs: ['Krexel'], detail: 'If prequest done — 2 runs/day in Ulu City. Good mesos between Pap and HT. See Bosses → Krexel.', tip: '2 runs/day — do not skip.' }
   ]},
-  { range: '120 – 140', label: 'Neo Tokyo + Horntail', theme: 'neotokyo', icon: '🏙️', spots: [
-    { name: 'Neo Tokyo (after prequest)', type: 'solo', mapStyle: 'city', mapImage: 'assets/images/maps/neo-tokyo.png', mobs: ['Yakuza Member', 'Gangster', 'Boss encounters'], detail: 'Start prequest in Kerning City. Best training in game at this range once unlocked.' },
-    { name: 'Horntail (daily boss)', type: 'party', mapStyle: 'volcano', mapImage: 'assets/images/maps/horntail-arena.png', mobs: ['Horntail'], detail: 'Run daily for necklace and rings. Complete Leafre prequest the day you hit 120.' }
+  { range: '120 – 140', label: 'Neo Tokyo + Horntail', theme: 'neotokyo', icon: '🏙️',
+    goal: 'Unlock Neo Tokyo after HT prequest — best training in the game at this range.',
+    priority: 'solo',
+    tips: ['NT prequest starts in Kerning — do not delay', 'Run Horntail daily for necklace and rings', 'EPQ after Chao at Lv 125', 'Start Pink Bean prequest at Lv 140'],
+    unlocks: [
+      { lv: 120, icon: '🌲', title: 'Chao (Ellin Forest)', page: 'prequests', prequest: 'chao' },
+      { lv: 125, icon: '🧚', title: 'Ephenia (EPQ)', page: 'prequests', prequest: 'ephenia' },
+      { lv: 140, icon: '👑', title: 'Pink Bean prequest', page: 'prequests', prequest: 'pinkbean' },
+    ],
+    spots: [
+    { name: 'Neo Tokyo (after prequest)', type: 'solo', recommended: true, mapStyle: 'city', mapImage: 'assets/images/maps/neo-tokyo.png', mobs: ['Yakuza Member', 'Gangster', 'Boss encounters'], detail: 'Start prequest in Kerning City. Best training in game at this range once unlocked.', tip: 'Best EXP in game once unlocked.' },
+    { name: 'Horntail (daily boss)', type: 'party', mapStyle: 'volcano', mapImage: 'assets/images/maps/horntail-arena.png', mobs: ['Horntail'], detail: 'Run daily for necklace and rings. Complete Leafre prequest the day you hit 120.', tip: 'Daily run — necklace is BiS for months.' }
   ]},
-  { range: '140 – 200', label: 'Neo Tokyo Deep + Pink Bean', theme: 'endgame', icon: '👑', spots: [
-    { name: 'Neo Tokyo Deep Maps', type: 'solo', mapStyle: 'city', mapImage: 'assets/images/maps/neo-tokyo.png', mobs: ['Dunas', 'Toad', 'Robo'], detail: 'Endgame training. Supplement with daily Horntail and Pink Bean runs.' },
-    { name: 'Pink Bean (daily boss)', type: 'party', mapStyle: 'temple', mapImage: 'assets/images/maps/pink-bean-temple.png', mobs: ['Pink Bean'], detail: 'Start Temple of Time prequest at 140. Hardest boss — see Bosses tab.' }
+  { range: '140 – 200', label: 'Neo Tokyo Deep + Pink Bean', theme: 'endgame', icon: '👑',
+    goal: 'NT deep maps for EXP + daily PB/Von Leon/NT boss rotation.',
+    priority: 'solo',
+    tips: ['PB daily after prequest — hardest standard boss', 'Von Leon: 2 runs/week, best EXP ratio', 'King Castle Golem daily for mesos + EXP', 'Farm Shaolin for best demi EXP/HP ratio at 150+'],
+    unlocks: [
+      { lv: 145, icon: '🤖', title: 'Vergamot (NT boss)', page: 'bosses', boss: 'vergamot' },
+      { lv: 170, icon: '🏯', title: 'Auf Haven expedition', page: 'prequests', prequest: 'auf-haven' },
+      { lv: 180, icon: '🦁', title: 'Von Leon (2×/week)', page: 'prequests', prequest: 'von-leon' },
+    ],
+    spots: [
+    { name: 'Neo Tokyo Deep Maps', type: 'solo', recommended: true, mapStyle: 'city', mapImage: 'assets/images/maps/neo-tokyo.png', mobs: ['Dunas', 'Toad', 'Robo'], detail: 'Endgame training. Supplement with daily Horntail and Pink Bean runs.', tip: 'Main grind — rotate NT bosses for variety.' },
+    { name: 'Pink Bean (daily boss)', type: 'party', mapStyle: 'temple', mapImage: 'assets/images/maps/pink-bean-temple.png', mobs: ['Pink Bean'], detail: 'Start Temple of Time prequest at 140. Hardest boss — see Bosses tab.', tip: 'Daily after prequest — plan your party comp.' }
   ]},
 ];
 

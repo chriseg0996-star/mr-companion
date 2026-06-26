@@ -512,7 +512,7 @@ function openPQ(id, skipHash) {
 function renderPQOverview() {
   const el = document.getElementById('pq-overview');
   if (!el || typeof PQS === 'undefined') return;
-  const levelInput = parseInt(document.getElementById('level-filter')?.value) || 0;
+  const levelInput = getContextLevel();
   el.innerHTML = `
     <div class="pq-track">
       ${PQS.map(pq => {
@@ -940,15 +940,7 @@ function shareGuide() {
   }
 }
 
-function initLevelFilter() {
-  const input = document.getElementById('level-filter');
-  if (!input) return;
-  input.addEventListener('input', () => {
-    const leechLf = document.getElementById('leech-level-filter');
-    if (leechLf && leechLf.value !== input.value) leechLf.value = input.value;
-    highlightLevel();
-  });
-}
+function initLevelFilter() {}
 
 // ══════════════════════════════════════════════
 // MAP VISUALS
@@ -1262,20 +1254,19 @@ function filterBossRegion(region) {
 let levelTypeFilter = 'all';
 let selectedLevelIndex = 0;
 
-function getMyLevel() {
-  return parseInt(document.getElementById('level-filter')?.value) || 0;
+function getBandLevelRange(l) {
+  const rangeParts = l?.range?.match(/(\d+)\s*[–-]\s*(\d+)/);
+  if (!rangeParts) return { start: 0, end: 200, mid: 0 };
+  const start = parseInt(rangeParts[1], 10);
+  const end = parseInt(rangeParts[2], 10);
+  return { start, end, mid: Math.floor((start + end) / 2) };
 }
 
-function findLevelIndexForLevel(myLevel) {
-  if (!myLevel) return -1;
-  for (let i = 0; i < LEVELS.length; i++) {
-    const rangeParts = LEVELS[i].range.match(/(\d+)\s*[–-]\s*(\d+)/);
-    if (!rangeParts) continue;
-    const start = parseInt(rangeParts[1], 10);
-    const end = parseInt(rangeParts[2], 10);
-    if (myLevel >= start && myLevel <= end) return i;
-  }
-  return -1;
+function getContextLevel() {
+  const leech = parseInt(document.getElementById('leech-level-filter')?.value, 10);
+  if (leech) return leech;
+  const l = LEVELS[getActiveLevelIndex()];
+  return getBandLevelRange(l).mid;
 }
 
 function getVisibleLevelIndices() {
@@ -1288,8 +1279,6 @@ function getVisibleLevelIndices() {
 function getActiveLevelIndex() {
   const visible = getVisibleLevelIndices();
   if (!visible.length) return 0;
-  const fromLevel = findLevelIndexForLevel(getMyLevel());
-  if (fromLevel >= 0 && visible.includes(fromLevel)) return fromLevel;
   if (visible.includes(selectedLevelIndex)) return selectedLevelIndex;
   return visible[0];
 }
@@ -1298,12 +1287,24 @@ function selectLevelBand(i) {
   if (i < 0 || i >= LEVELS.length) return;
   selectedLevelIndex = i;
   renderLeveling();
-  document.getElementById('level-detail')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function levelUnlockAction(u) {
+  if (u.prequest) return `openPrequest('${u.prequest}')`;
+  if (u.boss) return `showPage('bosses');showBoss('${u.boss}')`;
+  return `showPage('${u.page}')`;
+}
+
+function getPQsForBand(l) {
+  if (typeof PQS === 'undefined') return [];
+  const { mid } = getBandLevelRange(l);
+  return PQS.filter(pq => isPQInRange(pq, mid));
 }
 
 function renderLevelSpots(spots) {
   return spots.map(s => `
-    <article class="level-spot">
+    <article class="level-spot ${s.recommended ? 'level-spot--recommended' : ''}">
+      ${s.recommended ? '<span class="level-spot-rec">Best pick</span>' : ''}
       ${s.mapImage ? `<div class="level-spot-map">${renderMapScene(s.mapStyle || 'field', s.mobs || [], s.mapImage)}</div>` : ''}
       <div class="level-spot-body">
         <div class="level-spot-head">
@@ -1311,6 +1312,7 @@ function renderLevelSpots(spots) {
           <span class="badge ${s.type === 'party' ? 'badge-blue' : 'badge-green'}">${s.type}</span>
         </div>
         ${s.mobs?.length ? `<div class="level-spot-mobs">${s.mobs.map(m => `<span class="mob-chip">${m}</span>`).join('')}</div>` : ''}
+        ${s.tip ? `<p class="level-spot-tip">${s.tip}</p>` : ''}
         <p class="level-spot-detail">${s.detail}</p>
       </div>
     </article>
@@ -1320,21 +1322,17 @@ function renderLevelSpots(spots) {
 function renderLevelBands() {
   const el = document.getElementById('level-bands');
   if (!el) return;
-  const myLevel = getMyLevel();
   const active = getActiveLevelIndex();
   el.innerHTML = LEVELS.map((l, i) => {
     const spots = l.spots.filter(s => levelTypeFilter === 'all' || s.type === levelTypeFilter);
     if (!spots.length) return '';
-    const rangeParts = l.range.match(/(\d+)\s*[–-]\s*(\d+)/);
-    const rangeStart = rangeParts ? parseInt(rangeParts[1], 10) : 0;
-    const rangeEnd = rangeParts ? parseInt(rangeParts[2], 10) : 200;
-    const isCurrent = myLevel >= rangeStart && myLevel <= rangeEnd;
     const shortRange = l.range.replace(/\s/g, '');
     return `
-      <button type="button" class="level-band level-band--${l.theme || 'field'} ${i === active ? 'active' : ''} ${isCurrent ? 'level-band--here' : ''}"
+      <button type="button" class="level-band level-band--${l.theme || 'field'} ${i === active ? 'active' : ''}"
         role="tab" aria-selected="${i === active}" onclick="selectLevelBand(${i})">
         <span class="level-band-icon">${l.icon || '🗺️'}</span>
         <span class="level-band-range">${shortRange}</span>
+        <span class="level-band-label">${l.label}</span>
       </button>
     `;
   }).join('');
@@ -1353,23 +1351,75 @@ function renderLevelDetail() {
     return;
   }
 
-  const myLevel = getMyLevel();
-  const rangeParts = l.range.match(/(\d+)\s*[–-]\s*(\d+)/);
-  const isCurrent = myLevel && rangeParts
-    && myLevel >= parseInt(rangeParts[1], 10)
-    && myLevel <= parseInt(rangeParts[2], 10);
+  const pqs = getPQsForBand(l);
+  const { end } = getBandLevelRange(l);
+  const nextMilestone = typeof LEVEL_MILESTONES !== 'undefined'
+    ? LEVEL_MILESTONES.find(m => m.level > end)
+    : null;
+  const priorityLabel = { quests: 'Quests first', party: 'Party / PQ', solo: 'Solo grind' }[l.priority] || 'Train here';
 
   el.innerHTML = `
     <div class="level-detail-panel level-detail-panel--${l.theme || 'field'}">
       <header class="level-detail-header">
         <span class="level-detail-icon" aria-hidden="true">${l.icon || '🗺️'}</span>
         <div class="level-detail-titles">
-          <div class="level-detail-range">Lv ${l.range}${isCurrent ? ' <span class="badge badge-green level-here-badge">your range</span>' : ''}</div>
+          <div class="level-detail-range">Lv ${l.range}</div>
           <div class="level-detail-label">${l.label}</div>
         </div>
-        <span class="level-detail-count">${spots.length} spot${spots.length > 1 ? 's' : ''}</span>
+        <span class="level-detail-priority badge badge-yellow">${priorityLabel}</span>
       </header>
-      <div class="level-spots">${renderLevelSpots(spots)}</div>
+
+      ${l.goal ? `<div class="level-detail-goal"><strong>Goal:</strong> ${l.goal}</div>` : ''}
+
+      ${l.unlocks?.length ? `
+        <section class="level-detail-section">
+          <h4 class="level-section-title">Unlocks in this range</h4>
+          <div class="level-unlock-row">
+            ${l.unlocks.map(u => `
+              <button type="button" class="level-unlock-chip" onclick="${levelUnlockAction(u)}">
+                <span class="level-unlock-lv">Lv ${u.lv}</span>
+                <span class="level-unlock-icon">${u.icon}</span>
+                <span class="level-unlock-text">${u.title}</span>
+              </button>
+            `).join('')}
+          </div>
+        </section>
+      ` : ''}
+
+      ${nextMilestone ? `
+        <button type="button" class="level-next-milestone" onclick="${levelUnlockAction(nextMilestone)}">
+          <span class="level-next-label">Up next at Lv ${nextMilestone.level}</span>
+          <span class="level-next-text">${nextMilestone.icon} ${nextMilestone.title}</span>
+          <span class="level-next-arrow">→</span>
+        </button>
+      ` : ''}
+
+      <section class="level-detail-section">
+        <h4 class="level-section-title">Where to train</h4>
+        <div class="level-spots">${renderLevelSpots(spots)}</div>
+      </section>
+
+      ${pqs.length ? `
+        <section class="level-detail-section">
+          <h4 class="level-section-title">Party Quests</h4>
+          <div class="level-pq-row">
+            ${pqs.map(pq => `
+              <button type="button" class="level-pq-chip" onclick="openPQ('${pq.id}')">
+                <span class="level-pq-short">${pq.short}</span>
+                <span class="level-pq-lv">Lv ${pq.level}</span>
+                <span class="level-pq-party">${pq.party}</span>
+              </button>
+            `).join('')}
+          </div>
+        </section>
+      ` : ''}
+
+      ${l.tips?.length ? `
+        <section class="level-detail-section level-detail-section--tips">
+          <h4 class="level-section-title">Tips</h4>
+          <ul class="level-tips-list">${l.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+        </section>
+      ` : ''}
     </div>
   `;
 }
@@ -1384,15 +1434,13 @@ function renderLevels() {
 }
 
 function highlightLevel() {
-  const lf = document.getElementById('level-filter');
-  const leechLf = document.getElementById('leech-level-filter');
-  if (lf && leechLf && leechLf.value !== lf.value) leechLf.value = lf.value;
-  const idx = findLevelIndexForLevel(getMyLevel());
-  if (idx >= 0) selectedLevelIndex = idx;
   renderLeveling();
   renderLeeching();
-  renderLevelMilestones();
   renderPQOverview();
+}
+
+function renderLevelMilestones() {
+  /* milestones integrated into level detail panel */
 }
 
 function parseLevelRange(levelStr) {
@@ -1411,21 +1459,15 @@ function isLevelInRange(levelStr, myLevel) {
 }
 
 function highlightLeechLevel() {
-  const leechLf = document.getElementById('leech-level-filter');
-  const lf = document.getElementById('level-filter');
-  if (leechLf && lf && lf.value !== leechLf.value) lf.value = leechLf.value;
   renderLeeching();
-  renderLeveling();
-  renderLevelMilestones();
+  renderPQOverview();
 }
 
 function renderLeeching() {
   const g = typeof LEECHING_GUIDE !== 'undefined' ? LEECHING_GUIDE : null;
   if (!g) return;
 
-  const myLevel = parseInt(document.getElementById('leech-level-filter')?.value)
-    || parseInt(document.getElementById('level-filter')?.value)
-    || 0;
+  const myLevel = parseInt(document.getElementById('leech-level-filter')?.value, 10) || 0;
 
   const methods = document.getElementById('leech-methods');
   if (methods) {
@@ -1522,33 +1564,6 @@ function renderLeeching() {
   if (credit) {
     credit.innerHTML = `Source: <a href="${g.forumUrl}" target="_blank" rel="noopener">${g.credit}</a>`;
   }
-}
-
-function renderLevelMilestones() {
-  const el = document.getElementById('level-milestones');
-  if (!el || typeof LEVEL_MILESTONES === 'undefined') return;
-  const myLevel = parseInt(document.getElementById('level-filter')?.value) || 0;
-  if (!myLevel) { el.innerHTML = ''; return; }
-
-  const next = LEVEL_MILESTONES.find(m => m.level > myLevel);
-  if (!next) {
-    el.innerHTML = `<p class="milestone-strip milestone-strip--done">All major milestones complete — endgame grind.</p>`;
-    return;
-  }
-
-  const action = next.prequest
-    ? `openPrequest('${next.prequest}')`
-    : next.boss
-      ? `showPage('bosses');showBoss('${next.boss}')`
-      : `showPage('${next.page}')`;
-
-  el.innerHTML = `
-    <button type="button" class="milestone-strip" onclick="${action}">
-      <span class="milestone-strip-label">Next</span>
-      <span class="milestone-strip-text">${next.icon} Lv ${next.level} — ${next.title}</span>
-      <span class="milestone-strip-arrow">→</span>
-    </button>
-  `;
 }
 
 function filterLevelType(type, btn) {

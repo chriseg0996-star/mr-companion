@@ -1,2 +1,2 @@
 // Bump on each release (PWA cache + footer display).
-const APP_VERSION = '54';
+const APP_VERSION = '55';

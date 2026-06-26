@@ -1279,16 +1279,20 @@ function getPQsForBand(l) {
 function renderLevelSpots(spots) {
   return spots.map(s => `
     <article class="level-spot ${s.recommended ? 'level-spot--recommended' : ''}">
-      ${s.recommended ? '<span class="level-spot-rec">Best pick</span>' : ''}
-      <div class="level-spot-body">
-        <div class="level-spot-head">
-          <h3 class="level-spot-name">${s.name}</h3>
-          <span class="badge ${s.type === 'party' ? 'badge-blue' : 'badge-green'}">${s.type}</span>
-        </div>
-        ${s.mobs?.length ? `<div class="level-spot-mobs">${s.mobs.map(m => `<span class="mob-chip">${m}</span>`).join('')}</div>` : ''}
-        ${s.tip ? `<p class="level-spot-tip">${s.tip}</p>` : ''}
-        <p class="level-spot-detail">${s.detail}</p>
+      ${s.recommended ? '<span class="level-spot-rec">★ Best</span>' : ''}
+      <div class="level-spot-head">
+        <h3 class="level-spot-name">${s.name}</h3>
+        <span class="badge ${s.type === 'party' ? 'badge-blue' : 'badge-green'}">${s.type}</span>
       </div>
+      ${s.mobs?.length ? `<div class="level-spot-mob-grid">${s.mobs.map(m => `<span class="level-mob-pill">${m}</span>`).join('')}</div>` : ''}
+      ${s.location || s.exp ? `
+        <div class="level-spot-meta">
+          ${s.location ? `<span class="level-spot-loc">📍 ${s.location}</span>` : ''}
+          ${s.exp ? `<span class="level-spot-exp">⚡ ${s.exp}</span>` : ''}
+        </div>
+      ` : ''}
+      ${s.tip ? `<p class="level-spot-tip">${s.tip}</p>` : ''}
+      ${s.detail ? `<details class="level-spot-more"><summary>Directions</summary><p>${s.detail}</p></details>` : ''}
     </article>
   `).join('');
 }
@@ -1343,11 +1347,10 @@ function renderLevelDetail() {
         <span class="level-detail-priority badge badge-yellow">${priorityLabel}</span>
       </header>
 
-      ${l.goal ? `<div class="level-detail-goal"><strong>Goal:</strong> ${l.goal}</div>` : ''}
+      ${l.goal ? `<p class="level-detail-goal">${l.goal}</p>` : ''}
 
       ${l.unlocks?.length ? `
-        <section class="level-detail-section">
-          <h4 class="level-section-title">Unlocks in this range</h4>
+        <section class="level-detail-section level-detail-section--unlocks">
           <div class="level-unlock-row">
             ${l.unlocks.map(u => `
               <button type="button" class="level-unlock-chip" onclick="${levelUnlockAction(u)}">
@@ -1362,20 +1365,18 @@ function renderLevelDetail() {
 
       ${nextMilestone ? `
         <button type="button" class="level-next-milestone" onclick="${levelUnlockAction(nextMilestone)}">
-          <span class="level-next-label">Up next at Lv ${nextMilestone.level}</span>
+          <span class="level-next-label">Up next · Lv ${nextMilestone.level}</span>
           <span class="level-next-text">${nextMilestone.icon} ${nextMilestone.title}</span>
           <span class="level-next-arrow">→</span>
         </button>
       ` : ''}
 
-      <section class="level-detail-section">
-        <h4 class="level-section-title">Where to train</h4>
+      <section class="level-detail-section level-detail-section--spots">
         <div class="level-spots">${renderLevelSpots(spots)}</div>
       </section>
 
       ${pqs.length ? `
-        <section class="level-detail-section">
-          <h4 class="level-section-title">Party Quests</h4>
+        <section class="level-detail-section level-detail-section--pqs">
           <div class="level-pq-row">
             ${pqs.map(pq => `
               <button type="button" class="level-pq-chip" onclick="openPQ('${pq.id}')">
@@ -1389,10 +1390,10 @@ function renderLevelDetail() {
       ` : ''}
 
       ${l.tips?.length ? `
-        <section class="level-detail-section level-detail-section--tips">
-          <h4 class="level-section-title">Tips</h4>
+        <details class="level-detail-notes">
+          <summary>Tips · ${l.tips.length}</summary>
           <ul class="level-tips-list">${l.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-        </section>
+        </details>
       ` : ''}
     </div>
   `;

@@ -1031,10 +1031,42 @@ body.boss-detail-open { overflow: hidden; }
   border-color: var(--border-hover);
 }
 
+.level-band--island,
+.level-detail-panel--island { --zone-color: #3b82f6; }
+
+.level-band--victoria,
+.level-detail-panel--victoria { --zone-color: #4ade80; }
+
+.level-band--ludibrium,
+.level-detail-panel--ludibrium { --zone-color: #c084fc; }
+
+.level-band--orbis,
+.level-detail-panel--orbis { --zone-color: #60a5fa; }
+
+.level-band--leafre,
+.level-detail-panel--leafre { --zone-color: #f87171; }
+
+.level-band--neotokyo,
+.level-detail-panel--neotokyo { --zone-color: #fbbf24; }
+
+.level-band--endgame,
+.level-detail-panel--endgame { --zone-color: #ff8c69; }
+
+.level-band--field,
+.level-detail-panel--field { --zone-color: #94a3b8; }
+
 .level-band.active {
-  background: rgba(255, 140, 105, 0.1);
-  border-color: rgba(255, 140, 105, 0.4);
-  box-shadow: var(--shadow-glow);
+  background: color-mix(in srgb, var(--zone-color, var(--accent)) 14%, var(--bg2));
+  border-color: color-mix(in srgb, var(--zone-color, var(--accent)) 50%, var(--border));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--zone-color, var(--accent)) 22%, transparent);
+}
+
+.level-band.active .level-band-range {
+  color: var(--zone-color, var(--accent));
+}
+
+.level-band.active .level-band-icon {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--zone-color, var(--accent)) 40%, transparent));
 }
 
 .level-band-icon { font-size: 18px; line-height: 1; }
@@ -1074,26 +1106,23 @@ body.boss-detail-open { overflow: hidden; }
 .level-detail-panel {
   background: var(--bg2);
   border: 1px solid var(--border);
+  border-top: 2px solid var(--zone-color, var(--accent));
   border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
-
-.level-detail-panel--island    { border-top: 2px solid #3b82f6; }
-.level-detail-panel--victoria  { border-top: 2px solid #4ade80; }
-.level-detail-panel--ludibrium { border-top: 2px solid #c084fc; }
-.level-detail-panel--orbis     { border-top: 2px solid #60a5fa; }
-.level-detail-panel--leafre    { border-top: 2px solid #f87171; }
-.level-detail-panel--neotokyo  { border-top: 2px solid #fbbf24; }
-.level-detail-panel--endgame   { border-top: 2px solid var(--accent); }
 
 .level-detail-header {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, var(--bg3) 0%, var(--bg2) 100%);
+  border-bottom: 1px solid color-mix(in srgb, var(--zone-color, var(--border)) 25%, var(--border));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--zone-color, var(--accent)) 16%, var(--bg3)) 0%,
+    var(--bg2) 72%
+  );
 }
 
 .level-detail-icon { font-size: 28px; flex-shrink: 0; }
@@ -1115,25 +1144,31 @@ body.boss-detail-open { overflow: hidden; }
 .level-detail-priority {
   font-size: 10px !important;
   flex-shrink: 0;
+  color: var(--zone-color, var(--accent)) !important;
+  border-color: color-mix(in srgb, var(--zone-color, var(--accent)) 45%, transparent) !important;
+  background: color-mix(in srgb, var(--zone-color, var(--accent)) 10%, transparent) !important;
 }
 
 .level-detail-goal {
-  padding: 10px 16px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--text);
-  background: rgba(255, 140, 105, 0.06);
+  padding: 8px 16px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
   border-bottom: 1px solid var(--border);
-}
-
-.level-detail-goal strong {
-  color: var(--accent);
-  font-weight: 600;
 }
 
 .level-detail-section {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
+}
+
+.level-detail-section--unlocks,
+.level-detail-section--pqs {
+  padding: 10px 16px;
+}
+
+.level-detail-section--spots {
+  padding: 12px 16px 14px;
 }
 
 .level-detail-section:last-child { border-bottom: none; }
@@ -1160,8 +1195,8 @@ body.boss-detail-open { overflow: hidden; }
   align-items: center;
   gap: 6px;
   padding: 8px 10px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--zone-color, var(--accent)) 6%, var(--bg3));
+  border: 1px solid color-mix(in srgb, var(--zone-color, var(--accent)) 22%, var(--border));
   border-radius: var(--radius-sm);
   font: inherit;
   font-size: 12px;
@@ -1172,7 +1207,9 @@ body.boss-detail-open { overflow: hidden; }
 }
 
 .level-unlock-chip:hover,
-.level-pq-chip:hover { border-color: var(--accent); }
+.level-pq-chip:hover {
+  border-color: var(--zone-color, var(--accent));
+}
 
 .level-unlock-lv {
   font-size: 10px;
@@ -1199,7 +1236,7 @@ body.boss-detail-open { overflow: hidden; }
   gap: 8px;
   width: 100%;
   padding: 10px 16px;
-  background: var(--bg3);
+  background: color-mix(in srgb, var(--zone-color, var(--accent)) 5%, var(--bg3));
   border: none;
   border-bottom: 1px solid var(--border);
   font: inherit;
@@ -1210,7 +1247,9 @@ body.boss-detail-open { overflow: hidden; }
   transition: background 0.15s;
 }
 
-.level-next-milestone:hover { background: rgba(255, 140, 105, 0.06); }
+.level-next-milestone:hover {
+  background: color-mix(in srgb, var(--zone-color, var(--accent)) 10%, var(--bg3));
+}
 
 .level-next-label {
   font-size: 10px;
@@ -1258,8 +1297,8 @@ body.boss-detail-open { overflow: hidden; }
 }
 
 .level-spot--recommended {
-  border-color: rgba(74, 222, 128, 0.35);
-  background: rgba(74, 222, 128, 0.04);
+  border-color: color-mix(in srgb, var(--zone-color, #4ade80) 40%, var(--border));
+  background: color-mix(in srgb, var(--zone-color, #4ade80) 6%, var(--bg3));
 }
 
 .level-spot-rec {
@@ -1270,11 +1309,84 @@ body.boss-detail-open { overflow: hidden; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #4ade80;
+  color: var(--zone-color, #4ade80);
   padding: 2px 6px;
-  border: 1px solid rgba(74, 222, 128, 0.35);
+  border: 1px solid color-mix(in srgb, var(--zone-color, #4ade80) 40%, transparent);
   border-radius: 4px;
 }
+
+.level-mob-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--zone-color, var(--accent)) 12%, var(--bg2));
+  border: 1px solid color-mix(in srgb, var(--zone-color, var(--accent)) 28%, var(--border));
+  color: var(--text);
+}
+
+.level-spot-mob-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.level-spot-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.level-spot-loc,
+.level-spot-exp {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+}
+
+.level-spot-exp { color: var(--gold); }
+
+.level-spot-more {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.level-spot-more summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--zone-color, var(--muted));
+  list-style: none;
+}
+
+.level-spot-more summary::-webkit-details-marker { display: none; }
+
+.level-spot-more p {
+  margin: 8px 0 0;
+  line-height: 1.55;
+}
+
+.level-detail-notes {
+  padding: 0 16px 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.level-detail-notes summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 10px 0 6px;
+  color: var(--zone-color, var(--muted));
+  list-style: none;
+}
+
+.level-detail-notes summary::-webkit-details-marker { display: none; }
 
 .level-spot-body { min-width: 0; }
 

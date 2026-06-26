@@ -1009,20 +1009,21 @@ function renderWorldMap() {
   const myLevel = parseInt(document.getElementById('level-filter')?.value) || 0;
   const hero = document.getElementById('world-map-hero');
   if (hero) {
-    hero.innerHTML = `<img src="assets/images/maps/world-map.png" alt="MapleRoyals world map" class="world-map-img">`;
+    hero.innerHTML = `<img src="assets/images/maps/world-map.png" alt="MapleRoyals world map" class="world-map-img" width="900" height="80">`;
   }
   const el = document.getElementById('world-map');
   if (!el) return;
-  el.innerHTML = WORLD_MAP.map((z, i) => {
+  el.innerHTML = WORLD_MAP.map(z => {
     const parts = z.levels.match(/(\d+)[–-](\d+)/);
     const active = parts && myLevel >= parseInt(parts[1]) && myLevel <= parseInt(parts[2]);
     return `
-      <div class="world-node world-node--${z.theme} ${active ? 'active' : ''}" onclick="jumpToZone(${z.levelIndex})">
-        <div class="world-node-icon">${z.icon}</div>
-        <div class="world-node-name">${z.name}</div>
-        <div class="world-node-lv">Lv ${z.levels}</div>
-      </div>
-      ${i < WORLD_MAP.length - 1 ? '<div class="world-connector"></div>' : ''}
+      <button type="button" class="world-zone-tile world-zone-tile--${z.theme} ${active ? 'active' : ''}" onclick="jumpToZone(${z.levelIndex})">
+        <span class="world-zone-tile-icon">${z.icon}</span>
+        <span class="world-zone-tile-body">
+          <span class="world-zone-tile-name">${z.name}</span>
+          <span class="world-zone-tile-lv">Lv ${z.levels}</span>
+        </span>
+      </button>
     `;
   }).join('');
 }
@@ -1031,8 +1032,10 @@ function jumpToZone(i) {
   if (i < 0 || i >= LEVELS.length) return;
   const body = document.getElementById('level-' + i);
   const range = document.getElementById('level-range-' + i);
+  const header = body?.previousElementSibling;
   if (body) {
     body.classList.add('open');
+    header?.setAttribute('aria-expanded', 'true');
     range?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     range?.classList.add('level-highlight');
     setTimeout(() => range?.classList.remove('level-highlight'), 2000);
@@ -1298,19 +1301,16 @@ function renderLevels() {
     if (!spots.length) return '';
     return `
     <div class="level-range level-range--${l.theme || 'field'} ${isCurrent ? 'level-current' : ''}" id="level-range-${i}">
-      <div class="level-zone-banner level-zone--${l.theme || 'field'}">
-        <span class="level-zone-icon">${l.icon || '🗺️'}</span>
-        <span class="level-zone-name">${l.label}</span>
-      </div>
-      <div class="level-header" onclick="toggleLevel(${i})">
-        <div>
+      <button type="button" class="level-header" onclick="toggleLevel(${i})" aria-expanded="false" aria-controls="level-${i}">
+        <span class="level-header-main">
+          <span class="level-zone-icon">${l.icon || '🗺️'}</span>
           <span class="level-range-label">Lv ${l.range}</span>
-          ${isCurrent ? '<span class="badge badge-green" style="margin-left:8px;font-size:10px;">YOU ARE HERE</span>' : ''}
-          <span style="color:var(--muted);font-size:13px;margin-left:10px;">${l.label}</span>
-        </div>
-        <span style="color:var(--muted);font-size:12px;">${spots.length} spot${spots.length > 1 ? 's' : ''} ▾</span>
-      </div>
-      <div class="level-body ${isCurrent ? 'open' : ''}" id="level-${i}">
+          <span class="level-zone-name">${l.label}</span>
+          ${isCurrent ? '<span class="badge badge-green level-here-badge">here</span>' : ''}
+        </span>
+        <span class="level-header-meta">${spots.length} ▾</span>
+      </button>
+      <div class="level-body" id="level-${i}">
         ${spots.map(s => `
           <div class="spot spot-card">
             ${renderMapScene(s.mapStyle || 'field', s.mobs || [], s.mapImage || null)}
@@ -1471,38 +1471,24 @@ function renderLevelMilestones() {
   const myLevel = parseInt(document.getElementById('level-filter')?.value) || 0;
   if (!myLevel) { el.innerHTML = ''; return; }
 
-  const completed = LEVEL_MILESTONES.filter(m => m.level <= myLevel);
-  const upcoming = LEVEL_MILESTONES.filter(m => m.level > myLevel).slice(0, 3);
-  const current = completed[completed.length - 1];
+  const next = LEVEL_MILESTONES.find(m => m.level > myLevel);
+  if (!next) {
+    el.innerHTML = `<p class="milestone-strip milestone-strip--done">All major milestones complete — endgame grind.</p>`;
+    return;
+  }
+
+  const action = next.prequest
+    ? `openPrequest('${next.prequest}')`
+    : next.boss
+      ? `showPage('bosses');showBoss('${next.boss}')`
+      : `showPage('${next.page}')`;
 
   el.innerHTML = `
-    <div class="milestone-panel card">
-      <div class="card-header">
-        <h2>Level Milestones</h2>
-        <span class="badge badge-blue">Lv ${myLevel}</span>
-      </div>
-      ${current ? `<p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Latest: <strong>${current.icon} Lv ${current.level} — ${current.title}</strong></p>` : ''}
-      <div class="milestone-list">
-        ${upcoming.length ? upcoming.map(m => {
-          const action = m.prequest
-            ? `openPrequest('${m.prequest}')`
-            : m.boss
-              ? `showPage('bosses');showBoss('${m.boss}')`
-              : `showPage('${m.page}')`;
-          return `
-            <button type="button" class="milestone-item" onclick="${action}">
-              <span class="milestone-lv">Lv ${m.level}</span>
-              <span class="milestone-icon">${m.icon}</span>
-              <span class="milestone-body">
-                <span class="milestone-title">${m.title}</span>
-                <span class="milestone-detail">${m.detail}</span>
-              </span>
-              <span class="milestone-arrow">→</span>
-            </button>
-          `;
-        }).join('') : '<p style="font-size:13px;color:var(--muted);margin:0;">All major milestones complete — endgame grind time.</p>'}
-      </div>
-    </div>
+    <button type="button" class="milestone-strip" onclick="${action}">
+      <span class="milestone-strip-label">Next</span>
+      <span class="milestone-strip-text">${next.icon} Lv ${next.level} — ${next.title}</span>
+      <span class="milestone-strip-arrow">→</span>
+    </button>
   `;
 }
 
@@ -1515,7 +1501,11 @@ function filterLevelType(type, btn) {
 }
 
 function toggleLevel(i) {
-  document.getElementById('level-' + i).classList.toggle('open');
+  const body = document.getElementById('level-' + i);
+  const header = body?.previousElementSibling;
+  if (!body) return;
+  body.classList.toggle('open');
+  if (header) header.setAttribute('aria-expanded', body.classList.contains('open'));
 }
 
 // ══════════════════════════════════════════════

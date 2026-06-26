@@ -81,32 +81,45 @@
   </button>
 </nav>
 
-<div class="hero-wrap" id="hero-wrap">
-  <div class="hero-frame">
-    <img src="assets/images/ui/banner.png" alt="MapleRoyals — Henesys" class="hero-banner" onerror="this.closest('.hero-wrap').remove()">
-    <div class="hero-overlay"></div>
-    <div class="hero-caption">MapleRoyals v83 · The Clinic</div>
-  </div>
-</div>
-
 <div id="page-home" class="page active">
-  <header class="home-intro">
-    <h1>MapleRoyals Companion</h1>
-    <p class="subtitle">Your v83 guide for The Clinic — leveling, bosses, items, and everything in between.</p>
-    <p class="home-search-hint"><kbd>Ctrl</kbd>+<kbd>K</kbd> to search guides, bosses, items, and more.</p>
-  </header>
+  <div class="home-hero">
+    <img src="assets/images/ui/banner.png" alt="" class="home-hero-img" onerror="this.parentElement.classList.add('home-hero--plain')">
+    <div class="home-hero-overlay"></div>
+    <div class="home-hero-copy">
+      <p class="home-hero-eyebrow">MapleRoyals v83 · The Clinic</p>
+      <h1>MR Companion</h1>
+      <p class="home-hero-tagline">Leveling, bosses, items, and prequests — one place, no fluff.</p>
+    </div>
+  </div>
+  <div class="home-content">
+    <button type="button" class="home-search" onclick="openSearch()">
+      <span class="home-search-icon" aria-hidden="true">⌕</span>
+      <span class="home-search-text">Search guides, bosses, items…</span>
+      <kbd class="home-search-kbd">Ctrl K</kbd>
+    </button>
+    <section class="home-section">
+      <h2 class="section-label">Guides</h2>
+      <div id="home-guides" class="min-list"></div>
+    </section>
+    <section class="home-section">
+      <h2 class="section-label">Tools</h2>
+      <div id="home-tools" class="min-list"></div>
+    </section>
+  </div>
   <div id="pwa-install-banner" class="pwa-install-banner">
     <div class="pwa-install-inner">
-      <span>📲 Install MR Companion for offline access</span>
+      <span>Install for offline access</span>
       <button class="btn btn-sm" onclick="installPWA()">Install</button>
-      <button class="btn-ghost btn-sm" onclick="dismissPWA()">Not now</button>
+      <button class="btn-ghost btn-sm" onclick="dismissPWA()">Dismiss</button>
     </div>
   </div>
 </div>
 
 <div id="page-pqs" class="page">
-  <h1>Party Quest Guide</h1>
-  <p class="subtitle">PQs are the fastest way to level on MapleRoyals. Find a party in channel, enter the portal, and clear stages together.</p>
+  <header class="page-intro">
+    <h1>Party Quests</h1>
+    <p class="subtitle">Fastest way to level — find a party, enter the portal, clear stages together.</p>
+  </header>
   <div id="pq-overview" class="pq-overview"></div>
   <div id="pq-list"></div>
 </div>
@@ -114,9 +127,9 @@
 <div id="page-tools" class="page">
   <header class="page-intro">
     <h1>Tools &amp; Library</h1>
-    <p class="subtitle">Calculators, trackers, and curated forum reads — everything that isn't a core guide page.</p>
+    <p class="subtitle">Calculators, checklists, and forum reads.</p>
   </header>
-  <div class="guide-grid" id="tools-grid"></div>
+  <div id="tools-grid" class="min-list"></div>
   <section class="library-section">
     <h2 class="library-heading">Forum Library</h2>
     <p class="section-hint">Community-written deep dives. Open any thread for the full write-up.</p>

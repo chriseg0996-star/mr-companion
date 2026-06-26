@@ -72,8 +72,6 @@ function showPage(id, btn, skipHash) {
   if (id !== 'prequests') closePrequestDetail(true);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
-  const hero = document.getElementById('hero-wrap');
-  if (hero) hero.classList.toggle('hero-wrap--hidden', id !== 'home');
   updateNavActive(id, btn);
   closeNavDrawer();
   closeNavDropdowns();
@@ -363,22 +361,56 @@ function maybeResetDailies() {
   checkState = state;
 }
 
+function renderMinListItem({ id, title, desc, icon }) {
+  const label = title || id;
+  return `
+    <button type="button" class="min-list-item" onclick="showPage('${id}')">
+      ${icon ? `<span class="min-list-icon" aria-hidden="true">${icon}</span>` : ''}
+      <span class="min-list-body">
+        <span class="min-list-label">${label}</span>
+        ${desc ? `<span class="min-list-desc">${desc}</span>` : ''}
+      </span>
+      <span class="min-list-arrow" aria-hidden="true">→</span>
+    </button>
+  `;
+}
+
+function renderHome() {
+  const guideIds = new Set(['leveling', 'leeching', 'pqs', 'prequests', 'bosses', 'classes', 'items', 'jobadv']);
+  const toolIds = new Set(['quiz', 'gear']);
+
+  if (typeof GUIDE_SECTIONS !== 'undefined') {
+    const guides = document.getElementById('home-guides');
+    if (guides) {
+      guides.innerHTML = GUIDE_SECTIONS
+        .filter(s => guideIds.has(s.id))
+        .map(s => renderMinListItem({ id: s.id, title: s.title.replace(/ Guide$/, ''), desc: s.desc, icon: s.icon }))
+        .join('');
+    }
+    const tools = document.getElementById('home-tools');
+    if (tools) {
+      const coreTools = GUIDE_SECTIONS
+        .filter(s => toolIds.has(s.id))
+        .map(s => renderMinListItem({ id: s.id, title: s.title, desc: s.desc, icon: s.icon }));
+      coreTools.push(renderMinListItem({ id: 'checklist', title: 'Daily Checklist', desc: 'Vote, bosses, mesos', icon: '✅' }));
+      coreTools.push(renderMinListItem({ id: 'tools', title: 'All Tools & Forum Library', desc: 'Calculators and community guides', icon: '🧰' }));
+      tools.innerHTML = coreTools.join('');
+    }
+  }
+}
+
 function renderTools() {
   const tools = [
-    { id: 'glossary', icon: '👾', title: 'Mob Glossary', desc: 'What are Galloperas, newts, and other mobs you will train on.' },
-    { id: 'hpwash', icon: '❤️', title: 'HP Wash Calculator', desc: 'How much HP you gain per wash at your INT.' },
-    { id: 'scrolls', icon: '📜', title: 'Scroll Tracker', desc: 'Log scroll attempts and track your success rate.' },
-    { id: 'mesos', icon: '💰', title: 'Meso Tracker', desc: 'Track income and expenses per session.' },
-    { id: 'party', icon: '⚔️', title: 'Party Builder', desc: 'Build a bossing party and check for missing buffs.' },
-    { id: 'checklist', icon: '✅', title: 'Daily Checklist', desc: 'Daily and weekly tasks with progress bar.' },
+    { id: 'glossary', icon: '👾', title: 'Mob Glossary', desc: 'Mobs you will see while leveling' },
+    { id: 'hpwash', icon: '❤️', title: 'HP Wash Calculator', desc: 'HP gained per wash at your INT' },
+    { id: 'scrolls', icon: '📜', title: 'Scroll Tracker', desc: 'Log scroll attempts and rates' },
+    { id: 'mesos', icon: '💰', title: 'Meso Tracker', desc: 'Session income and expenses' },
+    { id: 'party', icon: '⚔️', title: 'Party Builder', desc: 'Boss party and missing buffs' },
+    { id: 'checklist', icon: '✅', title: 'Daily Checklist', desc: 'Daily and weekly tasks' },
   ];
-  document.getElementById('tools-grid').innerHTML = tools.map(t => `
-    <div class="guide-card" onclick="showPage('${t.id}')">
-      <div class="guide-icon">${t.icon}</div>
-      <div class="guide-title">${t.title}</div>
-      <div class="guide-desc">${t.desc}</div>
-    </div>
-  `).join('');
+  document.getElementById('tools-grid').innerHTML = tools
+    .map(t => renderMinListItem({ id: t.id, title: t.title, desc: t.desc, icon: t.icon }))
+    .join('');
   renderExternalLinks('tools-external-links');
 }
 
@@ -2522,6 +2554,7 @@ function initGlobalSearch() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
+  renderHome();
   initPWA();
   initGlobalSearch();
   renderTools();

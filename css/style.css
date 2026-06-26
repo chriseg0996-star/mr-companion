@@ -1803,6 +1803,68 @@ kbd {
 .external-link-desc { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
 .external-link-arrow { color: var(--muted); font-size: 14px; }
 
+/* Forum guides */
+.home-forum-guides { margin-top: 16px; }
+.forum-guides-section { display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px; }
+.forum-guides-group-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.forum-guide-card { flex-wrap: wrap; }
+.forum-guide-companion {
+  flex-shrink: 0;
+  margin-left: auto;
+  margin-right: 4px;
+}
+.forum-guide-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.forum-guide-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.forum-guide-pill:hover {
+  border-color: var(--accent);
+  background: var(--bg3);
+}
+.godly-items-summary { font-size: 13px; }
+.godly-tier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 6px;
+}
+.godly-tier {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.godly-tier-color {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 52px;
+}
+
 .home-onboarding { margin-bottom: 20px; }
 
 .onboarding-steps { display: flex; flex-direction: column; gap: 8px; }
@@ -2307,6 +2369,99 @@ kbd {
   font-size: 11px;
   color: var(--muted);
   flex-shrink: 0;
+}
+
+/* LEECHING */
+.leech-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 14px;
+}
+
+.leech-methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.leech-method {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.leech-method-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+.leech-method-label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.leech-method-detail { font-size: 11px; color: var(--muted); line-height: 1.45; }
+
+.leech-goby-card { margin-bottom: 4px; }
+
+.leech-range {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.leech-range:last-child { border-bottom: none; }
+
+.leech-range--current {
+  background: rgba(74, 222, 128, 0.06);
+  border-left: 2px solid var(--green);
+  padding-left: 8px;
+}
+
+.leech-range-row {
+  display: grid;
+  grid-template-columns: 72px 1fr minmax(120px, 1.4fr) auto;
+  gap: 8px 10px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.leech-range-lv {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.leech-range-mobs { font-weight: 500; min-width: 0; }
+.leech-range-map { font-size: 12px; color: var(--muted); min-width: 0; }
+.leech-range-badge { font-size: 10px !important; }
+.leech-range-note { font-size: 11px; color: var(--muted); margin-top: 4px; padding-left: 72px; }
+
+.leech-boss-sections { padding: 8px 10px 10px; }
+
+.leech-boss-group + .leech-boss-group {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.leech-boss-row {
+  display: grid;
+  grid-template-columns: 72px 1fr 1.5fr;
+  gap: 8px 10px;
+  padding: 6px 0;
+  font-size: 13px;
+  align-items: center;
+}
+
+.leech-boss-name { font-weight: 500; }
+
+@media (max-width: 640px) {
+  .leech-range-row,
+  .leech-boss-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .leech-range-note { padding-left: 0; }
 }
 
 .boss-card--early { border-top: 2px solid var(--green); }

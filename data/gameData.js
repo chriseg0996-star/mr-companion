@@ -1051,6 +1051,7 @@ const PQS = [
 
 const GUIDE_SECTIONS = [
   { id: 'leveling', icon: '📈', title: 'Leveling Guide', desc: 'Where to train from level 1 to 200 — maps, mobs, and when to run PQs.' },
+  { id: 'leeching', icon: '💸', title: 'Leeching Guide', desc: 'Mob leech maps by level, goby method, area bosses, and boss leech to 200.' },
   { id: 'pqs', icon: '👥', title: 'Party Quests', desc: 'KPQ through CWKPQ — how to run them, rewards, and when they are best.' },
   { id: 'prequests', icon: '📜', title: 'Prequests', desc: 'Zakum, Pap, HT, PB, CWK keystone, and Neo Tokyo unlock chains.' },
   { id: 'bosses', icon: '💀', title: 'Boss Guides', desc: 'Daily bosses, demi-bosses, and CWK — prequests, HP reqs, drops, and tips.' },

@@ -4,7 +4,7 @@
 // NAV
 // ══════════════════════════════════════════════
 const PAGE_TITLES = {
-  home: 'Start Here', leveling: 'Leveling', pqs: 'Party Quests', bosses: 'Bosses',
+  home: 'Start Here', leveling: 'Leveling', leeching: 'Leeching', pqs: 'Party Quests', bosses: 'Bosses',
   prequests: 'Prequests', items: 'Items', classes: 'Classes', jobadv: 'Jobs',
   quiz: 'Class Quiz', gear: 'Gear', checklist: 'Daily', tools: 'Tools',
   glossary: 'Mob Glossary',
@@ -17,7 +17,7 @@ const NAV_DRAWER_SECTIONS = [
   {
     label: 'Guides',
     items: [
-      { id: 'home', icon: '🏠' }, { id: 'leveling', icon: '📈' }, { id: 'pqs', icon: '👥' },
+      { id: 'home', icon: '🏠' }, { id: 'leveling', icon: '📈' }, { id: 'leeching', icon: '💸' }, { id: 'pqs', icon: '👥' },
       { id: 'bosses', icon: '💀' }, { id: 'prequests', icon: '📜' }, { id: 'items', icon: '🎒' },
       { id: 'classes', icon: '⚔️' }, { id: 'jobadv', icon: '🎖️' },
     ],
@@ -637,6 +637,75 @@ function renderExternalLinks(targetId) {
   `).join('');
 }
 
+function renderForumGuideCard(g) {
+  const companion = g.companionPage
+    ? `<button type="button" class="btn btn-sm btn-ghost forum-guide-companion" onclick="showPage('${g.companionPage}')">In-app guide</button>`
+    : '';
+  return `
+    <a href="${g.url}" target="_blank" rel="noopener" class="external-link-card forum-guide-card">
+      <span class="external-link-icon">${g.icon}</span>
+      <span class="external-link-body">
+        <span class="external-link-label">${g.label}</span>
+        <span class="external-link-desc">${g.desc}</span>
+      </span>
+      ${companion}
+      <span class="external-link-arrow">↗</span>
+    </a>
+  `;
+}
+
+function renderForumGuides() {
+  if (typeof FORUM_GUIDES === 'undefined') return;
+
+  const home = document.getElementById('home-forum-guides');
+  if (home) {
+    home.innerHTML = FORUM_GUIDES.flatMap(section => section.guides.map(renderForumGuideCard)).join('');
+  }
+
+  const tools = document.getElementById('tools-forum-guides');
+  if (tools) {
+    tools.innerHTML = FORUM_GUIDES.map(section => `
+      <div class="forum-guides-group">
+        <div class="forum-guides-group-label">${section.category}</div>
+        <div class="external-links-grid">${section.guides.map(renderForumGuideCard).join('')}</div>
+      </div>
+    `).join('');
+  }
+
+  renderForumGuideBars();
+  renderGodlyItemsSummary();
+}
+
+function renderForumGuideBars() {
+  if (typeof FORUM_GUIDES === 'undefined') return;
+  const all = FORUM_GUIDES.flatMap(s => s.guides);
+  ['leveling', 'bosses', 'items', 'jobadv', 'leeching'].forEach(pageId => {
+    const el = document.getElementById('forum-guide-bar-' + pageId);
+    if (!el) return;
+    const guides = all.filter(g => g.page === pageId || g.companionPage === pageId);
+    if (!guides.length) { el.innerHTML = ''; return; }
+    el.innerHTML = guides.map(g => `
+      <a href="${g.url}" target="_blank" rel="noopener" class="forum-guide-pill">${g.icon} ${g.label} ↗</a>
+    `).join('');
+  });
+}
+
+function renderGodlyItemsSummary() {
+  const el = document.getElementById('godly-items-summary');
+  const g = typeof GODLY_ITEMS_SUMMARY !== 'undefined' ? GODLY_ITEMS_SUMMARY : null;
+  if (!el || !g) return;
+  el.innerHTML = `
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">${g.chance}. ${g.bonus}</p>
+    <p style="font-size:12px;color:var(--gold);margin-bottom:10px;">${g.warning}</p>
+    <div class="godly-tier-grid">
+      ${g.tiers.map(t => `
+        <div class="godly-tier"><span class="godly-tier-color">${t.color}</span><span>${t.rule}</span></div>
+      `).join('')}
+    </div>
+    <p style="margin-top:10px;"><a href="${g.url}" target="_blank" rel="noopener" style="color:var(--blue);font-size:13px;">Full forum guide ↗</a></p>
+  `;
+}
+
 // ══════════════════════════════════════════════
 // PQs
 // ══════════════════════════════════════════════
@@ -1102,6 +1171,8 @@ function initLevelProfile() {
     setProfileLevel(v);
     const pl = document.getElementById('profile-level');
     if (pl && pl.value !== v) pl.value = v;
+    const leechLf = document.getElementById('leech-level-filter');
+    if (leechLf && leechLf.value !== v) leechLf.value = v;
   });
 }
 
@@ -1483,10 +1554,156 @@ function highlightLevel() {
   const lf = document.getElementById('level-filter');
   const pl = document.getElementById('profile-level');
   if (lf && pl && lf.value !== pl.value) setProfileLevel(lf.value);
+  const leechLf = document.getElementById('leech-level-filter');
+  if (lf && leechLf && leechLf.value !== lf.value) leechLf.value = lf.value;
   renderLevels();
+  renderLeeching();
   renderWorldMap();
   renderLevelMilestones();
   renderPQOverview();
+}
+
+function parseLevelRange(levelStr) {
+  const range = levelStr.match(/(\d+)\s*[–-]\s*(\d+)/);
+  if (range) return { start: parseInt(range[1], 10), end: parseInt(range[2], 10) };
+  const plus = levelStr.match(/(\d+)\s*\+/);
+  if (plus) return { start: parseInt(plus[1], 10), end: 200 };
+  return { start: 0, end: 0 };
+}
+
+function isLevelInRange(levelStr, myLevel) {
+  if (!myLevel) return false;
+  const { start, end } = parseLevelRange(levelStr);
+  if (levelStr.includes('+') && !levelStr.includes('–') && !levelStr.includes('-')) return myLevel >= start;
+  return myLevel >= start && myLevel <= end;
+}
+
+function highlightLeechLevel() {
+  const leechLf = document.getElementById('leech-level-filter');
+  const lf = document.getElementById('level-filter');
+  if (leechLf && lf && lf.value !== leechLf.value) {
+    lf.value = leechLf.value;
+    setProfileLevel(leechLf.value);
+  }
+  renderLeeching();
+  renderLevels();
+  renderWorldMap();
+  renderLevelMilestones();
+}
+
+function renderLeeching() {
+  const g = typeof LEECHING_GUIDE !== 'undefined' ? LEECHING_GUIDE : null;
+  if (!g) return;
+
+  const myLevel = parseInt(document.getElementById('leech-level-filter')?.value)
+    || parseInt(document.getElementById('level-filter')?.value)
+    || getProfile().level
+    || 0;
+
+  const methods = document.getElementById('leech-methods');
+  if (methods) {
+    methods.innerHTML = g.methods.map(m => `
+      <div class="leech-method">
+        <span class="leech-method-icon" aria-hidden="true">${m.icon}</span>
+        <div>
+          <div class="leech-method-label">${m.label}</div>
+          <div class="leech-method-detail">${m.detail}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const gobyEl = document.getElementById('leech-goby');
+  if (gobyEl && g.goby) {
+    const gb = g.goby;
+    gobyEl.innerHTML = `
+      <div class="card-header">
+        <h2>${gb.title}</h2>
+        <span class="badge badge-yellow">Premium</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:8px;"><strong>${gb.map}</strong> · ${gb.mobs.join(', ')}</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">${gb.summary}</p>
+      <h3>Seller setup</h3>
+      <ul class="drop-list">${gb.requirements.map(r => `<li>${r}</li>`).join('')}</ul>
+      <h3>As the buyer</h3>
+      <ul class="drop-list">${gb.buyerNotes.map(r => `<li>${r}</li>`).join('')}</ul>
+    `;
+  }
+
+  const list = document.getElementById('leech-list');
+  if (list) {
+    list.innerHTML = g.ranges.map((r, i) => {
+      const isCurrent = isLevelInRange(r.level, myLevel);
+      const spot = r.spots[0];
+      if (!spot) return '';
+      return `
+        <div class="leech-range ${isCurrent ? 'leech-range--current' : ''}" id="leech-range-${i}">
+          <div class="leech-range-row">
+            <span class="leech-range-lv">Lv ${r.level}</span>
+            <span class="leech-range-mobs">${spot.mobs}</span>
+            <span class="leech-range-map">${spot.map}</span>
+            ${isCurrent ? '<span class="badge badge-green leech-range-badge">You</span>' : ''}
+          </div>
+          ${spot.notes ? `<div class="leech-range-note">${spot.notes}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+  const bosses = document.getElementById('leech-bosses');
+  if (bosses) {
+    bosses.innerHTML = `
+      <div class="leech-boss-group">
+        <div class="boss-progression-group-label">Area bosses</div>
+        <div class="leech-boss-list">
+          ${g.areaBosses.map(b => `
+            <div class="leech-range">
+              <div class="leech-boss-row">
+                <span class="leech-range-lv">${b.level}</span>
+                <span class="leech-boss-name">${b.name}</span>
+                <span class="leech-range-map">${b.map}</span>
+              </div>
+              ${b.notes ? `<div class="leech-range-note">${b.notes}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="leech-boss-group">
+        <div class="boss-progression-group-label">Boss expeditions</div>
+        <div class="leech-boss-list">
+          ${g.bossLeech.map(b => `
+            <div class="leech-boss-row">
+              <span class="leech-range-lv">${b.level}</span>
+              <span class="leech-boss-name">${b.name}</span>
+              ${b.notes ? `<span class="leech-range-map">${b.notes}</span>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  const tips = document.getElementById('leech-tips');
+  if (tips) {
+    tips.innerHTML = `
+      <div class="card-header"><h2>Tips</h2></div>
+      <ul class="drop-list">${g.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+    `;
+  }
+
+  const credit = document.getElementById('leech-credit');
+  if (credit) {
+    credit.innerHTML = `Source: <a href="${g.forumUrl}" target="_blank" rel="noopener">${g.credit}</a>`;
+  }
+}
+
+function initLeechLevelFilter() {
+  const input = document.getElementById('leech-level-filter');
+  const levelFilter = document.getElementById('level-filter');
+  if (!input) return;
+  const saved = localStorage.getItem('mr-level');
+  if (saved && !input.value) input.value = saved;
+  if (levelFilter && saved && !levelFilter.value) levelFilter.value = saved;
 }
 
 function renderLevelMilestones() {
@@ -2507,6 +2724,18 @@ function buildSearchIndex() {
   LEVELS.forEach(l => l.spots.forEach(s => {
     items.push({ type: 'Training', label: s.name, sub: `Lv ${l.range}`, action: () => showPage('leveling') });
   }));
+  if (typeof FORUM_GUIDES !== 'undefined') {
+    FORUM_GUIDES.forEach(section => {
+      section.guides.forEach(g => {
+        items.push({
+          type: 'Forum',
+          label: g.label,
+          sub: g.desc,
+          action: () => { if (g.companionPage) showPage(g.companionPage); else window.open(g.url, '_blank', 'noopener'); },
+        });
+      });
+    });
+  }
   searchIndex = items;
   return items;
 }
@@ -2600,11 +2829,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initPWA();
   initGlobalSearch();
   renderTools();
+  renderForumGuides();
   renderPQs();
   renderBossProgression();
   initBossRegionFilters();
   renderBosses();
   renderLevels();
+  renderLeeching();
   renderWorldMap();
   renderLevelMilestones();
   renderChecklist();
@@ -2623,6 +2854,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateItemsPageMeta();
   renderQuickRefChips();
   initLevelProfile();
+  initLeechLevelFilter();
   initItemAutocomplete();
   initRouteFromHash();
 });

@@ -29,11 +29,12 @@
       <button type="button" class="nav-btn" data-page="bosses" onclick="showPage('bosses', this)">Bosses</button>
       <button type="button" class="nav-btn" data-page="items" onclick="showPage('items', this)">Items</button>
 
-      <div class="nav-dropdown" data-nav-pages="pqs,prequests,classes,jobadv">
+      <div class="nav-dropdown" data-nav-pages="pqs,prequests,classes,jobadv,leeching">
         <button type="button" class="nav-btn nav-dropdown-toggle" aria-expanded="false">Guides <span class="nav-chevron">▾</span></button>
         <div class="nav-dropdown-menu">
           <button type="button" class="nav-dropdown-item" data-page="pqs" onclick="navGo('pqs')">Party Quests</button>
           <button type="button" class="nav-dropdown-item" data-page="prequests" onclick="navGo('prequests')">Prequests</button>
+          <button type="button" class="nav-dropdown-item" data-page="leeching" onclick="navGo('leeching')">Leeching</button>
           <button type="button" class="nav-dropdown-item" data-page="classes" onclick="navGo('classes')">Classes</button>
           <button type="button" class="nav-dropdown-item" data-page="jobadv" onclick="navGo('jobadv')">Jobs</button>
         </div>
@@ -122,6 +123,10 @@
   <div id="home-next-steps" class="home-next-steps"></div>
   <div id="home-progress" class="home-progress"></div>
   <div class="guide-grid" id="guide-grid"></div>
+  <details class="price-expand-wrap home-forum-guides">
+    <summary>Community forum guides</summary>
+    <div id="home-forum-guides" class="external-links-grid"></div>
+  </details>
   <hr class="divider">
   <h2>New Player Path</h2>
   <div class="path-steps">
@@ -162,6 +167,9 @@
   <h1>More Tools</h1>
   <p class="subtitle">Extra helpers for players who are already settled in.</p>
   <div class="guide-grid" id="tools-grid"></div>
+  <h2 style="margin-top:20px;">Community Forum Guides</h2>
+  <p class="section-hint">Essential reads from the MapleRoyals forums — leveling, bossing, mastery books, and more.</p>
+  <div id="tools-forum-guides" class="forum-guides-section"></div>
   <hr class="divider">
   <h2>Official Links</h2>
   <div id="tools-external-links" class="external-links-grid"></div>
@@ -186,6 +194,7 @@
 <div id="page-items" class="page">
   <h1>Item Guide</h1>
   <p class="subtitle">Dropped something and not sure what to do? Search it — keep, sell in FM, or vendor to NPC. FM prices from Sylafia's guide.</p>
+  <div id="forum-guide-bar-items" class="forum-guide-bar"></div>
   <div class="item-search-row">
     <div class="item-search-wrap">
       <input type="text" id="item-search" placeholder="e.g. Zakum Helmet, Work Gloves, Chaos Scroll..." autocomplete="off" aria-autocomplete="list" aria-controls="item-suggestions" aria-expanded="false">
@@ -224,6 +233,10 @@
       <div style="font-size:13px;color:var(--muted);line-height:2.2;">White potions · Basic consumables · No-stat mob drops · Equipment 20+ levels below yours · Basic arrows · Common ores (mithril, orihalcon)</div>
     </div>
     <div class="card">
+      <div class="card-header"><h2>Godly Items</h2><span class="badge badge-purple">ROYALS</span></div>
+      <div id="godly-items-summary" class="godly-items-summary"></div>
+    </div>
+    <div class="card">
       <div class="card-header"><h2>Godly Stat Thresholds</h2><span class="badge badge-yellow">REFERENCE</span></div>
       <div style="font-size:13px;color:var(--muted);">
         <div class="stat-row"><span class="stat-label">Earrings</span><span>10+ main stat</span></div>
@@ -252,6 +265,7 @@
 <div id="page-bosses" class="page">
   <h1>Boss Guides</h1>
   <p class="subtitle">Tap a boss for prequest, drops, and party tips.</p>
+  <div id="forum-guide-bar-bosses" class="forum-guide-bar"></div>
   <div class="boss-toolbar">
     <div class="filter-bar filter-bar--compact" id="boss-tier-filters">
       <button class="filter-btn active" onclick="filterBoss('all', this)">All</button>
@@ -273,6 +287,7 @@
 <div id="page-leveling" class="page">
   <h1>Leveling Guide</h1>
   <p class="subtitle">Best training spots from level 1 to 200 — maps, mobs, and solo vs party options.</p>
+  <div id="forum-guide-bar-leveling" class="forum-guide-bar"></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
     <label style="font-size:13px;color:var(--muted);">I'm level:</label>
     <input type="number" id="level-filter" placeholder="e.g. 45" min="1" max="200" style="width:80px;" oninput="highlightLevel()">
@@ -287,6 +302,27 @@
   <h2 style="margin-top:28px;">Training Spots</h2>
   <div id="level-milestones" class="level-milestones"></div>
   <div id="level-list"></div>
+</div>
+
+<div id="page-leeching" class="page">
+  <h1>Leeching Guide</h1>
+  <p class="subtitle">Where to leech from level 10 to 200 — mob maps, goby method, area bosses, and boss leech.</p>
+  <div id="forum-guide-bar-leeching" class="forum-guide-bar"></div>
+  <div class="leech-toolbar">
+    <label style="font-size:13px;color:var(--muted);">I'm level:</label>
+    <input type="number" id="leech-level-filter" placeholder="e.g. 85" min="1" max="200" style="width:80px;" oninput="highlightLeechLevel()">
+    <a href="https://royals.ms/forum/threads/leeching-guide-updated-2022-goby-guide-included.145533/" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a>
+  </div>
+  <div id="leech-methods" class="leech-methods"></div>
+  <div id="leech-goby" class="card leech-goby-card"></div>
+  <h2 style="margin-top:20px;">Mob leech by level</h2>
+  <div id="leech-list"></div>
+  <details class="price-expand-wrap" style="margin-top:16px;">
+    <summary>Area boss leech &amp; boss expeditions (135+)</summary>
+    <div id="leech-bosses" class="leech-boss-sections"></div>
+  </details>
+  <div id="leech-tips" class="card" style="margin-top:16px;"></div>
+  <p class="price-credit" id="leech-credit"></p>
 </div>
 
 <div id="page-checklist" class="page">
@@ -454,6 +490,7 @@
 <div id="page-jobadv" class="page">
   <h1>Job Advancement Guide</h1>
   <p class="subtitle">Every job change from level 8/10 to 120 — NPCs, quest steps, and skill priorities. Check off steps as you go.</p>
+  <div id="forum-guide-bar-jobadv" class="forum-guide-bar"></div>
   <div class="job-progress-bar-wrap"><div class="job-progress-bar" id="job-progress-bar"></div></div>
   <p class="section-hint" id="job-progress-label"></p>
   <div class="filter-bar">
@@ -522,6 +559,8 @@
 <script src="data/externalLinks.js"></script>
 <script src="data/bossDrops.js"></script>
 <script src="data/scrollPrices.js"></script>
+<script src="data/leechingData.js"></script>
+<script src="data/forumGuides.js"></script>
 
 <div id="boss-detail-overlay" class="guide-overlay" hidden onclick="if(event.target===this)closeBossDetail()">
   <div id="boss-detail" class="guide-panel" role="dialog" aria-modal="true" aria-label="Boss guide"></div>

@@ -241,19 +241,23 @@
 
 <div id="page-bosses" class="page">
   <h1>Boss Guides</h1>
-  <p class="subtitle">Prequests, HP requirements, mobs, drops, and party tips for every boss. Click a boss for the full guide.</p>
-  <div id="boss-progression" class="boss-progression"></div>
-  <div class="filter-bar" id="boss-tier-filters">
-    <button class="filter-btn active" onclick="filterBoss('all', this)">All</button>
-    <button class="filter-btn" onclick="filterBoss('early', this)">Early</button>
-    <button class="filter-btn" onclick="filterBoss('mid', this)">Mid</button>
-    <button class="filter-btn" onclick="filterBoss('late', this)">Late</button>
-    <button class="filter-btn" onclick="filterBoss('endgame', this)">Endgame</button>
-    <button class="filter-btn" onclick="filterBoss('demi', this)">Demi</button>
+  <p class="subtitle">Tap a boss for prequest, drops, and party tips.</p>
+  <div class="boss-toolbar">
+    <div class="filter-bar filter-bar--compact" id="boss-tier-filters">
+      <button class="filter-btn active" onclick="filterBoss('all', this)">All</button>
+      <button class="filter-btn" onclick="filterBoss('early', this)">Early</button>
+      <button class="filter-btn" onclick="filterBoss('mid', this)">Mid</button>
+      <button class="filter-btn" onclick="filterBoss('late', this)">Late</button>
+      <button class="filter-btn" onclick="filterBoss('endgame', this)">Endgame</button>
+      <button class="filter-btn" onclick="filterBoss('demi', this)">Demi</button>
+    </div>
+    <select id="boss-region-filters" class="filter-select" aria-label="Filter by region"></select>
   </div>
-  <div class="filter-bar filter-bar--secondary" id="boss-region-filters"></div>
-  <div id="boss-detail" class="boss-detail"></div>
   <div class="boss-grid" id="boss-grid"></div>
+  <details class="boss-progression-wrap">
+    <summary>Boss progression order</summary>
+    <div id="boss-progression" class="boss-progression"></div>
+  </details>
 </div>
 
 <div id="page-leveling" class="page">
@@ -509,6 +513,11 @@
 <script src="data/externalLinks.js"></script>
 <script src="data/bossDrops.js"></script>
 <script src="data/scrollPrices.js"></script>
+
+<div id="boss-detail-overlay" class="boss-detail-overlay" hidden onclick="if(event.target===this)closeBossDetail()">
+  <div id="boss-detail" class="boss-detail" role="dialog" aria-modal="true" aria-label="Boss guide"></div>
+</div>
+
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -68,6 +68,7 @@ function initRouteFromHash() {
 }
 
 function showPage(id, btn, skipHash) {
+  if (id !== 'bosses') closeBossDetail(true);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   updateNavActive(id, btn);
@@ -119,7 +120,11 @@ function initNav() {
   });
   document.addEventListener('click', closeNavDropdowns);
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeNavDrawer(); closeNavDropdowns(); }
+    if (e.key === 'Escape') {
+      closeBossDetail();
+      closeNavDrawer();
+      closeNavDropdowns();
+    }
   });
   const initial = parseHash()?.page || 'home';
   updateNavActive(initial);
@@ -1231,11 +1236,12 @@ function getBossRegion(b) {
 }
 
 function initBossRegionFilters() {
-  const bar = document.getElementById('boss-region-filters');
-  if (!bar) return;
-  bar.innerHTML = BOSS_REGIONS.map((r, i) =>
-    `<button type="button" class="filter-btn filter-btn--region ${i === 0 ? 'active' : ''}" onclick="filterBossRegion('${r.id}', this)">${r.label}</button>`
+  const sel = document.getElementById('boss-region-filters');
+  if (!sel) return;
+  sel.innerHTML = BOSS_REGIONS.map(r =>
+    `<option value="${r.id}">${r.label}</option>`
   ).join('');
+  sel.onchange = () => filterBossRegion(sel.value);
 }
 
 function renderBosses() {
@@ -1248,13 +1254,14 @@ function renderBosses() {
   });
   grid.innerHTML = filtered.map(b => `
     <div class="boss-card boss-card--${b.tier}" onclick="showBoss('${b.id}')">
-      <img src="${b.image}" alt="${b.name}" class="boss-img" onerror="this.style.display='none'">
-      <div class="card-header" style="margin-bottom:4px;">
-        <h2>${b.name}</h2>
-        <span class="badge ${tierColors[b.tier]}">${b.tier}</span>
+      <img src="${b.image}" alt="" class="boss-img" onerror="this.style.display='none'">
+      <div class="boss-card-body">
+        <div class="boss-card-row">
+          <h2>${b.name}</h2>
+          <span class="badge ${tierColors[b.tier]}">${b.tier}</span>
+        </div>
+        <div class="boss-meta">Lv ${b.level} · ${b.hpReq} HP · ${b.location}</div>
       </div>
-      <div class="boss-level">Level ${b.level} · ${b.location}</div>
-      <div style="font-size:12px;color:var(--muted);">HP req: ${b.hpReq} · Damage: ${b.dmgReq}</div>
     </div>
   `).join('');
 }
@@ -1312,13 +1319,23 @@ function renderBossPrequestProgress(bossId) {
   `;
 }
 
+function closeBossDetail(skipHash) {
+  const overlay = document.getElementById('boss-detail-overlay');
+  if (!overlay || overlay.hidden) return;
+  overlay.hidden = true;
+  document.body.classList.remove('boss-detail-open');
+  if (!skipHash) setRoute('bosses');
+}
+
 function showBoss(id, skipHash) {
   if (!skipHash) {
     showPage('bosses', null, true);
     setRoute('bosses', id);
   }
   const b = BOSSES.find(x => x.id === id);
+  if (!b) return;
   const detail = document.getElementById('boss-detail');
+  const overlay = document.getElementById('boss-detail-overlay');
   const pq = getBossPrequest(id);
   const prequestId = pq?.id || b.prequestId || id;
   detail.innerHTML = `
@@ -1330,7 +1347,7 @@ function showBoss(id, skipHash) {
             <h2>${b.name}</h2>
             <div style="font-size:13px;color:var(--muted);">${b.location}</div>
           </div>
-          <button class="btn-ghost" onclick="document.getElementById('boss-detail').classList.remove('show')" style="font-size:12px;padding:5px 12px;flex-shrink:0;">Close</button>
+          <button class="btn-ghost" onclick="closeBossDetail()" style="font-size:12px;padding:5px 12px;flex-shrink:0;">Close</button>
         </div>
       </div>
     </div>
@@ -1367,24 +1384,25 @@ function showBoss(id, skipHash) {
     <ul class="drop-list">${b.tips.map(t => `<li>${t}</li>`).join('')}</ul>
     ${b.forumGuide ? `<p style="margin-top:12px;"><a href="${b.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a></p>` : ''}
   `;
-  detail.classList.add('show');
-  detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  detail.scrollTop = 0;
+  overlay.hidden = false;
+  document.body.classList.add('boss-detail-open');
 }
 
 function filterBoss(tier, btn) {
   document.querySelectorAll('#boss-tier-filters .filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   bossTierFilter = tier;
-  document.getElementById('boss-detail').classList.remove('show');
+  closeBossDetail(true);
   renderBosses();
   renderBossProgression();
 }
 
-function filterBossRegion(region, btn) {
-  document.querySelectorAll('#boss-region-filters .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function filterBossRegion(region) {
   bossRegionFilter = region;
-  document.getElementById('boss-detail').classList.remove('show');
+  const sel = document.getElementById('boss-region-filters');
+  if (sel) sel.value = region;
+  closeBossDetail(true);
   renderBosses();
 }
 

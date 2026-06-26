@@ -835,6 +835,266 @@ button.btn-ghost:hover {
 .btn-sm { padding: 6px 14px; font-size: 13px; }
 
 /* BOSS */
+/* BOSS — chips + inline panel (leveling pattern) */
+.boss-bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.boss-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 0 1 76px;
+  min-width: 68px;
+  max-width: 88px;
+  padding: 6px 4px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--tier-color, var(--border));
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font: inherit;
+  color: var(--text);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.boss-band:hover {
+  background: var(--bg3);
+  border-color: color-mix(in srgb, var(--tier-color, var(--border)) 40%, var(--border));
+}
+
+.boss-band.active {
+  background: color-mix(in srgb, var(--tier-color, var(--accent)) 12%, var(--bg2));
+  border-color: color-mix(in srgb, var(--tier-color, var(--accent)) 50%, var(--border));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--tier-color, var(--accent)) 20%, transparent);
+}
+
+.boss-band--early { --tier-color: #4ade80; }
+.boss-band--mid { --tier-color: #fbbf24; }
+.boss-band--late { --tier-color: #c084fc; }
+.boss-band--endgame { --tier-color: #f87171; }
+.boss-band--demi { --tier-color: #60a5fa; }
+
+.boss-band-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+}
+
+.boss-band-img--missing { display: none; }
+
+.boss-band-name {
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boss-band-lv {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.boss-band.active .boss-band-lv {
+  color: var(--tier-color, var(--accent));
+}
+
+.boss-detail { min-height: 120px; margin-bottom: 16px; }
+
+.boss-detail-empty {
+  margin: 0;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--bg2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+}
+
+.boss-detail-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--tier-color, var(--accent));
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.boss-detail-panel--early { --tier-color: #4ade80; }
+.boss-detail-panel--mid { --tier-color: #fbbf24; }
+.boss-detail-panel--late { --tier-color: #c084fc; }
+.boss-detail-panel--endgame { --tier-color: #f87171; }
+.boss-detail-panel--demi { --tier-color: #60a5fa; }
+
+.boss-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--tier-color, var(--border)) 25%, var(--border));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tier-color, var(--accent)) 14%, var(--bg3)) 0%,
+    var(--bg2) 72%
+  );
+}
+
+.boss-detail-titles { flex: 1; min-width: 0; }
+
+.boss-detail-name {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.boss-detail-loc {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.boss-detail-tier {
+  flex-shrink: 0;
+  font-size: 10px !important;
+}
+
+.boss-detail-body {
+  display: grid;
+  grid-template-columns: 1fr minmax(88px, 108px);
+}
+
+.boss-detail-main { min-width: 0; }
+
+.boss-detail-main .boss-detail-section:last-child,
+.boss-detail-main .level-next-milestone:last-child {
+  border-bottom: none;
+}
+
+.boss-detail-section {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.boss-detail-section--tips {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.boss-detail-section--stats {
+  padding: 10px 16px;
+}
+
+.boss-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.boss-stat {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+}
+
+.boss-detail-section--stats .boss-respawn-banner {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.boss-detail-text {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.boss-drop-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.boss-drop-list li { margin-bottom: 4px; }
+.boss-drop-list li:last-child { margin-bottom: 0; }
+
+.boss-detail-art {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px 12px;
+  border-left: 1px solid var(--border);
+  background: color-mix(in srgb, var(--tier-color, var(--accent)) 4%, var(--bg2));
+}
+
+.boss-detail-portrait {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.4));
+}
+
+.boss-detail-portrait--missing { display: none; }
+
+.boss-progression-section {
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.boss-progression-section .level-section-title {
+  margin: 0 0 10px;
+  padding: 0 2px;
+}
+
+.boss-progression-row--active {
+  border-color: var(--accent) !important;
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg3)) !important;
+}
+
+.boss-detail-panel .boss-pq-progress {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 520px) {
+  .boss-detail-body {
+    grid-template-columns: 1fr;
+  }
+
+  .boss-detail-art {
+    order: -1;
+    border-left: none;
+    border-bottom: 1px solid var(--border);
+    padding: 12px;
+  }
+
+  .boss-detail-portrait {
+    width: 72px;
+    height: 72px;
+  }
+}
+
 .boss-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

@@ -68,7 +68,6 @@ function initRouteFromHash() {
 }
 
 function showPage(id, btn, skipHash) {
-  if (id !== 'bosses') closeBossDetail(true);
   if (id !== 'prequests') closePrequestDetail(true);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
@@ -1016,12 +1015,26 @@ function getBossPrequest(bossId) {
   return PREQUESTS?.find(p => p.id === pid || p.bossId === bossId);
 }
 
+function getBossProgressionList() {
+  const main = BOSSES.filter(b => b.tier !== 'demi' && b.tier !== 'endgame');
+  const endgame = BOSSES.filter(b => b.tier === 'endgame');
+  const demi = BOSSES.filter(b => b.tier === 'demi');
+  return [...main, ...endgame, ...demi];
+}
+
+function getNextBossInProgression(currentId) {
+  const all = getBossProgressionList();
+  const i = all.findIndex(b => b.id === currentId);
+  return i >= 0 && i < all.length - 1 ? all[i + 1] : null;
+}
+
 function renderBossProgression() {
   const el = document.getElementById('boss-progression');
   if (!el) return;
   const main = BOSSES.filter(b => b.tier !== 'demi' && b.tier !== 'endgame');
   const endgame = BOSSES.filter(b => b.tier === 'endgame');
   const demi = BOSSES.filter(b => b.tier === 'demi');
+  const active = getActiveBoss();
 
   const renderGroup = (label, list) => {
     if (!list.length) return '';
@@ -1031,7 +1044,7 @@ function renderBossProgression() {
         <ol class="boss-progression-list">
           ${list.map(b => `
             <li>
-              <button type="button" class="boss-progression-row" onclick="showBoss('${b.id}')">
+              <button type="button" class="boss-progression-row ${b.id === active?.id ? 'boss-progression-row--active' : ''}" onclick="selectBoss('${b.id}')">
                 <span class="boss-progression-tier tier-${b.tier}" aria-hidden="true"></span>
                 <span class="boss-progression-name">${b.name}</span>
                 <span class="boss-progression-lv">Lv ${b.level}</span>
@@ -1052,6 +1065,11 @@ function renderBossProgression() {
 
 let bossTierFilter = 'all';
 let bossRegionFilter = 'all';
+let selectedBossId = 'zakum';
+
+const BOSS_TIER_LABELS = {
+  early: 'Early', mid: 'Mid', late: 'Late', endgame: 'Endgame', demi: 'Demi',
+};
 
 const BOSS_REGIONS = [
   { id: 'all', label: 'All regions' },
@@ -1091,33 +1109,159 @@ function initBossRegionFilters() {
   sel.onchange = () => filterBossRegion(sel.value);
 }
 
-function renderBosses() {
-  const grid = document.getElementById('boss-grid');
-  const tierColors = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple', demi: 'badge-blue', endgame: 'badge-red' };
-  const filtered = BOSSES.filter(b => {
+function getFilteredBosses() {
+  return BOSSES.filter(b => {
     if (bossTierFilter !== 'all' && b.tier !== bossTierFilter) return false;
     if (bossRegionFilter !== 'all' && getBossRegion(b) !== bossRegionFilter) return false;
     return true;
   });
-  grid.innerHTML = filtered.map(b => `
-    <div class="boss-card boss-card--${b.tier}" onclick="showBoss('${b.id}')">
-      <div class="boss-card-body">
-        <div class="boss-card-row">
-          <h2>${b.name}</h2>
-          <span class="badge ${tierColors[b.tier]}">${b.tier}</span>
+}
+
+function getActiveBoss() {
+  const list = getFilteredBosses();
+  if (!list.length) return null;
+  return list.find(b => b.id === selectedBossId) || list[0];
+}
+
+function selectBoss(id, skipHash) {
+  selectedBossId = id;
+  renderBossing();
+  if (!skipHash) {
+    const onBosses = document.getElementById('page-bosses')?.classList.contains('active');
+    if (!onBosses) showPage('bosses', null, true);
+    setRoute('bosses', id);
+  }
+}
+
+function renderBossBands() {
+  const el = document.getElementById('boss-bands');
+  if (!el) return;
+  const list = getFilteredBosses();
+  const active = getActiveBoss();
+  if (!list.length) {
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = list.map(b => `
+    <button type="button" class="boss-band boss-band--${b.tier} ${b.id === active?.id ? 'active' : ''}"
+      role="tab" aria-selected="${b.id === active?.id}" title="${b.name}" onclick="selectBoss('${b.id}')">
+      <img class="boss-band-img" src="${b.image}" alt="" width="40" height="40" loading="lazy"
+        onerror="this.classList.add('boss-band-img--missing')">
+      <span class="boss-band-name">${b.name}</span>
+      <span class="boss-band-lv">${b.level.split(' ')[0]}</span>
+    </button>
+  `).join('');
+}
+
+function renderBossDetailPanel() {
+  const el = document.getElementById('boss-detail');
+  if (!el) return;
+  const b = getActiveBoss();
+  if (!b) {
+    el.innerHTML = `<p class="boss-detail-empty">No bosses match these filters — try another tier or region.</p>`;
+    return;
+  }
+
+  const pq = getBossPrequest(b.id);
+  const prequestId = pq?.id || b.prequestId || b.id;
+  const nextBoss = getNextBossInProgression(b.id);
+  const tierLabel = BOSS_TIER_LABELS[b.tier] || b.tier;
+  const tierBadge = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple', endgame: 'badge-red', demi: 'badge-blue' }[b.tier] || 'badge-yellow';
+
+  el.innerHTML = `
+    <div class="boss-detail-panel boss-detail-panel--${b.tier}">
+      <header class="boss-detail-header">
+        <div class="boss-detail-titles">
+          <div class="boss-detail-name">${b.name}</div>
+          <div class="boss-detail-loc">📍 ${b.location}</div>
         </div>
-        <div class="boss-meta">Lv ${b.level} · ${b.hpReq} HP · ${b.location}</div>
+        <span class="boss-detail-tier badge ${tierBadge}">${tierLabel}</span>
+      </header>
+
+      <div class="boss-detail-body">
+        <div class="boss-detail-main">
+          <section class="boss-detail-section boss-detail-section--stats">
+            <div class="boss-stat-row">
+              <span class="boss-stat">⚔️ Lv ${b.level}</span>
+              <span class="boss-stat">❤️ ${b.hpReq}</span>
+              <span class="boss-stat">💥 ${b.dmgReq}</span>
+              <span class="boss-stat">👥 ${b.party}</span>
+              <span class="boss-stat">⏱ ${b.respawn}</span>
+            </div>
+            ${renderBossRespawnBanner(b.id)}
+          </section>
+
+          ${b.phases?.length ? `
+            <section class="boss-detail-section">
+              <h3 class="level-section-title">Boss flow</h3>
+              ${renderFlow(b.phases, 'phase')}
+            </section>
+          ` : ''}
+
+          ${pq ? renderBossPrequestProgress(b.id) : ''}
+
+          <section class="boss-detail-section">
+            <h3 class="level-section-title">${pq ? 'Prequest' : 'How to access'}</h3>
+            <p class="boss-detail-text">${b.prequest}</p>
+            ${pq ? `<button type="button" class="btn btn-sm" style="margin-top:8px;" onclick="openPrequest('${prequestId}')">Full prequest guide →</button>` : ''}
+          </section>
+
+          <section class="boss-detail-section">
+            <h3 class="level-section-title">Drops</h3>
+            <ul class="boss-drop-list">${b.drops.map(d => `<li>${itemLink(d)}</li>`).join('')}</ul>
+            ${renderBossDropTable(b.id)}
+          </section>
+
+          <section class="boss-detail-section boss-detail-section--tips">
+            <h3 class="level-section-title">Tips</h3>
+            <ul class="level-tips-list">${b.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+            ${b.forumGuide ? `<a href="${b.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost" style="margin-top:10px;">Forum guide ↗</a>` : ''}
+          </section>
+
+          ${nextBoss ? `
+            <button type="button" class="level-next-milestone" onclick="selectBoss('${nextBoss.id}')">
+              <span class="level-next-label">Up next</span>
+              <span class="level-next-text">${nextBoss.name} · Lv ${nextBoss.level}</span>
+              <span class="level-next-arrow">→</span>
+            </button>
+          ` : ''}
+        </div>
+
+        <aside class="boss-detail-art" aria-hidden="true">
+          <img class="boss-detail-portrait" src="${b.image}" alt="" width="96" height="96" loading="lazy"
+            onerror="this.classList.add('boss-detail-portrait--missing')">
+        </aside>
       </div>
     </div>
-  `).join('');
+  `;
+}
+
+function renderBossing() {
+  const active = getActiveBoss();
+  if (active && active.id !== selectedBossId) selectedBossId = active.id;
+  renderBossBands();
+  renderBossDetailPanel();
+  renderBossProgression();
+}
+
+function renderBosses() {
+  renderBossing();
+}
+
+function closeBossDetail() {
+  /* legacy — bosses use inline panel */
+}
+
+function showBoss(id, skipHash) {
+  if (!skipHash) showPage('bosses', null, true);
+  selectBoss(id, skipHash);
 }
 
 function renderBossDropTable(bossId) {
   const table = BOSS_DROP_TABLES?.[bossId];
   if (!table?.length) return '';
   return `
-    <h3>Drop Table</h3>
-    <p class="section-hint" style="margin:0 0 12px;">Tap an item to check keep/vendor advice and FM price.</p>
+    <p class="section-hint" style="margin:12px 0 8px;">Detailed drop rates — tap an item for keep/vendor advice.</p>
     <div class="drop-table-wrap">
       <table class="drop-table">
         <thead><tr><th>Drop</th><th>Rate</th><th>Notes</th></tr></thead>
@@ -1154,7 +1298,7 @@ function renderBossPrequestProgress(bossId) {
   const pct = total ? Math.round((done / total) * 100) : 0;
   const complete = total > 0 && done === total;
   return `
-    <div class="boss-pq-progress card" style="margin-bottom:16px;padding:14px 16px;">
+    <div class="boss-pq-progress boss-detail-section" style="padding:12px 16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
         <span style="font-size:13px;font-weight:600;">${pq.short} prequest</span>
         <span class="badge ${complete ? 'badge-green' : 'badge-yellow'}">${done}/${total}${complete ? ' ✓' : ''}</span>
@@ -1165,87 +1309,18 @@ function renderBossPrequestProgress(bossId) {
   `;
 }
 
-function closeBossDetail(skipHash) {
-  const overlay = document.getElementById('boss-detail-overlay');
-  if (!overlay || overlay.hidden) return;
-  overlay.hidden = true;
-  document.body.classList.remove('guide-modal-open');
-  if (!skipHash) setRoute('bosses');
-}
-
-function showBoss(id, skipHash) {
-  if (!skipHash) {
-    showPage('bosses', null, true);
-    setRoute('bosses', id);
-  }
-  const b = BOSSES.find(x => x.id === id);
-  if (!b) return;
-  const detail = document.getElementById('boss-detail');
-  const overlay = document.getElementById('boss-detail-overlay');
-  const pq = getBossPrequest(id);
-  const prequestId = pq?.id || b.prequestId || id;
-  detail.innerHTML = `
-    <div class="boss-detail-top">
-      <div class="boss-detail-head">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
-          <div>
-            <h2>${b.name}</h2>
-            <div style="font-size:13px;color:var(--muted);">${b.location}</div>
-          </div>
-          <button class="btn-ghost" onclick="closeBossDetail()" style="font-size:12px;padding:5px 12px;flex-shrink:0;">Close</button>
-        </div>
-      </div>
-    </div>
-    <div class="info-grid">
-      <div class="info-item"><div class="label">Level req</div><div class="value">${b.level}</div></div>
-      <div class="info-item"><div class="label">HP required</div><div class="value">${b.hpReq}</div></div>
-      <div class="info-item"><div class="label">Damage req</div><div class="value">${b.dmgReq}</div></div>
-      <div class="info-item"><div class="label">Party size</div><div class="value">${b.party}</div></div>
-      <div class="info-item"><div class="label">Respawn</div><div class="value">${b.respawn}</div></div>
-    </div>
-    ${renderBossRespawnBanner(b.id)}
-    <div class="sep"></div>
-    <h3>Boss Flow</h3>
-    ${b.phases ? renderFlow(b.phases, 'phase') : ''}
-    <div class="sep"></div>
-    ${pq ? renderBossPrequestProgress(b.id) : ''}
-    ${pq ? `
-    <h3>Prequest Walkthrough</h3>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">
-      <a href="#" onclick="openPrequest('${prequestId}');return false;" style="color:var(--blue);">Open full step-by-step prequest guide →</a>
-    </p>
-    <div class="sep"></div>
-    ` : ''}
-    <h3>${pq ? 'Prequest Summary' : 'How to Access'}</h3>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">${b.prequest}</p>
-    <h3>Drops</h3>
-    <ul class="drop-list">${b.drops.map(d => `<li>${itemLink(d)}</li>`).join('')}</ul>
-    ${renderBossDropTable(b.id)}
-    <div class="sep"></div>
-    <h3>Tips</h3>
-    <ul class="drop-list">${b.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-    ${b.forumGuide ? `<p style="margin-top:12px;"><a href="${b.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a></p>` : ''}
-  `;
-  detail.scrollTop = 0;
-  overlay.hidden = false;
-  document.body.classList.add('guide-modal-open');
-}
-
 function filterBoss(tier, btn) {
   document.querySelectorAll('#boss-tier-filters .filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   bossTierFilter = tier;
-  closeBossDetail(true);
-  renderBosses();
-  renderBossProgression();
+  renderBossing();
 }
 
 function filterBossRegion(region) {
   bossRegionFilter = region;
   const sel = document.getElementById('boss-region-filters');
   if (sel) sel.value = region;
-  closeBossDetail(true);
-  renderBosses();
+  renderBossing();
 }
 
 // ══════════════════════════════════════════════

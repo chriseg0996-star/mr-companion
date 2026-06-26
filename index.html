@@ -221,10 +221,9 @@
   </details>
 </div>
 
-<div id="page-bosses" class="page">
-  <header class="page-intro">
-    <h1>Boss Guides</h1>
-    <p class="subtitle">Tap a boss for prequest, drops, and party tips.</p>
+<div id="page-bosses" class="page page--bosses">
+  <header class="page-intro page-intro--compact">
+    <h1>Bosses</h1>
   </header>
   <div class="boss-toolbar">
     <div class="filter-bar filter-bar--compact" id="boss-tier-filters">
@@ -237,11 +236,12 @@
     </div>
     <select id="boss-region-filters" class="filter-select" aria-label="Filter by region"></select>
   </div>
-  <div class="boss-grid" id="boss-grid"></div>
-  <details class="boss-progression-wrap">
-    <summary>Boss progression order</summary>
+  <div id="boss-bands" class="boss-bands" role="tablist" aria-label="Bosses"></div>
+  <div id="boss-detail" class="boss-detail" role="tabpanel"></div>
+  <section class="boss-progression-section">
+    <h3 class="level-section-title">Boss progression</h3>
     <div id="boss-progression" class="boss-progression"></div>
-  </details>
+  </section>
 </div>
 
 <div id="page-leveling" class="page page--leveling">
@@ -526,9 +526,6 @@
 <script src="data/leechingData.js"></script>
 <script src="data/forumGuides.js"></script>
 
-<div id="boss-detail-overlay" class="guide-overlay" hidden onclick="if(event.target===this)closeBossDetail()">
-  <div id="boss-detail" class="guide-panel" role="dialog" aria-modal="true" aria-label="Boss guide"></div>
-</div>
 
 <div id="prequest-detail-overlay" class="guide-overlay" hidden onclick="if(event.target===this)closePrequestDetail()">
   <div id="prequest-detail" class="guide-panel" role="dialog" aria-modal="true" aria-label="Prequest guide"></div>

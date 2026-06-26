@@ -4,20 +4,20 @@
 // NAV
 // ══════════════════════════════════════════════
 const PAGE_TITLES = {
-  home: 'Start Here', leveling: 'Leveling', leeching: 'Leeching', pqs: 'Party Quests', bosses: 'Bosses',
+  home: 'MR Companion', leveling: 'Leveling', leeching: 'Leeching', pqs: 'Party Quests', bosses: 'Bosses',
   prequests: 'Prequests', items: 'Items', classes: 'Classes', jobadv: 'Jobs',
   quiz: 'Class Quiz', gear: 'Gear', checklist: 'Daily', tools: 'Tools & Library',
   glossary: 'Mob Glossary',
   hpwash: 'HP Wash', scrolls: 'Scrolls', mesos: 'Mesos', party: 'Party',
 };
 
-const NAV_PRIMARY = ['home', 'leveling', 'bosses', 'items'];
+const NAV_PRIMARY = ['leveling', 'bosses', 'items'];
 
 const NAV_DRAWER_SECTIONS = [
   {
     label: 'Guides',
     items: [
-      { id: 'home', icon: '🏠' }, { id: 'leveling', icon: '📈' }, { id: 'leeching', icon: '💸' }, { id: 'pqs', icon: '👥' },
+      { id: 'leveling', icon: '📈' }, { id: 'leeching', icon: '💸' }, { id: 'pqs', icon: '👥' },
       { id: 'bosses', icon: '💀' }, { id: 'prequests', icon: '📜' }, { id: 'items', icon: '🎒' },
       { id: 'classes', icon: '⚔️' }, { id: 'jobadv', icon: '🎖️' },
     ],
@@ -90,9 +90,10 @@ function updateNavActive(id, btn) {
   document.querySelectorAll('.nav-btn[data-page], .nav-dropdown-item[data-page], .nav-drawer-item[data-page]').forEach(b => {
     b.classList.toggle('active', b.dataset.page === id);
   });
+  document.querySelector('.nav-logo')?.classList.toggle('active', id === 'home');
   document.querySelectorAll('.nav-bottom-btn').forEach(b => {
     if (b.dataset.page === 'menu') {
-      b.classList.toggle('active', !NAV_PRIMARY.includes(id));
+      b.classList.toggle('active', !NAV_PRIMARY.includes(id) && id !== 'home');
     } else {
       b.classList.toggle('active', b.dataset.page === id);
     }
@@ -103,7 +104,8 @@ function updateNavActive(id, btn) {
   });
   if (!btn) {
     btn = document.querySelector(`.nav-btn[data-page="${id}"]`)
-      || document.querySelector(`.nav-bottom-btn[data-page="${id}"]`);
+      || document.querySelector(`.nav-bottom-btn[data-page="${id}"]`)
+      || (id === 'home' ? document.querySelector('.nav-logo') : null);
   }
 }
 
@@ -296,228 +298,11 @@ function dismissPWA() {
   document.getElementById('pwa-install-banner')?.classList.remove('show');
 }
 
-function getProfile() {
-  return {
-    level: parseInt(localStorage.getItem('mr-level')) || 0,
-    classId: localStorage.getItem('mr-class') || '',
-  };
-}
-
-function setProfileLevel(v) {
-  if (v) localStorage.setItem('mr-level', v);
-  else localStorage.removeItem('mr-level');
-  const lf = document.getElementById('level-filter');
-  const pl = document.getElementById('profile-level');
-  if (lf) lf.value = v || '';
-  if (pl) pl.value = v || '';
-  highlightLevel();
-  renderHomeHeader();
-  renderProfileClassHint();
-  renderHomeNextSteps();
-  renderHomeProgress();
-  renderHomeOnboarding();
-}
-
-function setProfileClass(id) {
-  if (id) localStorage.setItem('mr-class', id);
-  else localStorage.removeItem('mr-class');
-  renderHomeHeader();
-  renderProfileClassHint();
-  renderHomeNextSteps();
-  renderHomeProgress();
-  renderGear();
-}
-
 function prequestProgress(id) {
   const pq = PREQUESTS.find(p => p.id === id);
   if (!pq) return { done: 0, total: 0 };
   const done = pq.steps.filter(s => isStepDone(stepKey('pq', `${id}-${s.id}`))).length;
   return { done, total: pq.steps.length };
-}
-
-function renderHomeNextSteps() {
-  const el = document.getElementById('home-next-steps');
-  if (!el) return;
-  const { level, classId } = getProfile();
-  renderHomeHeader();
-  renderProfileClassHint();
-
-  const steps = [];
-  if (!classId && level < 30) {
-    steps.push({ icon: '🎯', text: 'Not sure what to play?', action: () => showPage('quiz'), label: 'Take Class Quiz' });
-  }
-  if (level > 0 && level < 10) {
-    steps.push({ icon: '🏝️', text: 'Finish Maple Island tutorials', action: () => { showPage('leveling'); jumpToZone(0); }, label: 'Leveling guide' });
-  }
-  if (level >= 8 && level < 30) {
-    steps.push({ icon: '🎖️', text: 'Complete your next job advancement', action: () => showPage('jobadv'), label: 'Job guide' });
-  }
-  if (level >= 21 && level <= 30) {
-    steps.push({ icon: '👥', text: 'KPQ is fastest EXP at your level', action: () => showPage('pqs'), label: 'PQ guide' });
-  }
-  if (level >= 35 && level <= 50) {
-    steps.push({ icon: '👥', text: 'Run LPQ until level 50', action: () => showPage('pqs'), label: 'PQ guide' });
-  }
-  if (level >= 51 && level <= 70) {
-    steps.push({ icon: '👥', text: 'OPQ is best EXP right now', action: () => showPage('pqs'), label: 'PQ guide' });
-  }
-  if (level >= 70 && level < 85) {
-    steps.push({ icon: '🌤️', text: 'Train at Galloperas (Stairway to the Sky)', action: () => { showPage('leveling'); jumpToZone(4); }, label: 'Leveling' });
-  }
-  if (level >= 50) {
-    const z = prequestProgress('zakum');
-    if (z.done < z.total) steps.push({ icon: '💀', text: 'Zakum prequest in progress', action: () => openPrequest('zakum'), label: `${z.done}/${z.total} steps` });
-  }
-  if (level >= 70) {
-    const kr = prequestProgress('krexel');
-    if (kr.done < kr.total) steps.push({ icon: '🐙', text: 'Krexel prequest (Singapore)', action: () => openPrequest('krexel'), label: `${kr.done}/${kr.total} steps` });
-  }
-  if (level >= 85) {
-    const p = prequestProgress('papulatus');
-    if (p.done < p.total) steps.push({ icon: '🕐', text: 'Papulatus prequest', action: () => openPrequest('papulatus'), label: `${p.done}/${p.total} steps` });
-    const st = prequestProgress('scar-targa');
-    if (st.done < st.total) steps.push({ icon: '🎡', text: 'Scarlion/Targa prequest', action: () => openPrequest('scar-targa'), label: `${st.done}/${st.total} steps` });
-  }
-  if (level >= 90) {
-    const cwk = prequestProgress('cwk');
-    if (cwk.done < cwk.total) steps.push({ icon: '🏰', text: 'Crimsonwood Keystone prequest', action: () => openPrequest('cwk'), label: `${cwk.done}/${cwk.total} steps` });
-  }
-  if (level >= 120) {
-    const ht = prequestProgress('horntail');
-    if (ht.done < ht.total) steps.push({ icon: '🐉', text: 'Horntail prequest — do this first', action: () => openPrequest('horntail'), label: `${ht.done}/${ht.total} steps` });
-    const nt = prequestProgress('neo-tokyo');
-    if (nt.done < nt.total) steps.push({ icon: '🏙️', text: 'Neo Tokyo prequest for best EXP', action: () => openPrequest('neo-tokyo'), label: `${nt.done}/${nt.total} steps` });
-  }
-  if (level >= 140) {
-    const pb = prequestProgress('pinkbean');
-    if (pb.done < pb.total) steps.push({ icon: '👑', text: 'Pink Bean / Temple of Time', action: () => openPrequest('pinkbean'), label: `${pb.done}/${pb.total} steps` });
-  }
-  if (level >= 50) {
-    steps.push({ icon: '✅', text: 'Daily: vote, Zakum, farm mesos', action: () => showPage('checklist'), label: 'Daily checklist' });
-  }
-
-  if (!steps.length || !level) {
-    el.innerHTML = '';
-    window._homeActions = [];
-    return;
-  }
-
-  window._homeActions = steps.map(s => s.action);
-  const primary = steps[0];
-  const more = steps.slice(1, 4);
-
-  el.innerHTML = `
-    <div class="home-focus">
-      <button type="button" class="home-focus-card" onclick="runHomeAction(0)">
-        <span class="home-focus-icon">${primary.icon}</span>
-        <span class="home-focus-body">
-          <span class="home-focus-label">Up next · Lv ${level}</span>
-          <span class="home-focus-text">${primary.text}</span>
-        </span>
-        <span class="home-focus-cta">${primary.label} →</span>
-      </button>
-      ${more.length ? `
-        <ul class="home-focus-more">
-          ${more.map((s, i) => `
-            <li><button type="button" onclick="runHomeAction(${i + 1})">${s.icon} ${s.text}</button></li>
-          `).join('')}
-        </ul>
-      ` : ''}
-    </div>
-  `;
-}
-
-function renderHomeHeader() {
-  const title = document.getElementById('home-title');
-  const sub = document.getElementById('home-subtitle');
-  if (!title || !sub) return;
-  const { level, classId } = getProfile();
-  if (level && classId && CLASS_GUIDES[classId]) {
-    title.textContent = `Lv ${level} ${CLASS_GUIDES[classId].name}`;
-    sub.textContent = 'Your personalized dashboard — one place to see what matters right now.';
-  } else if (level) {
-    title.textContent = `Level ${level}`;
-    sub.textContent = 'Your personalized dashboard — one place to see what matters right now.';
-  } else {
-    title.textContent = 'MapleRoyals Companion';
-    sub.textContent = 'Your v83 guide for The Clinic — set your level above to unlock personalized tips.';
-  }
-}
-
-function renderProfileClassHint() {
-  const el = document.getElementById('profile-class-hint');
-  if (!el) return;
-  const { classId } = getProfile();
-  if (classId && CLASS_GUIDES[classId]) {
-    el.hidden = false;
-    el.innerHTML = `Playing <strong>${CLASS_GUIDES[classId].name}</strong> — <button type="button" class="profile-class-link" onclick="openClassGuide('${classId}')">Open class guide</button>`;
-  } else {
-    el.hidden = true;
-    el.innerHTML = '';
-  }
-}
-
-function runHomeAction(i) {
-  if (window._homeActions && window._homeActions[i]) window._homeActions[i]();
-}
-
-function initProfile() {
-  const levelInput = document.getElementById('profile-level');
-  const classSelect = document.getElementById('profile-class');
-  if (!levelInput || !classSelect) return;
-
-  if (typeof CLASS_GUIDES !== 'undefined') {
-    classSelect.innerHTML = '<option value="">Not sure yet</option>' +
-      Object.entries(CLASS_GUIDES).map(([id, c]) => `<option value="${id}">${c.name}</option>`).join('');
-  }
-
-  const { level, classId } = getProfile();
-  if (level) levelInput.value = level;
-  if (classId) classSelect.value = classId;
-
-  levelInput.addEventListener('input', () => {
-    setProfileLevel(levelInput.value);
-    renderHomeHeader();
-    renderProfileClassHint();
-  });
-  classSelect.addEventListener('change', () => {
-    setProfileClass(classSelect.value);
-    renderHomeHeader();
-    renderProfileClassHint();
-  });
-  renderHomeNextSteps();
-  renderHomeProgress();
-  renderHomeOnboarding();
-}
-
-function renderHome() {
-  renderHomeHeader();
-  renderProfileClassHint();
-  renderHomeNextSteps();
-  renderHomeProgress();
-  renderHomeOnboarding();
-}
-
-function renderHomeOnboarding() {
-  const el = document.getElementById('home-onboarding');
-  if (!el) return;
-  const { level } = getProfile();
-  if (level) { el.innerHTML = ''; return; }
-  el.innerHTML = `
-    <div class="onboarding-banner">
-      <p class="onboarding-banner-label">New to Royals?</p>
-      <p class="onboarding-banner-text">Take the class quiz, then enter your level — the nav has everything else.</p>
-      <button type="button" class="btn btn-sm" onclick="showPage('quiz')">Class Quiz</button>
-    </div>
-  `;
-}
-
-function getProfileJobProgress() {
-  const { classId } = getProfile();
-  if (!classId || !CLASS_GUIDES[classId]) return null;
-  const branch = JOB_BRANCH_MAP?.[CLASS_GUIDES[classId].branch];
-  if (!branch || !JOB_PATHS[branch]) return null;
-  return { branch, label: CLASS_GUIDES[classId].branch, ...getJobProgress(branch) };
 }
 
 function copyDeepLink(page, sub) {
@@ -532,17 +317,6 @@ function copyDeepLink(page, sub) {
     ta.value = url; document.body.appendChild(ta); ta.select();
     document.execCommand('copy'); document.body.removeChild(ta); done();
   }
-}
-
-function getPrequestOverallProgress() {
-  if (typeof PREQUESTS === 'undefined') return { done: 0, total: 0 };
-  let done = 0, total = 0;
-  PREQUESTS.forEach(pq => {
-    const p = prequestProgress(pq.id);
-    done += p.done;
-    total += p.total;
-  });
-  return { done, total };
 }
 
 function formatBossRunTime(id) {
@@ -587,62 +361,6 @@ function maybeResetDailies() {
   localStorage.setItem('mr-checklist', JSON.stringify(state));
   localStorage.setItem('mr-checklist-date', today);
   checkState = state;
-}
-
-function renderHomeProgress() {
-  const el = document.getElementById('home-progress');
-  if (!el) return;
-  const { level } = getProfile();
-  if (!level) { el.innerHTML = ''; return; }
-
-  const pq = getPrequestOverallProgress();
-  const pqPct = pq.total ? Math.round((pq.done / pq.total) * 100) : 0;
-  const dailyItems = CHECKLIST.filter(i => i.cat === 'Daily');
-  const dailyDone = dailyItems.filter(i => checkState[i.id]).length;
-  const bossRuns = CHECKLIST.filter(i => i.boss && checkState[i.id]).length;
-  const bossTotal = CHECKLIST.filter(i => i.boss).length;
-  const job = getProfileJobProgress();
-  const jobPct = job?.total ? Math.round((job.done / job.total) * 100) : 0;
-
-  el.innerHTML = `
-    <div class="home-progress-stack">
-      <div class="card home-progress-card home-progress-card--click" role="button" tabindex="0" onclick="showPage('prequests')">
-        <div class="card-header"><h2>Prequests</h2><span class="badge badge-yellow">${pq.done}/${pq.total}</span></div>
-        <div class="prequest-track-bar"><div style="width:${pqPct}%"></div></div>
-      </div>
-      <div class="card home-progress-card home-progress-card--click" role="button" tabindex="0" onclick="showPage('checklist')">
-        <div class="card-header"><h2>Today's Dailies</h2><span class="badge badge-green">${dailyDone}/${dailyItems.length}</span></div>
-        <p class="home-progress-meta">Boss runs marked: ${bossRuns}/${bossTotal}</p>
-      </div>
-      ${job ? `
-      <div class="card home-progress-card home-progress-card--click" role="button" tabindex="0" onclick="showPage('jobadv')">
-        <div class="card-header"><h2>Job Steps</h2><span class="badge badge-blue">${job.done}/${job.total}</span></div>
-        <p class="home-progress-meta">${job.label} path</p>
-        <div class="prequest-track-bar"><div style="width:${jobPct}%"></div></div>
-      </div>
-      ` : ''}
-      <div class="card home-progress-card">
-        <div class="card-header"><h2>Next Milestone</h2></div>
-        ${renderNextMilestoneCard(level)}
-      </div>
-    </div>
-  `;
-}
-
-function renderNextMilestoneCard(level) {
-  if (typeof LEVEL_MILESTONES === 'undefined') return '<p style="color:var(--muted);font-size:13px;">—</p>';
-  const next = LEVEL_MILESTONES.find(m => m.level > level);
-  if (!next) return '<p style="font-size:13px;color:var(--muted);">You\'ve hit all major milestones — focus on daily bosses and gear.</p>';
-  const action = next.prequest
-    ? `openPrequest('${next.prequest}')`
-    : next.boss
-      ? `showPage('bosses');showBoss('${next.boss}')`
-      : `showPage('${next.page}')`;
-  return `
-    <p style="font-size:14px;font-weight:600;margin:0 0 4px;">${next.icon} Lv ${next.level} — ${next.title}</p>
-    <p style="font-size:13px;color:var(--muted);margin:0 0 10px;">${next.detail}</p>
-    <button type="button" class="btn btn-sm" onclick="${action}">Go →</button>
-  `;
 }
 
 function renderTools() {
@@ -750,8 +468,7 @@ function openPQ(id, skipHash) {
 function renderPQOverview() {
   const el = document.getElementById('pq-overview');
   if (!el || typeof PQS === 'undefined') return;
-  const { level } = getProfile();
-  const levelInput = parseInt(document.getElementById('level-filter')?.value) || level;
+  const levelInput = parseInt(document.getElementById('level-filter')?.value) || 0;
   el.innerHTML = `
     <div class="pq-track">
       ${PQS.map(pq => {
@@ -1179,18 +896,13 @@ function shareGuide() {
   }
 }
 
-function initLevelProfile() {
+function initLevelFilter() {
   const input = document.getElementById('level-filter');
   if (!input) return;
-  const saved = localStorage.getItem('mr-level');
-  if (saved) { input.value = saved; highlightLevel(); }
   input.addEventListener('input', () => {
-    const v = input.value;
-    setProfileLevel(v);
-    const pl = document.getElementById('profile-level');
-    if (pl && pl.value !== v) pl.value = v;
     const leechLf = document.getElementById('leech-level-filter');
-    if (leechLf && leechLf.value !== v) leechLf.value = v;
+    if (leechLf && leechLf.value !== input.value) leechLf.value = input.value;
+    highlightLevel();
   });
 }
 
@@ -1570,8 +1282,6 @@ function renderLevels() {
 
 function highlightLevel() {
   const lf = document.getElementById('level-filter');
-  const pl = document.getElementById('profile-level');
-  if (lf && pl && lf.value !== pl.value) setProfileLevel(lf.value);
   const leechLf = document.getElementById('leech-level-filter');
   if (lf && leechLf && leechLf.value !== lf.value) leechLf.value = lf.value;
   renderLevels();
@@ -1599,10 +1309,7 @@ function isLevelInRange(levelStr, myLevel) {
 function highlightLeechLevel() {
   const leechLf = document.getElementById('leech-level-filter');
   const lf = document.getElementById('level-filter');
-  if (leechLf && lf && lf.value !== leechLf.value) {
-    lf.value = leechLf.value;
-    setProfileLevel(leechLf.value);
-  }
+  if (leechLf && lf && lf.value !== leechLf.value) lf.value = leechLf.value;
   renderLeeching();
   renderLevels();
   renderWorldMap();
@@ -1615,7 +1322,6 @@ function renderLeeching() {
 
   const myLevel = parseInt(document.getElementById('leech-level-filter')?.value)
     || parseInt(document.getElementById('level-filter')?.value)
-    || getProfile().level
     || 0;
 
   const methods = document.getElementById('leech-methods');
@@ -1715,19 +1421,10 @@ function renderLeeching() {
   }
 }
 
-function initLeechLevelFilter() {
-  const input = document.getElementById('leech-level-filter');
-  const levelFilter = document.getElementById('level-filter');
-  if (!input) return;
-  const saved = localStorage.getItem('mr-level');
-  if (saved && !input.value) input.value = saved;
-  if (levelFilter && saved && !levelFilter.value) levelFilter.value = saved;
-}
-
 function renderLevelMilestones() {
   const el = document.getElementById('level-milestones');
   if (!el || typeof LEVEL_MILESTONES === 'undefined') return;
-  const myLevel = parseInt(document.getElementById('level-filter')?.value) || getProfile().level || 0;
+  const myLevel = parseInt(document.getElementById('level-filter')?.value) || 0;
   if (!myLevel) { el.innerHTML = ''; return; }
 
   const completed = LEVEL_MILESTONES.filter(m => m.level <= myLevel);
@@ -1888,7 +1585,6 @@ function renderChecklist() {
   const total = CHECKLIST.length;
   document.getElementById('check-bar').style.width = (done / total * 100) + '%';
   document.getElementById('check-count').textContent = `${done} / ${total} complete`;
-  renderHomeProgress();
 }
 
 function toggleCheck(id) {
@@ -2079,9 +1775,6 @@ function showQuizResult() {
   const guideBtn = classId
     ? `<button class="btn" style="margin-right:8px;" onclick="openClassGuide('${classId}')">Read ${best.name} Guide →</button>`
     : '';
-  const profileBtn = classId
-    ? `<button class="btn btn-ghost" style="margin-right:8px;" onclick="setProfileClass('${classId}');document.getElementById('profile-class').value='${classId}';showPage('home');">Set as my class</button>`
-    : '';
   const resultEl = document.getElementById('quiz-result');
   let actions = resultEl.querySelector('.quiz-actions');
   if (!actions) {
@@ -2089,7 +1782,7 @@ function showQuizResult() {
     actions.className = 'quiz-actions';
     resultEl.appendChild(actions);
   }
-  actions.innerHTML = `${guideBtn}${profileBtn}<button class="btn-ghost" onclick="resetQuiz()">Retake Quiz</button>`;
+  actions.innerHTML = `${guideBtn}<button class="btn-ghost" onclick="resetQuiz()">Retake Quiz</button>`;
   const icon = document.getElementById('quiz-class-icon');
   if (icon) { icon.src = best.icon; icon.alt = best.name; icon.style.display = ''; }
   document.getElementById('quiz-result').classList.add('show');
@@ -2106,12 +1799,7 @@ function resetQuiz() {
 // GEAR ROADMAP
 // ══════════════════════════════════════════════
 function renderGear() {
-  const { classId } = getProfile();
-  const classGear = classId && CLASS_GEAR_NOTES?.[classId]
-    ? renderClassGearBlock(classId, `${CLASS_GUIDES[classId]?.name || 'Your class'} — gear priorities`)
-    : '';
   document.getElementById('gear-timeline').innerHTML = `
-    ${classGear}
     ${GEAR_PHASES.map(p => `
     <div class="gear-phase">
       <div class="gear-phase-title">${p.title}</div>
@@ -2158,13 +1846,11 @@ function isStepDone(key) {
 
 function toggleStep(key, rerender) {
   localStorage.setItem(key, isStepDone(key) ? '0' : '1');
-  if (rerender === 'job') { renderJobAdv(); renderHomeProgress(); }
+  if (rerender === 'job') renderJobAdv();
   else if (rerender === 'prequest') {
     renderPrequests();
     renderPrequestOverview();
     refreshOpenPrequestDetail();
-    renderHomeNextSteps();
-    renderHomeProgress();
   }
 }
 
@@ -2543,13 +2229,7 @@ function initPartyBuilder() {
     });
   }
   if (!partyMembers.length) {
-    const { classId } = getProfile();
-    if (classId && CLASS_GUIDES[classId]) {
-      const name = CLASS_GUIDES[classId].name;
-      const map = { 'Fire/Poison Arch Mage': 'Fire/Poison Mage', 'Ice/Lightning Arch Mage': 'Ice/Lightning Mage' };
-      partyMembers = [map[name] || name];
-      savePartyMembers();
-    }
+    partyMembers = [];
   }
   renderPartyPresets();
   renderPartySlots();
@@ -2842,8 +2522,6 @@ function initGlobalSearch() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
-  renderHome();
-  initProfile();
   initPWA();
   initGlobalSearch();
   renderTools();
@@ -2870,8 +2548,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderScrollPrices();
   updateItemsPageMeta();
   renderQuickRefChips();
-  initLevelProfile();
-  initLeechLevelFilter();
+  initLevelFilter();
   initItemAutocomplete();
   initRouteFromHash();
 });

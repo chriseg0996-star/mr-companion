@@ -1,4 +1,4 @@
-const CACHE = 'mr-companion-v44';
+const CACHE = 'mr-companion-v46';
 const PRECACHE = [
   './',
   './index.html',

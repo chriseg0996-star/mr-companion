@@ -18,13 +18,12 @@
 
 <nav class="site-nav">
   <div class="nav-top">
-    <button type="button" class="nav-logo" onclick="showPage('home')">
+    <button type="button" class="nav-logo active" data-page="home" onclick="showPage('home', this)">
       <span class="nav-logo-mark">🍁</span>
       <span class="nav-logo-text">MR Companion</span>
     </button>
 
     <div class="nav-desktop" role="navigation" aria-label="Main">
-      <button type="button" class="nav-btn" data-page="home" onclick="showPage('home', this)">Start</button>
       <button type="button" class="nav-btn" data-page="leveling" onclick="showPage('leveling', this)">Leveling</button>
       <button type="button" class="nav-btn" data-page="bosses" onclick="showPage('bosses', this)">Bosses</button>
       <button type="button" class="nav-btn" data-page="items" onclick="showPage('items', this)">Items</button>
@@ -68,9 +67,6 @@
 <div class="nav-backdrop" id="nav-backdrop" hidden onclick="closeNavDrawer()"></div>
 
 <nav class="nav-bottom" aria-label="Quick navigation">
-  <button type="button" class="nav-bottom-btn active" data-page="home" onclick="showPage('home', this)">
-    <span class="nav-bottom-icon" aria-hidden="true">🏠</span><span>Start</span>
-  </button>
   <button type="button" class="nav-bottom-btn" data-page="leveling" onclick="showPage('leveling', this)">
     <span class="nav-bottom-icon" aria-hidden="true">📈</span><span>Level</span>
   </button>
@@ -95,8 +91,9 @@
 
 <div id="page-home" class="page active">
   <header class="home-intro">
-    <h1 id="home-title">MapleRoyals Companion</h1>
-    <p class="subtitle" id="home-subtitle">Your v83 guide for The Clinic — leveling, bosses, items, and everything in between.</p>
+    <h1>MapleRoyals Companion</h1>
+    <p class="subtitle">Your v83 guide for The Clinic — leveling, bosses, items, and everything in between.</p>
+    <p class="home-search-hint"><kbd>Ctrl</kbd>+<kbd>K</kbd> to search guides, bosses, items, and more.</p>
   </header>
   <div id="pwa-install-banner" class="pwa-install-banner">
     <div class="pwa-install-inner">
@@ -104,33 +101,6 @@
       <button class="btn btn-sm" onclick="installPWA()">Install</button>
       <button class="btn-ghost btn-sm" onclick="dismissPWA()">Not now</button>
     </div>
-  </div>
-  <div class="home-dashboard">
-    <div class="home-dashboard-main">
-      <div id="home-onboarding" class="home-onboarding"></div>
-      <div class="card profile-card" id="profile-card">
-        <div class="card-header">
-          <h2>My Character</h2>
-          <span class="badge badge-blue">Saved locally</span>
-        </div>
-        <div class="profile-fields">
-          <div class="profile-field">
-            <label for="profile-level">Level</label>
-            <input type="number" id="profile-level" min="1" max="200" placeholder="e.g. 45">
-          </div>
-          <div class="profile-field">
-            <label for="profile-class">Class</label>
-            <select id="profile-class">
-              <option value="">Not sure yet</option>
-            </select>
-          </div>
-        </div>
-        <p id="profile-class-hint" class="profile-class-hint" hidden></p>
-        <p class="section-hint profile-hint">Personalizes your dashboard and highlights your current zone. <kbd>Ctrl</kbd>+<kbd>K</kbd> to search.</p>
-      </div>
-      <div id="home-next-steps" class="home-next-steps"></div>
-    </div>
-    <aside id="home-progress" class="home-progress"></aside>
   </div>
 </div>
 

@@ -93,6 +93,8 @@ body {
 
 .nav-logo-mark { font-size: 18px; filter: drop-shadow(0 0 8px rgba(255, 140, 105, 0.4)); }
 
+.nav-logo.active .nav-logo-text { color: var(--accent); }
+
 .nav-desktop {
   display: none;
   align-items: center;
@@ -389,6 +391,12 @@ body.nav-drawer-open { overflow: hidden; }
 .home-intro h1 {
   font-size: clamp(1.75rem, 5vw, 2.35rem);
   margin-bottom: 6px;
+}
+
+.home-search-hint {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 @keyframes fadeIn {

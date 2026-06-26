@@ -45,7 +45,7 @@
           <button type="button" class="nav-dropdown-item" data-page="quiz" onclick="navGo('quiz')">Class Quiz</button>
           <button type="button" class="nav-dropdown-item" data-page="gear" onclick="navGo('gear')">Gear</button>
           <button type="button" class="nav-dropdown-item" data-page="checklist" onclick="navGo('checklist')">Daily</button>
-          <button type="button" class="nav-dropdown-item" data-page="tools" onclick="navGo('tools')">Tools &amp; Library</button>
+          <button type="button" class="nav-dropdown-item" data-page="tools" onclick="navGo('tools')">Library</button>
         </div>
       </div>
     </div>
@@ -87,24 +87,16 @@
     <div class="home-hero-overlay"></div>
     <div class="home-hero-copy">
       <p class="home-hero-eyebrow">MapleRoyals v83 · The Clinic</p>
-      <h1>MR Companion</h1>
-      <p class="home-hero-tagline">Leveling, bosses, items, and prequests — one place, no fluff.</p>
+      <p class="home-hero-tagline">Leveling, bosses, items, and prequests — one place.</p>
     </div>
   </div>
   <div class="home-content">
     <button type="button" class="home-search" onclick="openSearch()">
       <span class="home-search-icon" aria-hidden="true">⌕</span>
-      <span class="home-search-text">Search guides, bosses, items…</span>
+      <span class="home-search-text">Search anything…</span>
       <kbd class="home-search-kbd">Ctrl K</kbd>
     </button>
-    <section class="home-section">
-      <h2 class="section-label">Guides</h2>
-      <div id="home-guides" class="min-list"></div>
-    </section>
-    <section class="home-section">
-      <h2 class="section-label">Tools</h2>
-      <div id="home-tools" class="min-list"></div>
-    </section>
+    <div id="home-grid" class="home-grid"></div>
   </div>
   <div id="pwa-install-banner" class="pwa-install-banner">
     <div class="pwa-install-inner">

@@ -375,28 +375,40 @@ function renderMinListItem({ id, title, desc, icon }) {
   `;
 }
 
-function renderHome() {
-  const guideIds = new Set(['leveling', 'leeching', 'pqs', 'prequests', 'bosses', 'classes', 'items', 'jobadv']);
-  const toolIds = new Set(['quiz', 'gear']);
+function renderHomeTile({ id, title, icon }) {
+  return `
+    <button type="button" class="home-tile" onclick="showPage('${id}')">
+      <span class="home-tile-icon" aria-hidden="true">${icon}</span>
+      <span class="home-tile-label">${title}</span>
+    </button>
+  `;
+}
 
-  if (typeof GUIDE_SECTIONS !== 'undefined') {
-    const guides = document.getElementById('home-guides');
-    if (guides) {
-      guides.innerHTML = GUIDE_SECTIONS
-        .filter(s => guideIds.has(s.id))
-        .map(s => renderMinListItem({ id: s.id, title: s.title.replace(/ Guide$/, ''), desc: s.desc, icon: s.icon }))
-        .join('');
-    }
-    const tools = document.getElementById('home-tools');
-    if (tools) {
-      const coreTools = GUIDE_SECTIONS
-        .filter(s => toolIds.has(s.id))
-        .map(s => renderMinListItem({ id: s.id, title: s.title, desc: s.desc, icon: s.icon }));
-      coreTools.push(renderMinListItem({ id: 'checklist', title: 'Daily Checklist', desc: 'Vote, bosses, mesos', icon: '✅' }));
-      coreTools.push(renderMinListItem({ id: 'tools', title: 'All Tools & Forum Library', desc: 'Calculators and community guides', icon: '🧰' }));
-      tools.innerHTML = coreTools.join('');
-    }
-  }
+function renderHome() {
+  const homeOrder = [
+    'leveling', 'bosses', 'items', 'pqs',
+    'prequests', 'leeching', 'classes', 'jobadv',
+    'quiz', 'checklist', 'gear', 'tools',
+  ];
+  const grid = document.getElementById('home-grid');
+  if (!grid || typeof GUIDE_SECTIONS === 'undefined') return;
+
+  const byId = Object.fromEntries(GUIDE_SECTIONS.map(s => [s.id, s]));
+  const extras = {
+    checklist: { id: 'checklist', icon: '✅', title: 'Daily' },
+    tools: { id: 'tools', icon: '🧰', title: 'Library' },
+  };
+
+  grid.innerHTML = homeOrder.map(id => {
+    const s = byId[id] || extras[id];
+    if (!s) return '';
+    const title = (s.title || id)
+      .replace(/ Guide$/, '')
+      .replace(/^Pick Your Class$/, 'Class Quiz')
+      .replace(/^Gear Roadmap$/, 'Gear')
+      .replace(/^Job Advancements$/, 'Jobs');
+    return renderHomeTile({ id: s.id, title, icon: s.icon });
+  }).join('');
 }
 
 function renderTools() {

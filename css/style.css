@@ -754,6 +754,7 @@ button.btn-ghost:hover {
 
 .boss-card .boss-level { display: none; }
 
+.guide-overlay,
 .boss-detail-overlay {
   position: fixed;
   inset: 0;
@@ -767,8 +768,10 @@ button.btn-ghost:hover {
   padding: 16px;
 }
 
+.guide-overlay[hidden],
 .boss-detail-overlay[hidden] { display: none !important; }
 
+.guide-panel,
 .boss-detail {
   width: 100%;
   max-width: 680px;
@@ -784,7 +787,10 @@ button.btn-ghost:hover {
   scrollbar-width: thin;
 }
 
+body.guide-modal-open,
 body.boss-detail-open { overflow: hidden; }
+
+.guide-panel h2,
 .boss-detail h2 { font-size: 20px; margin-bottom: 4px; -webkit-text-fill-color: var(--text); }
 
 .boss-detail-top { display: flex; gap: 18px; align-items: flex-start; margin-bottom: 18px; }
@@ -1197,19 +1203,19 @@ body.boss-detail-open { overflow: hidden; }
 .quest-tips { margin-top: 12px; }
 .prequest-highlight { outline: 2px solid var(--accent); outline-offset: 4px; }
 
-.prequest-overview { margin-bottom: 24px; }
+.prequest-overview { margin-bottom: 12px; }
 
 .prequest-track {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
 }
 
 .prequest-track-item {
-  background: var(--surface);
+  background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px;
+  border-radius: var(--radius-sm);
+  padding: 10px;
   text-align: left;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
@@ -1225,10 +1231,10 @@ body.boss-detail-open { overflow: hidden; }
   justify-content: space-between;
   align-items: baseline;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
-.prequest-track-name { font-weight: 600; font-size: 14px; }
+.prequest-track-name { font-weight: 600; font-size: 13px; }
 .prequest-track-lv { font-size: 10px; color: var(--muted); white-space: nowrap; }
 
 .prequest-track-bar {
@@ -2075,14 +2081,14 @@ kbd {
 .flow-bosses--demi { margin-top: 12px; }
 
 .boss-progression-wrap {
-  margin-top: 20px;
+  margin-top: 16px;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--bg2);
 }
 
 .boss-progression-wrap summary {
-  padding: 10px 14px;
+  padding: 8px 12px;
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
@@ -2102,8 +2108,92 @@ kbd {
 
 .boss-progression {
   border-top: 1px solid var(--border);
-  padding: 6px 10px 10px;
+  padding: 8px 10px 10px;
   margin-bottom: 0;
+  counter-reset: boss-step;
+}
+
+.boss-progression-group + .boss-progression-group {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.boss-progression-group-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 4px;
+  padding: 0 4px;
+}
+
+.boss-progression-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.boss-progression-list > li {
+  counter-increment: boss-step;
+}
+
+.boss-progression-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 6px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s var(--ease);
+}
+
+.boss-progression-row::before {
+  content: counter(boss-step);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 18px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.boss-progression-row:hover { background: var(--bg3); }
+
+.boss-progression-tier {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.boss-progression-tier.tier-early { background: var(--green); }
+.boss-progression-tier.tier-mid { background: var(--gold); }
+.boss-progression-tier.tier-late { background: var(--purple); }
+.boss-progression-tier.tier-endgame { background: var(--red); }
+.boss-progression-tier.tier-demi { background: var(--blue); }
+
+.boss-progression-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.boss-progression-lv {
+  font-size: 11px;
+  color: var(--muted);
+  flex-shrink: 0;
 }
 
 .boss-card--early { border-top: 2px solid var(--green); }

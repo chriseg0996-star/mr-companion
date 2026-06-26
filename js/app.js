@@ -69,6 +69,7 @@ function initRouteFromHash() {
 
 function showPage(id, btn, skipHash) {
   if (id !== 'bosses') closeBossDetail(true);
+  if (id !== 'prequests') closePrequestDetail(true);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   updateNavActive(id, btn);
@@ -122,6 +123,7 @@ function initNav() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeBossDetail();
+      closePrequestDetail();
       closeNavDrawer();
       closeNavDropdowns();
     }
@@ -1182,24 +1184,31 @@ function renderBossProgression() {
   const main = BOSSES.filter(b => b.tier !== 'demi' && b.tier !== 'endgame');
   const endgame = BOSSES.filter(b => b.tier === 'endgame');
   const demi = BOSSES.filter(b => b.tier === 'demi');
-  const renderTrack = (list, startIdx = 0) => list.map((b, i) => `
-        <div class="flow-step boss-node" onclick="showBoss('${b.id}')">
-          <div class="flow-dot boss-dot tier-${b.tier}">${startIdx + i + 1}</div>
-          <div class="flow-label">${b.name}</div>
-          <div class="flow-sublabel">Lv ${b.level.split('+')[0].replace(/[^\d]/g, '') || '?'}+</div>
-        </div>
-        ${i < list.length - 1 ? '<div class="flow-line"></div>' : ''}
-      `).join('');
+
+  const renderGroup = (label, list) => {
+    if (!list.length) return '';
+    return `
+      <div class="boss-progression-group">
+        <div class="boss-progression-group-label">${label}</div>
+        <ol class="boss-progression-list">
+          ${list.map(b => `
+            <li>
+              <button type="button" class="boss-progression-row" onclick="showBoss('${b.id}')">
+                <span class="boss-progression-tier tier-${b.tier}" aria-hidden="true"></span>
+                <span class="boss-progression-name">${b.name}</span>
+                <span class="boss-progression-lv">Lv ${b.level}</span>
+              </button>
+            </li>
+          `).join('')}
+        </ol>
+      </div>
+    `;
+  };
+
   el.innerHTML = `
-    <div class="flow-track flow-bosses">${renderTrack(main)}</div>
-    ${endgame.length ? `
-      <p class="section-hint" style="margin:16px 0 8px;">Endgame — Auf Haven, The Boss, Von Leon & Rose Garden</p>
-      <div class="flow-track flow-bosses flow-bosses--endgame">${renderTrack(endgame, main.length)}</div>
-    ` : ''}
-    ${demi.length ? `
-      <p class="section-hint" style="margin:16px 0 8px;">Demi-bosses — optional gear, mesos & EPQ between Pap and Horntail</p>
-      <div class="flow-track flow-bosses flow-bosses--demi">${renderTrack(demi, main.length + endgame.length)}</div>
-    ` : ''}
+    ${renderGroup('Main bosses', main)}
+    ${renderGroup('Endgame', endgame)}
+    ${renderGroup('Demi-bosses', demi)}
   `;
 }
 
@@ -1323,7 +1332,7 @@ function closeBossDetail(skipHash) {
   const overlay = document.getElementById('boss-detail-overlay');
   if (!overlay || overlay.hidden) return;
   overlay.hidden = true;
-  document.body.classList.remove('boss-detail-open');
+  document.body.classList.remove('guide-modal-open');
   if (!skipHash) setRoute('bosses');
 }
 
@@ -1386,7 +1395,7 @@ function showBoss(id, skipHash) {
   `;
   detail.scrollTop = 0;
   overlay.hidden = false;
-  document.body.classList.add('boss-detail-open');
+  document.body.classList.add('guide-modal-open');
 }
 
 function filterBoss(tier, btn) {
@@ -1893,7 +1902,13 @@ function isStepDone(key) {
 function toggleStep(key, rerender) {
   localStorage.setItem(key, isStepDone(key) ? '0' : '1');
   if (rerender === 'job') { renderJobAdv(); renderHomeProgress(); }
-  else if (rerender === 'prequest') { renderPrequests(); renderPrequestOverview(); renderHomeNextSteps(); renderHomeProgress(); }
+  else if (rerender === 'prequest') {
+    renderPrequests();
+    renderPrequestOverview();
+    refreshOpenPrequestDetail();
+    renderHomeNextSteps();
+    renderHomeProgress();
+  }
 }
 
 function renderCheckableSteps(steps, prefix, rerender) {
@@ -1980,15 +1995,78 @@ function renderJobAdv() {
 // ══════════════════════════════════════════════
 // PREQUESTS
 // ══════════════════════════════════════════════
+let openPrequestId = null;
+
+function closePrequestDetail(skipHash) {
+  const overlay = document.getElementById('prequest-detail-overlay');
+  if (!overlay || overlay.hidden) return;
+  overlay.hidden = true;
+  openPrequestId = null;
+  document.body.classList.remove('guide-modal-open');
+  if (!skipHash) setRoute('prequests');
+}
+
+function renderPrequestDetailHtml(pq) {
+  const done = pq.steps.filter(s => isStepDone(stepKey('pq', `${pq.id}-${s.id}`))).length;
+  const total = pq.steps.length;
+  return `
+    <div class="guide-detail-top">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;width:100%;">
+        <div style="min-width:0;">
+          <h2>${pq.name}</h2>
+          <div style="font-size:13px;color:var(--muted);">${pq.location}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
+          <button type="button" class="btn-ghost" onclick="event.stopPropagation();copyDeepLink('prequests','${pq.id}')" title="Copy share link" style="font-size:12px;padding:5px 10px;">⎘</button>
+          <button type="button" class="btn-ghost" onclick="closePrequestDetail()" style="font-size:12px;padding:5px 12px;">Close</button>
+        </div>
+      </div>
+    </div>
+    ${pq.mapImage ? renderMapScene('field', [], pq.mapImage) : ''}
+    <p style="font-size:13px;color:var(--muted);margin:12px 0;">${pq.summary}</p>
+    <div class="info-grid" style="margin-bottom:14px;">
+      <div class="info-item"><div class="label">Recommend</div><div class="value" style="font-size:12px;">${pq.recommendLevel}</div></div>
+      <div class="info-item"><div class="label">Duration</div><div class="value">${pq.duration}</div></div>
+      <div class="info-item"><div class="label">Location</div><div class="value" style="font-size:12px;">${pq.location}</div></div>
+      <div class="info-item"><div class="label">Progress</div><div class="value">${done}/${total}</div></div>
+    </div>
+    <h3>Requirements</h3>
+    <ul class="drop-list">${pq.requirements.map(r => `<li>${r}</li>`).join('')}</ul>
+    <h3>Steps</h3>
+    ${renderCheckableSteps(pq.steps.map(s => ({ ...s, id: `${pq.id}-${s.id}` })), 'pq', 'prequest')}
+    <h3>Tips</h3>
+    <ul class="drop-list">${pq.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+      ${pq.bossId ? `<button class="btn btn-sm" onclick="showBoss('${pq.bossId}')">View Boss Guide →</button>` : ''}
+      ${pq.forumGuide ? `<a href="${pq.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a>` : ''}
+    </div>
+  `;
+}
+
+function refreshOpenPrequestDetail() {
+  if (!openPrequestId) return;
+  const pq = PREQUESTS?.find(p => p.id === openPrequestId);
+  const detail = document.getElementById('prequest-detail');
+  if (!pq || !detail) return;
+  const scroll = detail.scrollTop;
+  detail.innerHTML = renderPrequestDetailHtml(pq);
+  detail.scrollTop = scroll;
+}
+
 function openPrequest(id, skipHash) {
-  showPage('prequests', null, skipHash);
-  if (!skipHash) setRoute('prequests', id);
-  const el = document.getElementById('prequest-' + id);
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    el.classList.add('prequest-highlight');
-    setTimeout(() => el.classList.remove('prequest-highlight'), 2000);
+  const pq = PREQUESTS?.find(p => p.id === id);
+  if (!pq) return;
+  if (!skipHash) {
+    showPage('prequests', null, true);
+    setRoute('prequests', id);
   }
+  openPrequestId = id;
+  const detail = document.getElementById('prequest-detail');
+  const overlay = document.getElementById('prequest-detail-overlay');
+  detail.innerHTML = renderPrequestDetailHtml(pq);
+  detail.scrollTop = 0;
+  overlay.hidden = false;
+  document.body.classList.add('guide-modal-open');
 }
 
 function renderPrequestOverview() {
@@ -2017,41 +2095,6 @@ function renderPrequestOverview() {
 
 function renderPrequests() {
   renderPrequestOverview();
-  const el = document.getElementById('prequest-list');
-  if (!el || typeof PREQUESTS === 'undefined') return;
-  el.innerHTML = PREQUESTS.map(pq => {
-    const done = pq.steps.filter(s => isStepDone(stepKey('pq', `${pq.id}-${s.id}`))).length;
-    const total = pq.steps.length;
-    return `
-      <div class="card quest-card prequest-card" id="prequest-${pq.id}">
-        <div class="card-header">
-          <h2>${pq.name}</h2>
-          <div style="display:flex;gap:6px;align-items:center;">
-            <button type="button" class="btn-ghost btn-sm" onclick="event.stopPropagation();copyDeepLink('prequests','${pq.id}')" title="Copy share link">⎘</button>
-            <span class="badge badge-yellow">Start Lv ${pq.startLevel}+</span>
-          </div>
-        </div>
-        ${pq.mapImage ? renderMapScene('field', [], pq.mapImage) : ''}
-        <p style="font-size:14px;color:var(--muted);margin-bottom:12px;">${pq.summary}</p>
-        <div class="info-grid" style="margin-bottom:16px;">
-          <div class="info-item"><div class="label">Recommend</div><div class="value" style="font-size:12px;">${pq.recommendLevel}</div></div>
-          <div class="info-item"><div class="label">Duration</div><div class="value">${pq.duration}</div></div>
-          <div class="info-item"><div class="label">Location</div><div class="value" style="font-size:12px;">${pq.location}</div></div>
-          <div class="info-item"><div class="label">Progress</div><div class="value">${done}/${total}</div></div>
-        </div>
-        <h3>Requirements</h3>
-        <ul class="drop-list">${pq.requirements.map(r => `<li>${r}</li>`).join('')}</ul>
-        <h3>Steps</h3>
-        ${renderCheckableSteps(pq.steps.map(s => ({ ...s, id: `${pq.id}-${s.id}` })), 'pq', 'prequest')}
-        <h3>Tips</h3>
-        <ul class="drop-list">${pq.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-          ${pq.bossId ? `<button class="btn btn-sm" onclick="showPage('bosses');showBoss('${pq.bossId}')">View Boss Guide →</button>` : ''}
-          ${pq.forumGuide ? `<a href="${pq.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a>` : ''}
-        </div>
-      </div>
-    `;
-  }).join('');
 }
 
 // ══════════════════════════════════════════════

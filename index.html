@@ -429,9 +429,8 @@
 
 <div id="page-prequests" class="page">
   <h1>Prequest Guide</h1>
-  <p class="subtitle">Step-by-step walkthroughs to unlock bosses and Neo Tokyo. Check off steps as you complete them.</p>
+  <p class="subtitle">Tap a prequest to open its step-by-step walkthrough.</p>
   <div id="prequest-overview" class="prequest-overview"></div>
-  <div id="prequest-list"></div>
 </div>
 
 <div id="page-classes" class="page">
@@ -514,8 +513,12 @@
 <script src="data/bossDrops.js"></script>
 <script src="data/scrollPrices.js"></script>
 
-<div id="boss-detail-overlay" class="boss-detail-overlay" hidden onclick="if(event.target===this)closeBossDetail()">
-  <div id="boss-detail" class="boss-detail" role="dialog" aria-modal="true" aria-label="Boss guide"></div>
+<div id="boss-detail-overlay" class="guide-overlay" hidden onclick="if(event.target===this)closeBossDetail()">
+  <div id="boss-detail" class="guide-panel" role="dialog" aria-modal="true" aria-label="Boss guide"></div>
+</div>
+
+<div id="prequest-detail-overlay" class="guide-overlay" hidden onclick="if(event.target===this)closePrequestDetail()">
+  <div id="prequest-detail" class="guide-panel" role="dialog" aria-modal="true" aria-label="Prequest guide"></div>
 </div>
 
 <script src="js/app.js"></script>

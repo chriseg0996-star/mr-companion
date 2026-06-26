@@ -851,8 +851,8 @@ const WORLD_MAP = [
 
 const LEVELS = [
   { range: '1 – 10', label: 'Maple Island', theme: 'island', icon: '🏝️', spots: [
-    { name: 'Tutorial Quests', type: 'solo', mapStyle: 'island', mobs: ['Snails', 'Blue Snails', 'Mushrooms'], detail: 'Complete every tutorial quest — follow the flashing quest icons on each map. You should reach level 10 without grinding. Boat from South Perry to Lith Harbor when done.' },
-    { name: 'South Perry → Lith Harbor', type: 'solo', mapStyle: 'island', mobs: [], detail: 'After tutorial quests, take the ship at South Perry to Victoria Island. You land in Lith Harbor — start the Lith Harbor questline toward Henesys or Perion.' },
+    { name: 'Tutorial Quests', type: 'solo', mapStyle: 'island', mapImage: 'assets/images/maps/maple-island-amherst.png', mobs: ['Snails', 'Blue Snails', 'Mushrooms'], detail: 'Complete every tutorial quest — follow the flashing quest icons on each map. You should reach level 10 without grinding. Boat from South Perry to Lith Harbor when done.' },
+    { name: 'South Perry → Lith Harbor', type: 'solo', mapStyle: 'island', mapImage: 'assets/images/maps/south-perry-dock.png', mobs: [], detail: 'After tutorial quests, take the ship at South Perry to Victoria Island. You land in Lith Harbor — start the Lith Harbor questline toward Henesys or Perion.' },
   ]},
   { range: '10 – 20', label: 'Henesys Area', theme: 'victoria', icon: '🌳', spots: [
     { name: 'Pig Beach', type: 'solo', mapStyle: 'field', mapImage: 'assets/images/maps/pig-beach.png', mobs: ['Pigs', 'Ribbon Pigs'], detail: 'East of Henesys. Easy grind, good for beginners learning your class skills.' },

@@ -192,7 +192,7 @@ const BOSSES = [
     dmgReq: 'Funded party',
     location: 'Neo Tokyo — Clock Tower',
     prequestId: 'neo-tokyo',
-    image: 'assets/images/maps/neo-tokyo.png',
+    image: 'assets/images/bosses/toad.png',
     drops: ['Equipment', 'Scrolls', 'Mesos'],
     prequest: 'Complete Neo Tokyo prequest first, then the Castellan questline in Akihabara. Party of 3 required to enter the boss map.',
     tips: [
@@ -218,7 +218,7 @@ const BOSSES = [
     dmgReq: 'Well-funded party',
     location: 'Neo Tokyo — Vergamot Core',
     prequestId: 'neo-tokyo',
-    image: 'assets/images/maps/neo-tokyo.png',
+    image: 'assets/images/bosses/vergamot.png',
     drops: ['Equipment', 'Scrolls', 'Ores', 'Mesos'],
     prequest: 'Neo Tokyo prequest + Vergamot expedition quests from Ponicher (level 130+). Party of 3 to enter.',
     tips: [
@@ -244,7 +244,7 @@ const BOSSES = [
     dmgReq: 'Endgame-funded party',
     location: 'Neo Tokyo — Akihabara Command Room',
     prequestId: 'neo-tokyo',
-    image: 'assets/images/maps/neo-tokyo.png',
+    image: 'assets/images/bosses/dunas.png',
     drops: ['Equipment', 'High-tier scrolls', 'Ores', 'Mesos'],
     prequest: 'Neo Tokyo prequest + Dunas expedition quests (level 138+). Party of 3 required. Dunas v2 is a harder follow-up.',
     tips: [
@@ -270,7 +270,7 @@ const BOSSES = [
     dmgReq: 'Endgame-funded party',
     location: 'Neo Tokyo — Tokyo Skies',
     prequestId: 'neo-tokyo',
-    image: 'assets/images/maps/neo-tokyo.png',
+    image: 'assets/images/bosses/nibergen.png',
     drops: ['Equipment', 'Scrolls', 'Mesos', 'EXP'],
     prequest: 'Neo Tokyo prequest + Cradle to the Future questline (141+). Single boss quest in Tokyo Skies — party of 3.',
     tips: [
@@ -296,7 +296,7 @@ const BOSSES = [
     dmgReq: 'Funded party',
     location: 'Neo Tokyo — PQ Arena',
     prequestId: 'neo-tokyo',
-    image: 'assets/images/maps/neo-tokyo.png',
+    image: 'assets/images/bosses/nameless-magic-monster.png',
     drops: ['White Scroll Fragment A', 'Achilles 30', 'Chain Lightning 30', 'Belt scrolls', 'Scrolls'],
     prequest: 'Neo Tokyo storyline after Nibergen — Asia sends you to a PQ. Destroy the crystal to spawn the boss. Party of 3.',
     tips: [
@@ -323,7 +323,7 @@ const BOSSES = [
     dmgReq: 'Fully funded endgame party',
     location: 'Neo Tokyo — Shibuya',
     prequestId: 'neo-tokyo',
-    image: 'assets/images/maps/neo-tokyo.png',
+    image: 'assets/images/bosses/dunas-v2.png',
     drops: ['White Scroll Fragment', 'Equipment', 'Scrolls', 'Mesos'],
     prequest: 'Complete I\'m Going to Stop It! questline, then talk to Adult Dida in a party of 3. Fight starts immediately — no summon step.',
     tips: [
@@ -350,7 +350,7 @@ const BOSSES = [
     dmgReq: 'Fully funded endgame party',
     location: 'Neo Tokyo — Roppongi Mall',
     prequestId: 'auf-haven',
-    image: 'assets/images/maps/neo-tokyo.png',
+    image: 'assets/images/bosses/auf-haven.png',
     drops: ['Auf Haven Circlet', 'Chaos Scroll', 'Element Pierce', 'Ring 60% scrolls', '5k NX'],
     prequest: 'Complete Dunas v2 storyline, then choose A Rush of Core Blaze or Activating Core Blaze. Dida unlocks Roppongi Mall expedition.',
     tips: [
@@ -378,7 +378,7 @@ const BOSSES = [
     dmgReq: 'Top-funded endgame party',
     location: 'Lion King Castle',
     prequestId: 'von-leon',
-    image: 'assets/images/maps/leafre-newts.png',
+    image: 'assets/images/bosses/von-leon.png',
     drops: ['Von Leon\'s Belt', 'Von Leon\'s Medallion', 'Von Leon\'s Parchment', 'Hero\'s Will 10', 'Royal forging manuals', 'Bonus room loot'],
     prequest: 'Complete LHC/LKC prequest through "Is there any hope?" — see forum guide. Resets Monday 00:00 server time.',
     tips: [
@@ -406,7 +406,7 @@ const BOSSES = [
     dmgReq: 'Mid-funded (best EXP/HP in game)',
     location: 'Lion King Castle — Rose Garden',
     prequestId: 'von-leon',
-    image: 'assets/images/maps/leafre-newts.png',
+    image: 'assets/images/bosses/king-castle-golem.png',
     drops: ['Ifia\'s Ring', '5k NX Card', 'Ring 30% scrolls', 'Shiny Powder (bonus)', 'Purification Totem'],
     prequest: 'Daily Rose Garden quest — requires Von Leon prequest. Buy a Bug Catching Net for the bonus bee stage (5m meso per Shiny Powder).',
     tips: [
@@ -433,7 +433,7 @@ const BOSSES = [
     dmgReq: 'Funded party + Bishop mules',
     location: 'Zipangu — Ninja Castle Armory',
     prequestId: 'the-boss',
-    image: 'assets/images/maps/neo-tokyo.png',
+    image: 'assets/images/bosses/the-boss.png',
     drops: ['Brown Work Glove', 'Shogun Earrings', 'Gold Emerald Earrings', 'Face 30% scrolls', '5k NX'],
     prequest: 'Farm Female Boss\' Comb from Anego (Female Boss). Talk to Konpei at Armory, drop comb under the right window to start.',
     tips: [
@@ -539,7 +539,7 @@ const BOSSES = [
     dmgReq: 'Funded party',
     location: 'Shaolin Temple — Floor 7',
     prequestId: 'shaolin',
-    image: 'assets/images/maps/world-map.png',
+    image: 'assets/images/bosses/shaolin.png',
     drops: ['5k NX Card', 'Mastery Books', 'Holy Charge 20', 'Chain Lightning 20', 'Assassinate 20'],
     prequest: 'Receptionist Monk questline in Lushan (Eastern China) from level 120. Farm bronze/silver/gold hearts across temple floors.',
     tips: [

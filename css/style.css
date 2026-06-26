@@ -1080,103 +1080,189 @@ body.boss-detail-open { overflow: hidden; }
   flex-shrink: 0;
 }
 
-.level-list {
+.level-bands {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 6px;
+  margin-bottom: 12px;
 }
 
-.level-range {
+.level-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 1 1 calc(20% - 6px);
+  min-width: 58px;
+  max-width: 88px;
+  padding: 8px 4px;
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  overflow: hidden;
-  transition: border-color 0.2s var(--ease);
-}
-
-.level-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  width: 100%;
-  padding: 8px 12px;
-  background: none;
-  border: none;
   cursor: pointer;
   font: inherit;
   color: var(--text);
-  text-align: left;
-  transition: background 0.2s var(--ease);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 }
 
-.level-header:hover { background: var(--bg3); }
-
-.level-header-main {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  flex: 1;
+.level-band:hover {
+  background: var(--bg3);
+  border-color: var(--border-hover);
 }
 
-.level-range-label {
-  font-family: var(--display);
+.level-band.active {
+  background: rgba(255, 140, 105, 0.1);
+  border-color: rgba(255, 140, 105, 0.4);
+  box-shadow: var(--shadow-glow);
+}
+
+.level-band--here:not(.active) {
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.level-band-icon { font-size: 16px; line-height: 1; }
+
+.level-band-range {
+  font-size: 10px;
   font-weight: 600;
-  font-size: 13px;
-  flex-shrink: 0;
-}
-
-.level-zone-name {
-  font-size: 12px;
   color: var(--muted);
   white-space: nowrap;
+}
+
+.level-band.active .level-band-range { color: var(--text); }
+
+.level-detail { min-height: 120px; }
+
+.level-detail-empty {
+  margin: 0;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--bg2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+}
+
+.level-detail-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  text-overflow: ellipsis;
+  box-shadow: var(--shadow-sm);
 }
 
-.level-zone-icon {
-  font-size: 16px;
-  flex-shrink: 0;
+.level-detail-panel--island    { border-top: 2px solid #3b82f6; }
+.level-detail-panel--victoria  { border-top: 2px solid #4ade80; }
+.level-detail-panel--ludibrium { border-top: 2px solid #c084fc; }
+.level-detail-panel--orbis     { border-top: 2px solid #60a5fa; }
+.level-detail-panel--leafre    { border-top: 2px solid #f87171; }
+.level-detail-panel--neotokyo  { border-top: 2px solid #fbbf24; }
+.level-detail-panel--endgame   { border-top: 2px solid var(--accent); }
+
+.level-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--bg3) 0%, var(--bg2) 100%);
 }
 
-.level-here-badge {
-  font-size: 9px !important;
-  padding: 2px 6px !important;
-  flex-shrink: 0;
+.level-detail-icon { font-size: 28px; flex-shrink: 0; }
+
+.level-detail-titles { flex: 1; min-width: 0; }
+
+.level-detail-range {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 
-.level-header-meta {
+.level-detail-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.level-detail-count {
   font-size: 11px;
   color: var(--muted);
   flex-shrink: 0;
 }
 
-.level-body { display: none; padding: 0 10px 10px; }
-.level-body.open { display: block; }
+.level-spots {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
 
-.spot {
+.level-spot {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 10px 12px;
+}
+
+.level-spot-map {
+  flex-shrink: 0;
+  width: 88px;
+}
+
+.level-spot-map .map-scene {
+  height: 56px;
+  width: 88px;
+  margin: 0;
+  border-radius: 6px;
+}
+
+.level-spot-body { flex: 1; min-width: 0; }
+
+.level-spot-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 6px;
-  font-size: 13px;
+  flex-wrap: wrap;
 }
 
-.spot:last-child { margin-bottom: 0; }
-
-.spot-name { font-weight: 600; color: var(--blue); margin-bottom: 4px; font-size: 13px; }
-.spot-mobs { font-size: 11px; color: var(--gold); margin-bottom: 6px; font-weight: 500; }
-.spot-detail { color: var(--muted); font-size: 12px; line-height: 1.55; }
-
-.level-range.level-current {
-  border-color: rgba(255, 140, 105, 0.4);
-  box-shadow: var(--shadow-glow);
+.level-spot-name {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
 }
 
-.level-range.level-current .level-header {
-  background: linear-gradient(90deg, rgba(255, 140, 105, 0.08) 0%, transparent 100%);
+.level-spot-mobs { margin-bottom: 6px; }
+
+.level-spot-detail {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.level-here-badge {
+  font-size: 9px !important;
+  padding: 2px 6px !important;
+  vertical-align: middle;
+}
+
+@media (max-width: 479px) {
+  .level-band { flex: 1 1 calc(25% - 6px); min-width: 52px; }
+  .level-spot { flex-direction: column; }
+  .level-spot-map { width: 100%; }
+  .level-spot-map .map-scene { width: 100%; height: 72px; }
+}
+
+@media (min-width: 640px) {
+  .level-bands { gap: 8px; }
+  .level-band { max-width: none; }
 }
 
 /* GUIDE HOME */
@@ -2111,6 +2197,19 @@ kbd {
   height: 72px;
   margin-bottom: 8px;
 }
+
+.spot {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.spot-name { font-weight: 600; color: var(--blue); margin-bottom: 4px; font-size: 13px; }
+.spot-mobs { font-size: 11px; color: var(--gold); margin-bottom: 6px; font-weight: 500; }
+.spot-detail { color: var(--muted); font-size: 12px; line-height: 1.55; }
 
 .drop-table-wrap {
   overflow-x: auto;

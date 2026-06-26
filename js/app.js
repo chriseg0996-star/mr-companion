@@ -6,7 +6,7 @@
 const PAGE_TITLES = {
   home: 'Start Here', leveling: 'Leveling', leeching: 'Leeching', pqs: 'Party Quests', bosses: 'Bosses',
   prequests: 'Prequests', items: 'Items', classes: 'Classes', jobadv: 'Jobs',
-  quiz: 'Class Quiz', gear: 'Gear', checklist: 'Daily', tools: 'Tools',
+  quiz: 'Class Quiz', gear: 'Gear', checklist: 'Daily', tools: 'Tools & Library',
   glossary: 'Mob Glossary',
   hpwash: 'HP Wash', scrolls: 'Scrolls', mesos: 'Mesos', party: 'Party',
 };
@@ -72,6 +72,8 @@ function showPage(id, btn, skipHash) {
   if (id !== 'prequests') closePrequestDetail(true);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
+  const hero = document.getElementById('hero-wrap');
+  if (hero) hero.classList.toggle('hero-wrap--hidden', id !== 'home');
   updateNavActive(id, btn);
   closeNavDrawer();
   closeNavDropdowns();
@@ -309,6 +311,8 @@ function setProfileLevel(v) {
   if (lf) lf.value = v || '';
   if (pl) pl.value = v || '';
   highlightLevel();
+  renderHomeHeader();
+  renderProfileClassHint();
   renderHomeNextSteps();
   renderHomeProgress();
   renderHomeOnboarding();
@@ -317,6 +321,8 @@ function setProfileLevel(v) {
 function setProfileClass(id) {
   if (id) localStorage.setItem('mr-class', id);
   else localStorage.removeItem('mr-class');
+  renderHomeHeader();
+  renderProfileClassHint();
   renderHomeNextSteps();
   renderHomeProgress();
   renderGear();
@@ -333,14 +339,12 @@ function renderHomeNextSteps() {
   const el = document.getElementById('home-next-steps');
   if (!el) return;
   const { level, classId } = getProfile();
-  if (!level && !classId) { el.innerHTML = ''; return; }
+  renderHomeHeader();
+  renderProfileClassHint();
 
   const steps = [];
   if (!classId && level < 30) {
     steps.push({ icon: '🎯', text: 'Not sure what to play?', action: () => showPage('quiz'), label: 'Take Class Quiz' });
-  }
-  if (classId && CLASS_GUIDES[classId]) {
-    steps.push({ icon: '⚔️', text: `Playing ${CLASS_GUIDES[classId].name}`, action: () => openClassGuide(classId), label: 'Open class guide' });
   }
   if (level > 0 && level < 10) {
     steps.push({ icon: '🏝️', text: 'Finish Maple Island tutorials', action: () => { showPage('leveling'); jumpToZone(0); }, label: 'Leveling guide' });
@@ -392,24 +396,65 @@ function renderHomeNextSteps() {
     steps.push({ icon: '✅', text: 'Daily: vote, Zakum, farm mesos', action: () => showPage('checklist'), label: 'Daily checklist' });
   }
 
-  if (!steps.length) {
+  if (!steps.length || !level) {
     el.innerHTML = '';
     window._homeActions = [];
     return;
   }
+
   window._homeActions = steps.map(s => s.action);
+  const primary = steps[0];
+  const more = steps.slice(1, 4);
+
   el.innerHTML = `
-    <h2 style="margin-bottom:12px;">Your Next Steps${level ? ` <span style="color:var(--muted);font-size:14px;font-weight:400;">· Lv ${level}</span>` : ''}</h2>
-    <div class="next-steps-grid">
-      ${steps.slice(0, 6).map((s, i) => `
-        <button type="button" class="next-step-card" onclick="runHomeAction(${i})">
-          <span class="next-step-icon">${s.icon}</span>
-          <span class="next-step-text">${s.text}</span>
-          <span class="next-step-cta">${s.label} →</span>
-        </button>
-      `).join('')}
+    <div class="home-focus">
+      <button type="button" class="home-focus-card" onclick="runHomeAction(0)">
+        <span class="home-focus-icon">${primary.icon}</span>
+        <span class="home-focus-body">
+          <span class="home-focus-label">Up next · Lv ${level}</span>
+          <span class="home-focus-text">${primary.text}</span>
+        </span>
+        <span class="home-focus-cta">${primary.label} →</span>
+      </button>
+      ${more.length ? `
+        <ul class="home-focus-more">
+          ${more.map((s, i) => `
+            <li><button type="button" onclick="runHomeAction(${i + 1})">${s.icon} ${s.text}</button></li>
+          `).join('')}
+        </ul>
+      ` : ''}
     </div>
   `;
+}
+
+function renderHomeHeader() {
+  const title = document.getElementById('home-title');
+  const sub = document.getElementById('home-subtitle');
+  if (!title || !sub) return;
+  const { level, classId } = getProfile();
+  if (level && classId && CLASS_GUIDES[classId]) {
+    title.textContent = `Lv ${level} ${CLASS_GUIDES[classId].name}`;
+    sub.textContent = 'Your personalized dashboard — one place to see what matters right now.';
+  } else if (level) {
+    title.textContent = `Level ${level}`;
+    sub.textContent = 'Your personalized dashboard — one place to see what matters right now.';
+  } else {
+    title.textContent = 'MapleRoyals Companion';
+    sub.textContent = 'Your v83 guide for The Clinic — set your level above to unlock personalized tips.';
+  }
+}
+
+function renderProfileClassHint() {
+  const el = document.getElementById('profile-class-hint');
+  if (!el) return;
+  const { classId } = getProfile();
+  if (classId && CLASS_GUIDES[classId]) {
+    el.hidden = false;
+    el.innerHTML = `Playing <strong>${CLASS_GUIDES[classId].name}</strong> — <button type="button" class="profile-class-link" onclick="openClassGuide('${classId}')">Open class guide</button>`;
+  } else {
+    el.hidden = true;
+    el.innerHTML = '';
+  }
 }
 
 function runHomeAction(i) {
@@ -430,21 +475,24 @@ function initProfile() {
   if (level) levelInput.value = level;
   if (classId) classSelect.value = classId;
 
-  levelInput.addEventListener('input', () => setProfileLevel(levelInput.value));
-  classSelect.addEventListener('change', () => setProfileClass(classSelect.value));
+  levelInput.addEventListener('input', () => {
+    setProfileLevel(levelInput.value);
+    renderHomeHeader();
+    renderProfileClassHint();
+  });
+  classSelect.addEventListener('change', () => {
+    setProfileClass(classSelect.value);
+    renderHomeHeader();
+    renderProfileClassHint();
+  });
   renderHomeNextSteps();
   renderHomeProgress();
   renderHomeOnboarding();
 }
 
 function renderHome() {
-  document.getElementById('guide-grid').innerHTML = GUIDE_SECTIONS.map(s => `
-    <div class="guide-card" onclick="showPage('${s.id}')">
-      <div class="guide-icon">${s.icon}</div>
-      <div class="guide-title">${s.title}</div>
-      <div class="guide-desc">${s.desc}</div>
-    </div>
-  `).join('');
+  renderHomeHeader();
+  renderProfileClassHint();
   renderHomeNextSteps();
   renderHomeProgress();
   renderHomeOnboarding();
@@ -456,13 +504,10 @@ function renderHomeOnboarding() {
   const { level } = getProfile();
   if (level) { el.innerHTML = ''; return; }
   el.innerHTML = `
-    <div class="card onboarding-card">
-      <div class="card-header"><h2>New here?</h2><span class="badge badge-blue">Start in 30 sec</span></div>
-      <div class="onboarding-steps">
-        <button type="button" class="onboarding-step" onclick="showPage('quiz')"><span class="onboarding-num">1</span><span>Take the <strong>Class Quiz</strong></span></button>
-        <button type="button" class="onboarding-step" onclick="showPage('leveling')"><span class="onboarding-num">2</span><span>Read the <strong>Leveling Guide</strong></span></button>
-        <button type="button" class="onboarding-step" onclick="document.getElementById('profile-level').focus()"><span class="onboarding-num">3</span><span>Enter your <strong>level</strong> above for personalized tips</span></button>
-      </div>
+    <div class="onboarding-banner">
+      <p class="onboarding-banner-label">New to Royals?</p>
+      <p class="onboarding-banner-text">Take the class quiz, then enter your level — the nav has everything else.</p>
+      <button type="button" class="btn btn-sm" onclick="showPage('quiz')">Class Quiz</button>
     </div>
   `;
 }
@@ -560,23 +605,20 @@ function renderHomeProgress() {
   const jobPct = job?.total ? Math.round((job.done / job.total) * 100) : 0;
 
   el.innerHTML = `
-    <div class="home-progress-grid">
-      <div class="card home-progress-card">
+    <div class="home-progress-stack">
+      <div class="card home-progress-card home-progress-card--click" role="button" tabindex="0" onclick="showPage('prequests')">
         <div class="card-header"><h2>Prequests</h2><span class="badge badge-yellow">${pq.done}/${pq.total}</span></div>
         <div class="prequest-track-bar"><div style="width:${pqPct}%"></div></div>
-        <button type="button" class="btn btn-sm btn-ghost" style="margin-top:10px;" onclick="showPage('prequests')">View all →</button>
       </div>
-      <div class="card home-progress-card">
+      <div class="card home-progress-card home-progress-card--click" role="button" tabindex="0" onclick="showPage('checklist')">
         <div class="card-header"><h2>Today's Dailies</h2><span class="badge badge-green">${dailyDone}/${dailyItems.length}</span></div>
-        <p style="font-size:13px;color:var(--muted);margin:0;">Boss runs marked: ${bossRuns}/${bossTotal}</p>
-        <button type="button" class="btn btn-sm btn-ghost" style="margin-top:10px;" onclick="showPage('checklist')">Open checklist →</button>
+        <p class="home-progress-meta">Boss runs marked: ${bossRuns}/${bossTotal}</p>
       </div>
       ${job ? `
-      <div class="card home-progress-card">
+      <div class="card home-progress-card home-progress-card--click" role="button" tabindex="0" onclick="showPage('jobadv')">
         <div class="card-header"><h2>Job Steps</h2><span class="badge badge-blue">${job.done}/${job.total}</span></div>
-        <p style="font-size:12px;color:var(--muted);margin:0 0 8px;">${job.label} path</p>
+        <p class="home-progress-meta">${job.label} path</p>
         <div class="prequest-track-bar"><div style="width:${jobPct}%"></div></div>
-        <button type="button" class="btn btn-sm btn-ghost" style="margin-top:10px;" onclick="showPage('jobadv')">Job guide →</button>
       </div>
       ` : ''}
       <div class="card home-progress-card">
@@ -638,9 +680,6 @@ function renderExternalLinks(targetId) {
 }
 
 function renderForumGuideCard(g) {
-  const companion = g.companionPage
-    ? `<button type="button" class="btn btn-sm btn-ghost forum-guide-companion" onclick="showPage('${g.companionPage}')">In-app guide</button>`
-    : '';
   return `
     <a href="${g.url}" target="_blank" rel="noopener" class="external-link-card forum-guide-card">
       <span class="external-link-icon">${g.icon}</span>
@@ -648,7 +687,6 @@ function renderForumGuideCard(g) {
         <span class="external-link-label">${g.label}</span>
         <span class="external-link-desc">${g.desc}</span>
       </span>
-      ${companion}
       <span class="external-link-arrow">↗</span>
     </a>
   `;
@@ -656,11 +694,6 @@ function renderForumGuideCard(g) {
 
 function renderForumGuides() {
   if (typeof FORUM_GUIDES === 'undefined') return;
-
-  const home = document.getElementById('home-forum-guides');
-  if (home) {
-    home.innerHTML = FORUM_GUIDES.flatMap(section => section.guides.map(renderForumGuideCard)).join('');
-  }
 
   const tools = document.getElementById('tools-forum-guides');
   if (tools) {
@@ -672,22 +705,7 @@ function renderForumGuides() {
     `).join('');
   }
 
-  renderForumGuideBars();
   renderGodlyItemsSummary();
-}
-
-function renderForumGuideBars() {
-  if (typeof FORUM_GUIDES === 'undefined') return;
-  const all = FORUM_GUIDES.flatMap(s => s.guides);
-  ['leveling', 'bosses', 'items', 'jobadv', 'leeching'].forEach(pageId => {
-    const el = document.getElementById('forum-guide-bar-' + pageId);
-    if (!el) return;
-    const guides = all.filter(g => g.page === pageId || g.companionPage === pageId);
-    if (!guides.length) { el.innerHTML = ''; return; }
-    el.innerHTML = guides.map(g => `
-      <a href="${g.url}" target="_blank" rel="noopener" class="forum-guide-pill">${g.icon} ${g.label} ↗</a>
-    `).join('');
-  });
 }
 
 function renderGodlyItemsSummary() {
@@ -2839,7 +2857,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderWorldMap();
   renderLevelMilestones();
   renderChecklist();
-  renderExternalLinks('checklist-external-links');
   updateScrollStats();
   updateMesoStats();
   renderGear();

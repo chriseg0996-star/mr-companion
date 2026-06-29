@@ -3650,16 +3650,15 @@ kbd {
   flex-shrink: 0;
 }
 
-/* LEECHING */
-.leech-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  margin-bottom: 14px;
+/* LEECHING — chips + inline panel */
+.leech-intro {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin-bottom: 10px;
 }
 
-.leech-methods {
+.leech-methods-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 8px;
@@ -3680,67 +3679,264 @@ kbd {
 .leech-method-label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
 .leech-method-detail { font-size: 11px; color: var(--muted); line-height: 1.45; }
 
-.leech-goby-card { margin-bottom: 4px; }
-
-.leech-range {
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--border);
+.leech-bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
-.leech-range:last-child { border-bottom: none; }
-
-.leech-range--current {
-  background: rgba(74, 222, 128, 0.06);
-  border-left: 2px solid var(--green);
-  padding-left: 8px;
-}
-
-.leech-range-row {
-  display: grid;
-  grid-template-columns: 72px 1fr minmax(120px, 1.4fr) auto;
-  gap: 8px 10px;
+.leech-band {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  font-size: 13px;
+  justify-content: center;
+  gap: 2px;
+  flex: 0 1 76px;
+  min-width: 68px;
+  max-width: 92px;
+  padding: 6px 4px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--leech-color, var(--border));
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font: inherit;
+  color: var(--text);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 }
 
-.leech-range-lv {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
+.leech-band:hover {
+  background: var(--bg3);
+  border-color: color-mix(in srgb, var(--leech-color, var(--border)) 40%, var(--border));
+}
+
+.leech-band.active {
+  background: color-mix(in srgb, var(--leech-color, var(--accent)) 12%, var(--bg2));
+  border-color: color-mix(in srgb, var(--leech-color, var(--accent)) 50%, var(--border));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--leech-color, var(--accent)) 20%, transparent);
+}
+
+.leech-band--recommended:not(.active) {
+  border-color: color-mix(in srgb, #4ade80 35%, var(--border));
+}
+
+.leech-band--island,
+.leech-detail-panel--island { --leech-color: #3b82f6; }
+
+.leech-band--victoria,
+.leech-detail-panel--victoria { --leech-color: #4ade80; }
+
+.leech-band--kerning,
+.leech-detail-panel--kerning { --leech-color: #a3e635; }
+
+.leech-band--ludibrium,
+.leech-detail-panel--ludibrium { --leech-color: #c084fc; }
+
+.leech-band--malaysia,
+.leech-detail-panel--malaysia { --leech-color: #fbbf24; }
+
+.leech-band--magatia,
+.leech-detail-panel--magatia { --leech-color: #60a5fa; }
+
+.leech-band--masteria,
+.leech-detail-panel--masteria { --leech-color: #f472b6; }
+
+.leech-band--leafre,
+.leech-detail-panel--leafre { --leech-color: #f87171; }
+
+.leech-band--singapore,
+.leech-detail-panel--singapore { --leech-color: #38bdf8; }
+
+.leech-band--aqua,
+.leech-detail-panel--aqua { --leech-color: #22d3ee; }
+
+.leech-band--endgame,
+.leech-detail-panel--endgame { --leech-color: #ff8c69; }
+
+.leech-band--field,
+.leech-detail-panel--field { --leech-color: #94a3b8; }
+
+.leech-band-range {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
   white-space: nowrap;
 }
 
-.leech-range-mobs { font-weight: 500; min-width: 0; }
-.leech-range-map { font-size: 12px; color: var(--muted); min-width: 0; }
-.leech-range-badge { font-size: 10px !important; }
-.leech-range-note { font-size: 11px; color: var(--muted); margin-top: 4px; padding-left: 72px; }
-
-.leech-boss-sections { padding: 8px 10px 10px; }
-
-.leech-boss-group + .leech-boss-group {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
+.leech-band-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.2;
 }
 
-.leech-boss-row {
-  display: grid;
-  grid-template-columns: 72px 1fr 1.5fr;
-  gap: 8px 10px;
-  padding: 6px 0;
+.leech-band.active .leech-band-range {
+  color: var(--leech-color, var(--accent));
+}
+
+.leech-detail-host {
+  min-height: 120px;
+  width: 100%;
+  max-width: none;
+}
+
+.leech-detail-empty {
+  margin: 0;
+  padding: 24px 16px;
+  text-align: center;
   font-size: 13px;
-  align-items: center;
+  color: var(--muted);
+  background: var(--bg2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
 }
 
-.leech-boss-name { font-weight: 500; }
+.leech-detail-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--leech-color, var(--accent));
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
 
-@media (max-width: 640px) {
-  .leech-range-row,
-  .leech-boss-row {
-    grid-template-columns: 1fr;
-    gap: 2px;
+.leech-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--leech-color, var(--border)) 25%, var(--border));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--leech-color, var(--accent)) 14%, var(--bg3)) 0%,
+    var(--bg2) 72%
+  );
+}
+
+.leech-detail-titles { flex: 1; min-width: 0; }
+
+.leech-detail-name {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.leech-detail-loc {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.leech-detail-rec {
+  margin: 0;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4ade80;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, #4ade80 6%, var(--bg2));
+}
+
+.leech-detail-main .leech-detail-section:last-child,
+.leech-detail-main .level-next-milestone:last-child {
+  border-bottom: none;
+}
+
+.leech-detail-section {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.leech-detail-section--tips {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.leech-detail-section--goby {
+  background: color-mix(in srgb, #fbbf24 5%, var(--bg2));
+  border-top: 1px dashed color-mix(in srgb, #fbbf24 25%, var(--border));
+}
+
+.leech-detail-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.leech-detail-mapline,
+.leech-detail-summary {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.leech-detail-subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 10px 0 6px;
+  color: var(--text);
+}
+
+.leech-spot-mobs {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.leech-spot-note {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.leech-boss-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leech-boss-entry {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 4px 10px;
+  padding: 8px 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.leech-boss-entry-lv {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.leech-boss-entry-name { font-weight: 600; }
+
+.leech-boss-entry-map {
+  grid-column: 2;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.leech-boss-entry-note {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.45;
+}
+
+@media (max-width: 520px) {
+  .leech-band {
+    flex: 0 1 68px;
+    min-width: 60px;
   }
-  .leech-range-note { padding-left: 0; }
 }
 
 .boss-card--early { border-top: 2px solid var(--green); }

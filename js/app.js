@@ -1433,8 +1433,6 @@ function getBandLevelRange(l) {
 }
 
 function getContextLevel() {
-  const leech = parseInt(document.getElementById('leech-level-filter')?.value, 10);
-  if (leech) return leech;
   const l = LEVELS[getActiveLevelIndex()];
   return getBandLevelRange(l).mid;
 }
@@ -1628,10 +1626,6 @@ function highlightLevel() {
   renderPQOverview();
 }
 
-function renderLevelMilestones() {
-  /* milestones integrated into level detail panel */
-}
-
 function parseLevelRange(levelStr) {
   const range = levelStr.match(/(\d+)\s*[–-]\s*(\d+)/);
   if (range) return { start: parseInt(range[1], 10), end: parseInt(range[2], 10) };
@@ -1647,112 +1641,273 @@ function isLevelInRange(levelStr, myLevel) {
   return myLevel >= start && myLevel <= end;
 }
 
-function highlightLeechLevel() {
+let selectedLeechKey = 0;
+let leechBandUserPicked = false;
+
+function getLeechTheme(r) {
+  const label = (r.label || '').toLowerCase();
+  const map = (r.spots?.[0]?.map || '').toLowerCase();
+  if (label.includes('tutorial') || map.includes('maple island')) return 'island';
+  if (label.includes('victoria') || map.includes('henesys')) return 'victoria';
+  if (map.includes('ludibrium') || map.includes('path of time') || map.includes('terrace hall')) return 'ludibrium';
+  if (map.includes('kerning') || map.includes('subway')) return 'kerning';
+  if (map.includes('malaysia')) return 'malaysia';
+  if (map.includes('alcadno') || map.includes('magatia')) return 'magatia';
+  if (map.includes('crimsonwood')) return 'masteria';
+  if (map.includes('leafre')) return 'leafre';
+  if (map.includes('singapore') || map.includes('ulu')) return 'singapore';
+  if (map.includes('aqua') || map.includes('deep sea')) return 'aqua';
+  return 'field';
+}
+
+function leechRangeOverlapsGoby(levelStr) {
+  const { start, end } = parseLevelRange(levelStr);
+  return start <= 70 && end >= 30;
+}
+
+function getRecommendedLeechKey() {
+  const g = typeof LEECHING_GUIDE !== 'undefined' ? LEECHING_GUIDE : null;
+  if (!g) return 0;
+  const level = getContextLevel();
+  if (!level) return 0;
+  const idx = g.ranges.findIndex(r => isLevelInRange(r.level, level));
+  return idx >= 0 ? idx : 0;
+}
+
+function selectLeechBand(key) {
+  leechBandUserPicked = true;
+  selectedLeechKey = key;
   renderLeeching();
-  renderPQOverview();
+}
+
+function getNextLeechKey(key) {
+  const g = typeof LEECHING_GUIDE !== 'undefined' ? LEECHING_GUIDE : null;
+  if (!g) return null;
+  if (key === 'area') return 'boss';
+  if (key === 'boss') return null;
+  if (typeof key === 'number' && key < g.ranges.length - 1) return key + 1;
+  if (typeof key === 'number' && key === g.ranges.length - 1) return 'area';
+  return null;
+}
+
+function renderLeechGobySection(gb) {
+  if (!gb) return '';
+  return `
+    <section class="leech-detail-section leech-detail-section--goby">
+      <div class="leech-detail-section-head">
+        <h3 class="level-section-title">${gb.title}</h3>
+        <span class="badge badge-yellow">Premium</span>
+      </div>
+      <p class="leech-detail-mapline"><strong>${gb.map}</strong> · ${gb.mobs.join(', ')}</p>
+      <p class="leech-detail-summary">${gb.summary}</p>
+      <h4 class="leech-detail-subtitle">Seller setup</h4>
+      <ul class="level-tips-list">${gb.requirements.map(r => `<li>${r}</li>`).join('')}</ul>
+      <h4 class="leech-detail-subtitle">As the buyer</h4>
+      <ul class="level-tips-list">${gb.buyerNotes.map(r => `<li>${r}</li>`).join('')}</ul>
+    </section>
+  `;
+}
+
+function renderLeechBossRows(rows, showMap) {
+  return rows.map(b => `
+    <div class="leech-boss-entry">
+      <span class="leech-boss-entry-lv">${b.level}</span>
+      <span class="leech-boss-entry-name">${b.name}</span>
+      ${showMap && b.map ? `<span class="leech-boss-entry-map">${b.map}</span>` : ''}
+      ${b.notes ? `<p class="leech-boss-entry-note">${b.notes}</p>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderLeechBands() {
+  const g = typeof LEECHING_GUIDE !== 'undefined' ? LEECHING_GUIDE : null;
+  const el = document.getElementById('leech-bands');
+  if (!el || !g) return;
+  const level = getContextLevel();
+  const rangeChips = g.ranges.map((r, i) => {
+    const recommended = isLevelInRange(r.level, level);
+    const theme = getLeechTheme(r);
+    return `
+      <button type="button" class="leech-band leech-band--${theme} ${selectedLeechKey === i ? 'active' : ''} ${recommended ? 'leech-band--recommended' : ''}"
+        role="tab" aria-selected="${selectedLeechKey === i}" title="${r.label}" onclick="selectLeechBand(${i})">
+        <span class="leech-band-range">${r.level}</span>
+        <span class="leech-band-label">${r.label}</span>
+      </button>
+    `;
+  }).join('');
+  const specialChips = `
+    <button type="button" class="leech-band leech-band--masteria ${selectedLeechKey === 'area' ? 'active' : ''}"
+      role="tab" aria-selected="${selectedLeechKey === 'area'}" onclick="selectLeechBand('area')">
+      <span class="leech-band-range">105+</span>
+      <span class="leech-band-label">Area boss</span>
+    </button>
+    <button type="button" class="leech-band leech-band--endgame ${selectedLeechKey === 'boss' ? 'active' : ''}"
+      role="tab" aria-selected="${selectedLeechKey === 'boss'}" onclick="selectLeechBand('boss')">
+      <span class="leech-band-range">135+</span>
+      <span class="leech-band-label">Boss leech</span>
+    </button>
+  `;
+  el.innerHTML = rangeChips + specialChips;
+}
+
+function renderLeechDetailPanel() {
+  const g = typeof LEECHING_GUIDE !== 'undefined' ? LEECHING_GUIDE : null;
+  const el = document.getElementById('leech-detail');
+  if (!el || !g) return;
+
+  const level = getContextLevel();
+  const nextKey = getNextLeechKey(selectedLeechKey);
+
+  if (selectedLeechKey === 'area') {
+    el.innerHTML = `
+      <div class="leech-detail-panel leech-detail-panel--masteria">
+        <header class="leech-detail-header">
+          <div class="leech-detail-titles">
+            <div class="leech-detail-name">Area boss leech</div>
+            <div class="leech-detail-loc">Camp channels — seller kills, buyer stays in range</div>
+          </div>
+        </header>
+        <div class="leech-detail-main">
+          <section class="leech-detail-section">
+            <div class="leech-boss-list">${renderLeechBossRows(g.areaBosses, true)}</div>
+          </section>
+          ${renderLeechTipsSection(g)}
+          ${nextKey ? renderLeechNextButton(nextKey, g) : ''}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (selectedLeechKey === 'boss') {
+    el.innerHTML = `
+      <div class="leech-detail-panel leech-detail-panel--endgame">
+        <header class="leech-detail-header">
+          <div class="leech-detail-titles">
+            <div class="leech-detail-name">Boss expedition leech</div>
+            <div class="leech-detail-loc">Daily bosses and expeditions · 135 to 200</div>
+          </div>
+        </header>
+        <div class="leech-detail-main">
+          <section class="leech-detail-section">
+            <div class="leech-boss-list">${renderLeechBossRows(g.bossLeech, false)}</div>
+          </section>
+          ${renderLeechTipsSection(g)}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const r = g.ranges[selectedLeechKey];
+  if (!r) {
+    el.innerHTML = `<p class="leech-detail-empty">No leech data for this range.</p>`;
+    return;
+  }
+
+  const spot = r.spots[0];
+  const theme = getLeechTheme(r);
+  const inRange = isLevelInRange(r.level, level);
+  const showGoby = leechRangeOverlapsGoby(r.level) && g.goby;
+
+  el.innerHTML = `
+    <div class="leech-detail-panel leech-detail-panel--${theme}">
+      <header class="leech-detail-header">
+        <div class="leech-detail-titles">
+          <div class="leech-detail-name">Lv ${r.level} · ${r.label}</div>
+          ${spot ? `<div class="leech-detail-loc">📍 ${spot.map}</div>` : ''}
+        </div>
+      </header>
+      ${inRange ? `<p class="leech-detail-rec">★ Best mob leech range for your current level band</p>` : ''}
+      <div class="leech-detail-main">
+        ${spot ? `
+          <section class="leech-detail-section">
+            <h3 class="level-section-title">Mob leech spot</h3>
+            <div class="leech-spot-mobs">${spot.mobs}</div>
+            ${spot.notes ? `<p class="leech-spot-note">${spot.notes}</p>` : ''}
+          </section>
+        ` : ''}
+        ${showGoby ? renderLeechGobySection(g.goby) : ''}
+        ${renderLeechTipsSection(g)}
+        ${nextKey !== null ? renderLeechNextButton(nextKey, g) : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderLeechTipsSection(g) {
+  return `
+    <section class="leech-detail-section leech-detail-section--tips">
+      <h3 class="level-section-title">Tips</h3>
+      <ul class="level-tips-list">${g.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+    </section>
+  `;
+}
+
+function renderLeechNextButton(nextKey, g) {
+  let label = '';
+  let range = '';
+  if (nextKey === 'area') {
+    label = 'Area boss';
+    range = '105+';
+  } else if (nextKey === 'boss') {
+    label = 'Boss leech';
+    range = '135+';
+  } else {
+    const r = g.ranges[nextKey];
+    if (!r) return '';
+    label = r.label;
+    range = r.level;
+  }
+  const onclick = typeof nextKey === 'number' ? `selectLeechBand(${nextKey})` : `selectLeechBand('${nextKey}')`;
+  return `
+    <button type="button" class="level-next-milestone" onclick="${onclick}">
+      <span class="level-next-label">Up next</span>
+      <span class="level-next-text">${label} · Lv ${range}</span>
+      <span class="level-next-arrow">→</span>
+    </button>
+  `;
 }
 
 function renderLeeching() {
   const g = typeof LEECHING_GUIDE !== 'undefined' ? LEECHING_GUIDE : null;
   if (!g) return;
 
-  const myLevel = parseInt(document.getElementById('leech-level-filter')?.value, 10) || 0;
-
   const methods = document.getElementById('leech-methods');
   if (methods) {
-    methods.innerHTML = g.methods.map(m => `
-      <div class="leech-method">
-        <span class="leech-method-icon" aria-hidden="true">${m.icon}</span>
-        <div>
-          <div class="leech-method-label">${m.label}</div>
-          <div class="leech-method-detail">${m.detail}</div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  const gobyEl = document.getElementById('leech-goby');
-  if (gobyEl && g.goby) {
-    const gb = g.goby;
-    gobyEl.innerHTML = `
-      <div class="card-header">
-        <h2>${gb.title}</h2>
-        <span class="badge badge-yellow">Premium</span>
-      </div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:8px;"><strong>${gb.map}</strong> · ${gb.mobs.join(', ')}</p>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">${gb.summary}</p>
-      <h3>Seller setup</h3>
-      <ul class="drop-list">${gb.requirements.map(r => `<li>${r}</li>`).join('')}</ul>
-      <h3>As the buyer</h3>
-      <ul class="drop-list">${gb.buyerNotes.map(r => `<li>${r}</li>`).join('')}</ul>
-    `;
-  }
-
-  const list = document.getElementById('leech-list');
-  if (list) {
-    list.innerHTML = g.ranges.map((r, i) => {
-      const isCurrent = isLevelInRange(r.level, myLevel);
-      const spot = r.spots[0];
-      if (!spot) return '';
-      return `
-        <div class="leech-range ${isCurrent ? 'leech-range--current' : ''}" id="leech-range-${i}">
-          <div class="leech-range-row">
-            <span class="leech-range-lv">Lv ${r.level}</span>
-            <span class="leech-range-mobs">${spot.mobs}</span>
-            <span class="leech-range-map">${spot.map}</span>
-            ${isCurrent ? '<span class="badge badge-green leech-range-badge">You</span>' : ''}
+    methods.innerHTML = `
+      <p class="leech-intro">${g.intro}</p>
+      <div class="leech-methods-grid">
+        ${g.methods.map(m => `
+          <div class="leech-method">
+            <span class="leech-method-icon" aria-hidden="true">${m.icon}</span>
+            <div>
+              <div class="leech-method-label">${m.label}</div>
+              <div class="leech-method-detail">${m.detail}</div>
+            </div>
           </div>
-          ${spot.notes ? `<div class="leech-range-note">${spot.notes}</div>` : ''}
-        </div>
-      `;
-    }).join('');
-  }
-
-  const bosses = document.getElementById('leech-bosses');
-  if (bosses) {
-    bosses.innerHTML = `
-      <div class="leech-boss-group">
-        <div class="boss-progression-group-label">Area bosses</div>
-        <div class="leech-boss-list">
-          ${g.areaBosses.map(b => `
-            <div class="leech-range">
-              <div class="leech-boss-row">
-                <span class="leech-range-lv">${b.level}</span>
-                <span class="leech-boss-name">${b.name}</span>
-                <span class="leech-range-map">${b.map}</span>
-              </div>
-              ${b.notes ? `<div class="leech-range-note">${b.notes}</div>` : ''}
-            </div>
-          `).join('')}
-        </div>
-      </div>
-      <div class="leech-boss-group">
-        <div class="boss-progression-group-label">Boss expeditions</div>
-        <div class="leech-boss-list">
-          ${g.bossLeech.map(b => `
-            <div class="leech-boss-row">
-              <span class="leech-range-lv">${b.level}</span>
-              <span class="leech-boss-name">${b.name}</span>
-              ${b.notes ? `<span class="leech-range-map">${b.notes}</span>` : ''}
-            </div>
-          `).join('')}
-        </div>
+        `).join('')}
       </div>
     `;
   }
 
-  const tips = document.getElementById('leech-tips');
-  if (tips) {
-    tips.innerHTML = `
-      <div class="card-header"><h2>Tips</h2></div>
-      <ul class="drop-list">${g.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-    `;
+  if (typeof selectedLeechKey === 'number' && selectedLeechKey >= g.ranges.length) {
+    selectedLeechKey = 0;
   }
+  if (!leechBandUserPicked) {
+    selectedLeechKey = getRecommendedLeechKey();
+  }
+  renderLeechBands();
+  renderLeechDetailPanel();
 
   const credit = document.getElementById('leech-credit');
   if (credit) {
     credit.innerHTML = `Source: <a href="${g.forumUrl}" target="_blank" rel="noopener">${g.credit}</a>`;
   }
+}
+
+function renderLevelMilestones() {
+  /* milestones integrated into level detail panel */
 }
 
 function filterLevelType(type, btn) {

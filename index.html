@@ -263,24 +263,13 @@
   <div id="level-detail" class="level-detail" role="tabpanel"></div>
 </div>
 
-<div id="page-leeching" class="page">
-  <header class="page-intro">
+<div id="page-leeching" class="page page--leeching">
+  <header class="page-intro page-intro--compact">
     <h1>Leeching Guide</h1>
-    <p class="subtitle">Where to leech from level 10 to 200 — mob maps, goby method, area bosses, and boss leech.</p>
   </header>
-  <div class="leech-toolbar">
-    <label style="font-size:13px;color:var(--muted);">I'm level:</label>
-    <input type="number" id="leech-level-filter" placeholder="e.g. 85" min="1" max="200" style="width:80px;" oninput="highlightLeechLevel()">
-  </div>
   <div id="leech-methods" class="leech-methods"></div>
-  <div id="leech-goby" class="card leech-goby-card"></div>
-  <h2 style="margin-top:20px;">Mob leech by level</h2>
-  <div id="leech-list"></div>
-  <details class="price-expand-wrap" style="margin-top:16px;">
-    <summary>Area boss leech &amp; boss expeditions (135+)</summary>
-    <div id="leech-bosses" class="leech-boss-sections"></div>
-  </details>
-  <div id="leech-tips" class="card" style="margin-top:16px;"></div>
+  <div id="leech-bands" class="leech-bands" role="tablist" aria-label="Leech level ranges"></div>
+  <div id="leech-detail" class="leech-detail-host" role="tabpanel"></div>
   <p class="price-credit" id="leech-credit"></p>
 </div>
 

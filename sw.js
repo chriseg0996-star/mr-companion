@@ -16,6 +16,7 @@ const PRECACHE = [
   './data/classForumLinks.js',
   './data/classGear.js',
   './data/bossDrops.js',
+  './data/bossFightGuides.js',
   './data/partyData.js',
   './data/externalLinks.js',
   './data/mobGlossary.js',

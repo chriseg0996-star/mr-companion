@@ -1678,6 +1678,51 @@ body.boss-detail-open { overflow: hidden; }
   border-left: 3px solid var(--accent);
 }
 
+.fight-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fight-guide-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.fight-guide-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fight-guide-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.fight-guide-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fight-guide-detail {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
 .tip-group-label {
   font-size: 10px;
   font-weight: 700;

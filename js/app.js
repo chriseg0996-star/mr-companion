@@ -353,29 +353,11 @@ function formatBossRunTime(id) {
   if (!iso) return '';
   const d = new Date(iso);
   const now = new Date();
-  let timeNote = '';
-  if (d.toDateString() === now.toDateString()) timeNote = ' · marked today';
-  else {
-    const days = Math.floor((now - d) / 86400000);
-    if (days === 1) timeNote = ' · yesterday';
-    else if (days < 7) timeNote = ` · ${days}d ago`;
-    else timeNote = ` · ${d.toLocaleDateString()}`;
-  }
-  const respawn = getBossRespawnStatus(id);
-  if (respawn) timeNote += respawn.ready ? ' · <span class="boss-ready">ready</span>' : ` · <span class="boss-cooldown">in ${respawn.label}</span>`;
-  return timeNote;
-}
-
-function getBossRespawnStatus(checklistId) {
-  const hours = BOSS_RESPAWN_HOURS?.[checklistId];
-  if (!hours) return null;
-  const iso = localStorage.getItem(`mr-boss-run-${checklistId}`);
-  if (!iso) return { ready: true, label: '' };
-  const remaining = hours * 3600000 - (Date.now() - new Date(iso).getTime());
-  if (remaining <= 0) return { ready: true, label: '' };
-  const h = Math.floor(remaining / 3600000);
-  const m = Math.floor((remaining % 3600000) / 60000);
-  return { ready: false, label: h > 0 ? `${h}h ${m}m` : `${m}m` };
+  if (d.toDateString() === now.toDateString()) return ' · marked today';
+  const days = Math.floor((now - d) / 86400000);
+  if (days === 1) return ' · yesterday';
+  if (days < 7) return ` · ${days}d ago`;
+  return ` · ${d.toLocaleDateString()}`;
 }
 
 function maybeResetDailies() {
@@ -1091,6 +1073,24 @@ function renderFlow(steps, type = 'phase') {
   `;
 }
 
+function renderFightGuide(bossId) {
+  const steps = BOSS_FIGHT_GUIDES?.[bossId];
+  if (!steps?.length) return '<p class="panel-empty">Fight guide coming soon.</p>';
+  return `
+    <div class="fight-guide">
+      ${steps.map((s, i) => `
+        <article class="fight-guide-step">
+          <div class="fight-guide-num" aria-hidden="true">${i + 1}</div>
+          <div class="fight-guide-body">
+            <h4 class="fight-guide-title">${s.title}</h4>
+            <p class="fight-guide-detail">${s.detail}</p>
+          </div>
+        </article>
+      `).join('')}
+    </div>
+  `;
+}
+
 function renderTipCards(items) {
   if (!items?.length) return '<p class="panel-empty">Nothing here yet.</p>';
   return `<div class="tip-cards">${items.map(t => `<div class="tip-card">${t}</div>`).join('')}</div>`;
@@ -1353,15 +1353,15 @@ function renderBossDetailPanel() {
   const nextBoss = getNextBossInProgression(b.id);
   const tierLabel = BOSS_TIER_LABELS[b.tier] || b.tier;
   const tierBadge = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple', endgame: 'badge-red', demi: 'badge-blue' }[b.tier] || 'badge-yellow';
-  const respawnBanner = renderBossRespawnBanner(b.id);
+  const hasFightGuide = BOSS_FIGHT_GUIDES?.[b.id]?.length || b.phases?.length;
 
   const panelTabs = [];
-  if (b.phases?.length) {
+  if (hasFightGuide) {
     panelTabs.push({
       id: 'fight',
       icon: '⚔️',
       label: 'Fight',
-      content: renderFlow(b.phases, 'phase'),
+      content: renderFightGuide(b.id),
     });
   }
   panelTabs.push({
@@ -1408,15 +1408,12 @@ function renderBossDetailPanel() {
             <span class="boss-stat">❤️ ${b.hpReq}</span>
             <span class="boss-stat">💥 ${b.dmgReq}</span>
             <span class="boss-stat">👥 ${b.party}</span>
-            <span class="boss-stat">⏱ ${b.respawn}</span>
           </div>
         </div>
         <span class="boss-detail-tier badge ${tierBadge}">${tierLabel}</span>
       </header>
 
-      ${respawnBanner ? `<div class="boss-detail-status">${respawnBanner}</div>` : ''}
-
-      ${renderPanelTabs(panelTabs, b.phases?.length ? 'fight' : 'loot')}
+      ${renderPanelTabs(panelTabs, hasFightGuide ? 'fight' : 'loot')}
 
       ${nextBoss ? `
         <button type="button" class="level-next-milestone" onclick="selectBoss('${nextBoss.id}')">
@@ -1466,18 +1463,6 @@ function renderBossDropTable(bossId) {
       </table>
     </div>
   `;
-}
-
-function renderBossRespawnBanner(bossId) {
-  const b = BOSSES.find(x => x.id === bossId);
-  const cid = b?.checklistId || { zakum: 'zakum', papulatus: 'pap', horntail: 'ht', pinkbean: 'pb' }[bossId];
-  if (!cid) return '';
-  const status = getBossRespawnStatus(cid);
-  if (!status) return '';
-  const weekly = bossId === 'von-leon';
-  return status.ready
-    ? `<p class="boss-respawn-banner ready">✓ Off cooldown — ready to run${weekly ? ' (weekly)' : ''}</p>`
-    : `<p class="boss-respawn-banner cooldown">⏳ Respawn in <strong>${status.label}</strong>${weekly ? ' (resets Monday server time)' : ''}</p>`;
 }
 
 function renderBossPrequestProgress(bossId) {

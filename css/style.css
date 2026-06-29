@@ -5,6 +5,7 @@
   --bg2: #0f1419;
   --bg3: #161d26;
   --bg-elevated: #1a222d;
+  --surface: #1a222d;
   --border: rgba(255, 255, 255, 0.07);
   --border-hover: rgba(255, 255, 255, 0.14);
   --text: #f0f4f8;
@@ -56,6 +57,7 @@ body {
   top: 0;
   z-index: 100;
   box-shadow: var(--shadow-sm);
+  overflow: visible;
 }
 
 .nav-top {
@@ -66,7 +68,7 @@ body {
   gap: 4px;
   padding: 0 12px;
   min-height: 48px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .nav-logo {
@@ -100,7 +102,7 @@ body {
   gap: 0;
   flex: 1;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .nav-actions {
@@ -162,6 +164,7 @@ body {
 
 .nav-dropdown {
   position: relative;
+  flex-shrink: 0;
 }
 
 .nav-dropdown-toggle {
@@ -1080,6 +1083,263 @@ button.btn-ghost:hover {
   border-radius: 0;
   border: none;
   border-bottom: 1px solid var(--border);
+}
+
+/* PARTY QUESTS — chips + inline panel */
+.pq-bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.pq-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 0 1 76px;
+  min-width: 68px;
+  max-width: 88px;
+  padding: 6px 4px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--pq-color, var(--border));
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font: inherit;
+  color: var(--text);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.pq-band:hover {
+  background: var(--bg3);
+  border-color: color-mix(in srgb, var(--pq-color, var(--border)) 40%, var(--border));
+}
+
+.pq-band.active {
+  background: color-mix(in srgb, var(--pq-color, var(--accent)) 12%, var(--bg2));
+  border-color: color-mix(in srgb, var(--pq-color, var(--accent)) 50%, var(--border));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--pq-color, var(--accent)) 20%, transparent);
+}
+
+.pq-band--recommended:not(.active) {
+  border-color: color-mix(in srgb, #4ade80 35%, var(--border));
+}
+
+.pq-band--construction,
+.pq-detail-panel--construction { --pq-color: #f87171; }
+
+.pq-band--clock,
+.pq-detail-panel--clock { --pq-color: #c084fc; }
+
+.pq-band--carnival,
+.pq-detail-panel--carnival { --pq-color: #fbbf24; }
+
+.pq-band--sky,
+.pq-detail-panel--sky { --pq-color: #60a5fa; }
+
+.pq-band--wedding,
+.pq-detail-panel--wedding { --pq-color: #f472b6; }
+
+.pq-band--forest,
+.pq-detail-panel--forest { --pq-color: #4ade80; }
+
+.pq-band--field,
+.pq-detail-panel--field { --pq-color: #94a3b8; }
+
+.pq-band-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+}
+
+.pq-band-img--missing { display: none; }
+
+.pq-band-short {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pq-band-lv {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.pq-band.active .pq-band-lv {
+  color: var(--pq-color, var(--accent));
+}
+
+.pq-detail-host {
+  min-height: 120px;
+  width: 100%;
+  max-width: none;
+}
+
+.pq-detail-empty {
+  margin: 0;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--bg2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+}
+
+.pq-detail-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--pq-color, var(--accent));
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.pq-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--pq-color, var(--border)) 25%, var(--border));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--pq-color, var(--accent)) 14%, var(--bg3)) 0%,
+    var(--bg2) 72%
+  );
+}
+
+.pq-detail-titles { flex: 1; min-width: 0; }
+
+.pq-detail-name {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.pq-detail-short {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.pq-detail-loc {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pq-detail-priority {
+  flex-shrink: 0;
+  font-size: 10px !important;
+}
+
+.pq-detail-rec {
+  margin: 0;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4ade80;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, #4ade80 6%, var(--bg2));
+}
+
+.pq-detail-body {
+  display: grid;
+  grid-template-columns: 1fr minmax(88px, 108px);
+}
+
+.pq-detail-main { min-width: 0; }
+
+.pq-detail-main .pq-detail-section:last-child,
+.pq-detail-main .level-next-milestone:last-child {
+  border-bottom: none;
+}
+
+.pq-detail-section {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pq-detail-section--tips {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pq-detail-section--stats {
+  padding: 10px 16px;
+}
+
+.pq-detail-section--links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pq-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pq-stat {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+}
+
+.pq-reward-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pq-detail-art {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px 12px;
+  border-left: 1px solid var(--border);
+  background: color-mix(in srgb, var(--pq-color, var(--accent)) 4%, var(--bg2));
+}
+
+.pq-detail-map {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 6px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.4));
+}
+
+.pq-detail-map--missing { display: none; }
+
+@media (max-width: 520px) {
+  .pq-detail-body {
+    grid-template-columns: 1fr;
+  }
+
+  .pq-detail-art {
+    order: -1;
+    border-left: none;
+    border-bottom: 1px solid var(--border);
+    padding: 12px;
+  }
+
+  .pq-detail-map {
+    width: 72px;
+    height: 72px;
+  }
 }
 
 @media (max-width: 520px) {

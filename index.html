@@ -46,6 +46,11 @@
           <button type="button" class="nav-dropdown-item" data-page="gear" onclick="navGo('gear')">Gear</button>
           <button type="button" class="nav-dropdown-item" data-page="checklist" onclick="navGo('checklist')">Daily</button>
           <button type="button" class="nav-dropdown-item" data-page="tools" onclick="navGo('tools')">Library</button>
+          <button type="button" class="nav-dropdown-item" data-page="glossary" onclick="navGo('glossary')">Mob Glossary</button>
+          <button type="button" class="nav-dropdown-item" data-page="hpwash" onclick="navGo('hpwash')">HP Wash</button>
+          <button type="button" class="nav-dropdown-item" data-page="scrolls" onclick="navGo('scrolls')">Scrolls</button>
+          <button type="button" class="nav-dropdown-item" data-page="mesos" onclick="navGo('mesos')">Mesos</button>
+          <button type="button" class="nav-dropdown-item" data-page="party" onclick="navGo('party')">Party</button>
         </div>
       </div>
     </div>
@@ -107,13 +112,12 @@
   </div>
 </div>
 
-<div id="page-pqs" class="page">
-  <header class="page-intro">
+<div id="page-pqs" class="page page--pqs">
+  <header class="page-intro page-intro--compact">
     <h1>Party Quests</h1>
-    <p class="subtitle">Fastest way to level — find a party, enter the portal, clear stages together.</p>
   </header>
-  <div id="pq-overview" class="pq-overview"></div>
-  <div id="pq-list"></div>
+  <div id="pq-bands" class="pq-bands" role="tablist" aria-label="Party quests"></div>
+  <div id="pq-detail" class="pq-detail-host" role="tabpanel"></div>
 </div>
 
 <div id="page-tools" class="page">

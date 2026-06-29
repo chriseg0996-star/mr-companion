@@ -82,6 +82,7 @@ function showPage(id, btn, skipHash) {
 }
 
 function navGo(id) {
+  closeNavDropdowns();
   showPage(id);
 }
 
@@ -121,6 +122,9 @@ function initNav() {
         toggle.setAttribute('aria-expanded', 'true');
       }
     });
+  });
+  document.querySelectorAll('.nav-dropdown-menu').forEach(menu => {
+    menu.addEventListener('click', e => e.stopPropagation());
   });
   document.addEventListener('click', closeNavDropdowns);
   document.addEventListener('keydown', e => {
@@ -525,66 +529,150 @@ function isPQInRange(pq, level) {
 }
 
 function openPQ(id, skipHash) {
-  showPage('pqs', null, skipHash);
-  if (!skipHash) setRoute('pqs', id);
-  const el = document.getElementById('pq-' + id);
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    el.classList.add('prequest-highlight');
-    setTimeout(() => el.classList.remove('prequest-highlight'), 2000);
-  }
+  if (!skipHash) showPage('pqs', null, true);
+  selectPQ(id, skipHash);
 }
 
-function renderPQOverview() {
-  const el = document.getElementById('pq-overview');
+const PQ_PRIORITY_LABELS = { high: 'Best EXP', medium: 'Side PQ', optional: 'Optional' };
+const PQ_PRIORITY_BADGES = { high: 'badge-green', medium: 'badge-yellow', optional: 'badge-blue' };
+
+let selectedPQId = 'kpq';
+
+function getActivePQ() {
+  if (typeof PQS === 'undefined' || !PQS.length) return null;
+  return PQS.find(pq => pq.id === selectedPQId) || PQS[0];
+}
+
+function getNextPQInOrder(currentId) {
+  if (typeof PQS === 'undefined') return null;
+  const i = PQS.findIndex(pq => pq.id === currentId);
+  return i >= 0 && i < PQS.length - 1 ? PQS[i + 1] : null;
+}
+
+function selectPQ(id, skipHash) {
+  if (typeof PQS !== 'undefined' && !PQS.some(pq => pq.id === id)) {
+    id = PQS[0]?.id;
+    if (!id) return;
+  }
+  selectedPQId = id;
+  renderPQing();
+  if (!skipHash) setRoute('pqs', id);
+}
+
+function renderPQBands() {
+  const el = document.getElementById('pq-bands');
   if (!el || typeof PQS === 'undefined') return;
+  const active = getActivePQ();
   const levelInput = getContextLevel();
+  el.innerHTML = PQS.map(pq => {
+    const recommended = isPQInRange(pq, levelInput);
+    return `
+      <button type="button" class="pq-band pq-band--${pq.mapTheme || 'field'} ${pq.id === active?.id ? 'active' : ''} ${recommended ? 'pq-band--recommended' : ''}"
+        role="tab" aria-selected="${pq.id === active?.id}" title="${pq.name}" onclick="selectPQ('${pq.id}')">
+        <img class="pq-band-img" src="${pq.mapImage || ''}" alt="" width="40" height="40" loading="lazy"
+          onerror="this.classList.add('pq-band-img--missing')">
+        <span class="pq-band-short">${pq.short}</span>
+        <span class="pq-band-lv">${pq.level.split(' ')[0]}</span>
+      </button>
+    `;
+  }).join('');
+}
+
+function renderPQDetailPanel() {
+  const el = document.getElementById('pq-detail');
+  if (!el) return;
+  const pq = getActivePQ();
+  if (!pq) {
+    el.innerHTML = `<p class="pq-detail-empty">No party quest data loaded.</p>`;
+    return;
+  }
+
+  const nextPQ = getNextPQInOrder(pq.id);
+  const priorityLabel = PQ_PRIORITY_LABELS[pq.priority] || pq.priority;
+  const priorityBadge = PQ_PRIORITY_BADGES[pq.priority] || 'badge-yellow';
+  const levelInput = getContextLevel();
+  const inRange = isPQInRange(pq, levelInput);
+
   el.innerHTML = `
-    <div class="pq-track">
-      ${PQS.map(pq => {
-        const recommended = isPQInRange(pq, levelInput);
-        return `
-          <button type="button" class="pq-track-item${recommended ? ' recommended' : ''}" onclick="openPQ('${pq.id}')">
-            <span class="pq-track-short">${pq.short}</span>
-            <span class="pq-track-lv">Lv ${pq.level}</span>
-            <span class="pq-track-party">${pq.party}</span>
-            ${recommended ? '<span class="pq-track-badge">Best for you</span>' : ''}
-          </button>
-        `;
-      }).join('')}
+    <div class="pq-detail-panel pq-detail-panel--${pq.mapTheme || 'field'}">
+      <header class="pq-detail-header">
+        <div class="pq-detail-titles">
+          <div class="pq-detail-name">${pq.name} <span class="pq-detail-short">(${pq.short})</span></div>
+          <div class="pq-detail-loc">📍 ${pq.location}</div>
+        </div>
+        <span class="pq-detail-priority badge ${priorityBadge}">${priorityLabel}</span>
+      </header>
+
+      ${inRange ? `<p class="pq-detail-rec">★ Best PQ for your current level range</p>` : ''}
+
+      <div class="pq-detail-body">
+        <div class="pq-detail-main">
+          <section class="pq-detail-section pq-detail-section--stats">
+            <div class="pq-stat-row">
+              <span class="pq-stat">⚔️ Lv ${pq.level}</span>
+              <span class="pq-stat">👥 ${pq.party}</span>
+            </div>
+          </section>
+
+          ${pq.stages?.length ? `
+            <section class="pq-detail-section">
+              <h3 class="level-section-title">Stages</h3>
+              ${renderFlow(pq.stages, 'pq')}
+            </section>
+          ` : ''}
+
+          <section class="pq-detail-section">
+            <h3 class="level-section-title">Rewards</h3>
+            <div class="pq-reward-row">${pq.rewards.map(r => `<span class="level-mob-pill">${r}</span>`).join('')}</div>
+          </section>
+
+          <section class="pq-detail-section">
+            <h3 class="level-section-title">How to run</h3>
+            <ul class="level-tips-list">${pq.howTo.map(s => `<li>${s}</li>`).join('')}</ul>
+          </section>
+
+          <section class="pq-detail-section pq-detail-section--tips">
+            <h3 class="level-section-title">Tips</h3>
+            <ul class="level-tips-list">${pq.tips.map(s => `<li>${s}</li>`).join('')}</ul>
+          </section>
+
+          <section class="pq-detail-section pq-detail-section--links">
+            ${pq.prequestId ? `<button type="button" class="btn btn-sm btn-ghost" onclick="openPrequest('${pq.prequestId}')">Prequest guide →</button>` : ''}
+            ${pq.bossId ? `<button type="button" class="btn btn-sm" onclick="showPage('bosses');showBoss('${pq.bossId}')">Boss guide →</button>` : ''}
+            ${pq.forumGuide ? `<a href="${pq.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a>` : ''}
+          </section>
+
+          ${nextPQ ? `
+            <button type="button" class="level-next-milestone" onclick="selectPQ('${nextPQ.id}')">
+              <span class="level-next-label">Up next</span>
+              <span class="level-next-text">${nextPQ.short} · Lv ${nextPQ.level}</span>
+              <span class="level-next-arrow">→</span>
+            </button>
+          ` : ''}
+        </div>
+
+        <aside class="pq-detail-art" aria-hidden="true">
+          <img class="pq-detail-map" src="${pq.mapImage || ''}" alt="" width="96" height="96" loading="lazy"
+            onerror="this.classList.add('pq-detail-map--missing')">
+        </aside>
+      </div>
     </div>
   `;
 }
 
+function renderPQing() {
+  const active = getActivePQ();
+  if (active && active.id !== selectedPQId) selectedPQId = active.id;
+  renderPQBands();
+  renderPQDetailPanel();
+}
+
+function renderPQOverview() {
+  renderPQBands();
+}
+
 function renderPQs() {
-  renderPQOverview();
-  const priorityBadge = { high: 'badge-green', medium: 'badge-yellow', optional: 'badge-blue' };
-  document.getElementById('pq-list').innerHTML = PQS.map(pq => `
-    <div class="card pq-card" id="pq-${pq.id}">
-      <div class="card-header">
-        <h2>${pq.name} <span style="color:var(--muted);font-weight:400;font-size:13px;">(${pq.short})</span></h2>
-        <span class="badge ${priorityBadge[pq.priority]}">${pq.priority}</span>
-      </div>
-      <h3>Stage Layout</h3>
-      ${pq.stages ? renderFlow(pq.stages, 'pq') : ''}
-      <div class="info-grid" style="margin-bottom:12px;">
-        <div class="info-item"><div class="label">Level</div><div class="value">${pq.level}</div></div>
-        <div class="info-item"><div class="label">Party</div><div class="value">${pq.party}</div></div>
-        <div class="info-item"><div class="label">Location</div><div class="value" style="font-size:12px;">${pq.location}</div></div>
-      </div>
-      <h3>Rewards</h3>
-      <div style="margin-bottom:12px;">${pq.rewards.map(r => `<span class="tag">${r}</span>`).join('')}</div>
-      <h3>How to run</h3>
-      <ul class="drop-list">${pq.howTo.map(s => `<li>${s}</li>`).join('')}</ul>
-      <h3>Tips</h3>
-      <ul class="drop-list">${pq.tips.map(s => `<li>${s}</li>`).join('')}</ul>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-        ${pq.prequestId ? `<button type="button" class="btn btn-sm btn-ghost" onclick="openPrequest('${pq.prequestId}')">Prequest guide →</button>` : ''}
-        ${pq.bossId ? `<button type="button" class="btn btn-sm" onclick="showPage('bosses');showBoss('${pq.bossId}')">View Boss Guide →</button>` : ''}
-        ${pq.forumGuide ? `<a href="${pq.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a>` : ''}
-      </div>
-    </div>
-  `).join('');
+  renderPQing();
 }
 
 // ══════════════════════════════════════════════

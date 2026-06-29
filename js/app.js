@@ -1239,13 +1239,18 @@ function renderBossBands() {
   }
   el.innerHTML = list.map(b => `
     <button type="button" class="boss-band boss-band--${b.tier} ${b.id === active?.id ? 'active' : ''}"
-      role="tab" aria-selected="${b.id === active?.id}" title="${b.name}" onclick="selectBoss('${b.id}')">
-      <img class="boss-band-img" src="${b.image}" alt="" width="40" height="40" loading="lazy"
+      role="tab" aria-selected="${b.id === active?.id}" title="${b.name} · Lv ${b.level}" onclick="selectBoss('${b.id}')">
+      <img class="boss-band-img" src="${b.image}" alt="" width="28" height="28" loading="lazy"
         onerror="this.classList.add('boss-band-img--missing')">
-      <span class="boss-band-name">${b.name}</span>
-      <span class="boss-band-lv">${b.level.split(' ')[0]}</span>
+      <span class="boss-band-meta">
+        <span class="boss-band-name">${b.name}</span>
+        <span class="boss-band-lv">${b.level.split(' ')[0]}</span>
+      </span>
     </button>
   `).join('');
+  requestAnimationFrame(() => {
+    el.querySelector('.boss-band.active')?.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
+  });
 }
 
 function renderBossDetailPanel() {
@@ -1262,70 +1267,64 @@ function renderBossDetailPanel() {
   const nextBoss = getNextBossInProgression(b.id);
   const tierLabel = BOSS_TIER_LABELS[b.tier] || b.tier;
   const tierBadge = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple', endgame: 'badge-red', demi: 'badge-blue' }[b.tier] || 'badge-yellow';
+  const respawnBanner = renderBossRespawnBanner(b.id);
 
   el.innerHTML = `
     <div class="boss-detail-panel boss-detail-panel--${b.tier}">
       <header class="boss-detail-header">
+        <img class="boss-detail-portrait" src="${b.image}" alt="" width="72" height="72" loading="lazy"
+          onerror="this.classList.add('boss-detail-portrait--missing')">
         <div class="boss-detail-titles">
           <div class="boss-detail-name">${b.name}</div>
           <div class="boss-detail-loc">📍 ${b.location}</div>
+          <div class="boss-stat-row boss-stat-row--header">
+            <span class="boss-stat">⚔️ ${b.level}</span>
+            <span class="boss-stat">❤️ ${b.hpReq}</span>
+            <span class="boss-stat">💥 ${b.dmgReq}</span>
+            <span class="boss-stat">👥 ${b.party}</span>
+            <span class="boss-stat">⏱ ${b.respawn}</span>
+          </div>
         </div>
         <span class="boss-detail-tier badge ${tierBadge}">${tierLabel}</span>
       </header>
 
-      <div class="boss-detail-body">
-        <div class="boss-detail-main">
-          <section class="boss-detail-section boss-detail-section--stats">
-            <div class="boss-stat-row">
-              <span class="boss-stat">⚔️ Lv ${b.level}</span>
-              <span class="boss-stat">❤️ ${b.hpReq}</span>
-              <span class="boss-stat">💥 ${b.dmgReq}</span>
-              <span class="boss-stat">👥 ${b.party}</span>
-              <span class="boss-stat">⏱ ${b.respawn}</span>
-            </div>
-            ${renderBossRespawnBanner(b.id)}
+      ${respawnBanner ? `<div class="boss-detail-status">${respawnBanner}</div>` : ''}
+
+      <div class="boss-detail-main">
+        ${b.phases?.length ? `
+          <section class="boss-detail-section boss-detail-section--flow">
+            <h3 class="level-section-title">Boss flow</h3>
+            ${renderFlow(b.phases, 'phase')}
           </section>
+        ` : ''}
 
-          ${b.phases?.length ? `
-            <section class="boss-detail-section">
-              <h3 class="level-section-title">Boss flow</h3>
-              ${renderFlow(b.phases, 'phase')}
-            </section>
-          ` : ''}
+        ${pq ? renderBossPrequestProgress(b.id) : ''}
 
-          ${pq ? renderBossPrequestProgress(b.id) : ''}
+        <section class="boss-detail-section">
+          <h3 class="level-section-title">${pq ? 'Prequest' : 'How to access'}</h3>
+          <p class="boss-detail-text">${b.prequest}</p>
+          ${pq ? `<button type="button" class="btn btn-sm" style="margin-top:8px;" onclick="openPrequest('${prequestId}')">Full prequest guide →</button>` : ''}
+        </section>
 
-          <section class="boss-detail-section">
-            <h3 class="level-section-title">${pq ? 'Prequest' : 'How to access'}</h3>
-            <p class="boss-detail-text">${b.prequest}</p>
-            ${pq ? `<button type="button" class="btn btn-sm" style="margin-top:8px;" onclick="openPrequest('${prequestId}')">Full prequest guide →</button>` : ''}
-          </section>
+        <section class="boss-detail-section">
+          <h3 class="level-section-title">Drops</h3>
+          <ul class="boss-drop-list">${b.drops.map(d => `<li>${itemLink(d)}</li>`).join('')}</ul>
+          ${renderBossDropTable(b.id)}
+        </section>
 
-          <section class="boss-detail-section">
-            <h3 class="level-section-title">Drops</h3>
-            <ul class="boss-drop-list">${b.drops.map(d => `<li>${itemLink(d)}</li>`).join('')}</ul>
-            ${renderBossDropTable(b.id)}
-          </section>
+        <section class="boss-detail-section boss-detail-section--tips">
+          <h3 class="level-section-title">Tips</h3>
+          <ul class="level-tips-list">${b.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+          ${b.forumGuide ? `<a href="${b.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost" style="margin-top:10px;">Forum guide ↗</a>` : ''}
+        </section>
 
-          <section class="boss-detail-section boss-detail-section--tips">
-            <h3 class="level-section-title">Tips</h3>
-            <ul class="level-tips-list">${b.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-            ${b.forumGuide ? `<a href="${b.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost" style="margin-top:10px;">Forum guide ↗</a>` : ''}
-          </section>
-
-          ${nextBoss ? `
-            <button type="button" class="level-next-milestone" onclick="selectBoss('${nextBoss.id}')">
-              <span class="level-next-label">Up next</span>
-              <span class="level-next-text">${nextBoss.name} · Lv ${nextBoss.level}</span>
-              <span class="level-next-arrow">→</span>
-            </button>
-          ` : ''}
-        </div>
-
-        <aside class="boss-detail-art" aria-hidden="true">
-          <img class="boss-detail-portrait" src="${b.image}" alt="" width="96" height="96" loading="lazy"
-            onerror="this.classList.add('boss-detail-portrait--missing')">
-        </aside>
+        ${nextBoss ? `
+          <button type="button" class="level-next-milestone" onclick="selectBoss('${nextBoss.id}')">
+            <span class="level-next-label">Up next</span>
+            <span class="level-next-text">${nextBoss.name} · Lv ${nextBoss.level}</span>
+            <span class="level-next-arrow">→</span>
+          </button>
+        ` : ''}
       </div>
     </div>
   `;
@@ -1336,7 +1335,6 @@ function renderBossing() {
   if (active && active.id !== selectedBossId) selectedBossId = active.id;
   renderBossBands();
   renderBossDetailPanel();
-  renderBossProgression();
 }
 
 function renderBosses() {

@@ -60,8 +60,8 @@ function initRouteFromHash() {
   showPage(r.page, null, true);
   if (!r.sub) return;
   const sub = r.sub.replace(/\+/g, ' ');
-  if (r.page === 'bosses') showBoss(r.sub, true);
-  else if (r.page === 'prequests') openPrequest(r.sub, true);
+  if (r.page === 'bosses') return;
+  if (r.page === 'prequests') openPrequest(sub, true);
   else if (r.page === 'classes') openClassGuide(r.sub, true);
   else if (r.page === 'items') checkItem(sub);
   else if (r.page === 'pqs') openPQ(r.sub, true);
@@ -79,6 +79,7 @@ function showPage(id, btn, skipHash) {
   document.title = (PAGE_TITLES[id] || 'Guide') + ' — MR Companion';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (!skipHash) setRoute(id);
+  if (id === 'bosses') syncBossView();
 }
 
 function navGo(id) {
@@ -591,73 +592,72 @@ function renderPQDetailPanel() {
   const priorityLabel = PQ_PRIORITY_LABELS[pq.priority] || pq.priority;
   const priorityBadge = PQ_PRIORITY_BADGES[pq.priority] || 'badge-yellow';
   const levelInput = getContextLevel();
-  const inRange = isPQInRange(pq, levelInput);
+  const inRange = isLevelInRange(pq, levelInput);
+
+  const panelTabs = [
+    {
+      id: 'run',
+      icon: '▶',
+      label: 'Run',
+      content: `
+        ${pq.stages?.length ? renderFlow(pq.stages, 'pq') : ''}
+        ${pq.howTo?.length ? renderTipCards(pq.howTo) : ''}
+      `,
+    },
+    {
+      id: 'loot',
+      icon: '💎',
+      label: 'Loot',
+      content: `<div class="pq-reward-row">${pq.rewards.map(r => `<span class="level-mob-pill">${r}</span>`).join('')}</div>`,
+    },
+  ];
+  if (pq.tips?.length) {
+    panelTabs.push({
+      id: 'tips',
+      icon: '💡',
+      label: 'Tips',
+      content: renderTipCards(pq.tips),
+    });
+  }
+
+  const linkActions = [
+    pq.prequestId ? `<button type="button" class="btn btn-sm btn-ghost" onclick="openPrequest('${pq.prequestId}')">Prequest →</button>` : '',
+    pq.bossId ? `<button type="button" class="btn btn-sm" onclick="showPage('bosses');showBoss('${pq.bossId}')">Boss →</button>` : '',
+    pq.forumGuide ? `<a href="${pq.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum ↗</a>` : '',
+  ].filter(Boolean).join('');
 
   el.innerHTML = `
     <div class="pq-detail-panel pq-detail-panel--${pq.mapTheme || 'field'}">
       <header class="pq-detail-header">
         <div class="pq-detail-titles">
-          <div class="pq-detail-name">${pq.name} <span class="pq-detail-short">(${pq.short})</span></div>
+          <div class="pq-detail-name">${pq.short} <span class="pq-detail-short">${pq.name}</span></div>
           <div class="pq-detail-loc">📍 ${pq.location}</div>
+          <div class="pq-stat-row pq-stat-row--header">
+            <span class="pq-stat">⚔️ ${pq.level}</span>
+            <span class="pq-stat">👥 ${pq.party}</span>
+          </div>
         </div>
+        <img class="pq-detail-map pq-detail-map--header" src="${pq.mapImage || ''}" alt="" width="64" height="64" loading="lazy"
+          onerror="this.classList.add('pq-detail-map--missing')">
         <span class="pq-detail-priority badge ${priorityBadge}">${priorityLabel}</span>
       </header>
 
-      ${inRange ? `<p class="pq-detail-rec">★ Best PQ for your current level range</p>` : ''}
+      ${inRange ? `<p class="pq-detail-rec">★ Best PQ for your level</p>` : ''}
 
-      <div class="pq-detail-body">
-        <div class="pq-detail-main">
-          <section class="pq-detail-section pq-detail-section--stats">
-            <div class="pq-stat-row">
-              <span class="pq-stat">⚔️ Lv ${pq.level}</span>
-              <span class="pq-stat">👥 ${pq.party}</span>
-            </div>
-          </section>
+      ${renderPanelTabs(panelTabs)}
 
-          ${pq.stages?.length ? `
-            <section class="pq-detail-section">
-              <h3 class="level-section-title">Stages</h3>
-              ${renderFlow(pq.stages, 'pq')}
-            </section>
-          ` : ''}
+      ${linkActions ? `<div class="panel-actions">${linkActions}</div>` : ''}
 
-          <section class="pq-detail-section">
-            <h3 class="level-section-title">Rewards</h3>
-            <div class="pq-reward-row">${pq.rewards.map(r => `<span class="level-mob-pill">${r}</span>`).join('')}</div>
-          </section>
-
-          <section class="pq-detail-section">
-            <h3 class="level-section-title">How to run</h3>
-            <ul class="level-tips-list">${pq.howTo.map(s => `<li>${s}</li>`).join('')}</ul>
-          </section>
-
-          <section class="pq-detail-section pq-detail-section--tips">
-            <h3 class="level-section-title">Tips</h3>
-            <ul class="level-tips-list">${pq.tips.map(s => `<li>${s}</li>`).join('')}</ul>
-          </section>
-
-          <section class="pq-detail-section pq-detail-section--links">
-            ${pq.prequestId ? `<button type="button" class="btn btn-sm btn-ghost" onclick="openPrequest('${pq.prequestId}')">Prequest guide →</button>` : ''}
-            ${pq.bossId ? `<button type="button" class="btn btn-sm" onclick="showPage('bosses');showBoss('${pq.bossId}')">Boss guide →</button>` : ''}
-            ${pq.forumGuide ? `<a href="${pq.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">Forum guide ↗</a>` : ''}
-          </section>
-
-          ${nextPQ ? `
-            <button type="button" class="level-next-milestone" onclick="selectPQ('${nextPQ.id}')">
-              <span class="level-next-label">Up next</span>
-              <span class="level-next-text">${nextPQ.short} · Lv ${nextPQ.level}</span>
-              <span class="level-next-arrow">→</span>
-            </button>
-          ` : ''}
-        </div>
-
-        <aside class="pq-detail-art" aria-hidden="true">
-          <img class="pq-detail-map" src="${pq.mapImage || ''}" alt="" width="96" height="96" loading="lazy"
-            onerror="this.classList.add('pq-detail-map--missing')">
-        </aside>
-      </div>
+      ${nextPQ ? `
+        <button type="button" class="level-next-milestone" onclick="selectPQ('${nextPQ.id}')">
+          <span class="level-next-label">Up next</span>
+          <span class="level-next-text">${nextPQ.short} · Lv ${nextPQ.level}</span>
+          <span class="level-next-arrow">→</span>
+        </button>
+      ` : ''}
     </div>
   `;
+  initPanelTabs(el.querySelector('[data-panel-tabs]'));
 }
 
 function renderPQing() {
@@ -1091,6 +1091,72 @@ function renderFlow(steps, type = 'phase') {
   `;
 }
 
+function renderTipCards(items) {
+  if (!items?.length) return '<p class="panel-empty">Nothing here yet.</p>';
+  return `<div class="tip-cards">${items.map(t => `<div class="tip-card">${t}</div>`).join('')}</div>`;
+}
+
+function renderPanelTabs(tabs, activeId) {
+  const visible = tabs.filter(t => t.content);
+  if (!visible.length) return '';
+  const id = activeId && visible.some(t => t.id === activeId) ? activeId : visible[0].id;
+  return `
+    <div class="panel-tabs" data-panel-tabs>
+      <div class="panel-tab-bar" role="tablist">
+        ${visible.map(t => `
+          <button type="button" class="panel-tab ${t.id === id ? 'active' : ''}" role="tab"
+            aria-selected="${t.id === id}" data-panel-tab="${t.id}">
+            ${t.icon ? `<span class="panel-tab-icon" aria-hidden="true">${t.icon}</span>` : ''}
+            <span>${t.label}</span>
+          </button>
+        `).join('')}
+      </div>
+      ${visible.map(t => `
+        <div class="panel-tab-panel ${t.id === id ? 'active' : ''}" role="tabpanel" data-panel-panel="${t.id}">
+          ${t.content}
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function initPanelTabs(root) {
+  const hosts = root
+    ? [root].filter(Boolean)
+    : [...document.querySelectorAll('[data-panel-tabs]')];
+  hosts.forEach(host => {
+    if (host.dataset.panelTabsBound) return;
+    host.dataset.panelTabsBound = '1';
+    host.querySelectorAll('[data-panel-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.dataset.panelTab;
+        host.querySelectorAll('[data-panel-tab]').forEach(b => {
+          const on = b.dataset.panelTab === tabId;
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-selected', String(on));
+        });
+        host.querySelectorAll('[data-panel-panel]').forEach(p => {
+          p.classList.toggle('active', p.dataset.panelPanel === tabId);
+        });
+      });
+    });
+  });
+}
+
+function renderMethodLegend(methods) {
+  if (!methods?.length) return '';
+  return `
+    <div class="method-legend" aria-label="Leech types">
+      ${methods.map(m => `
+        <span class="method-legend-pill" title="${m.detail}">
+          <span class="method-legend-icon" aria-hidden="true">${m.icon}</span>
+          ${m.label}
+        </span>
+      `).join('')}
+    </div>
+  `;
+}
+
 function renderWorldMap() {
   renderLeveling();
 }
@@ -1208,49 +1274,69 @@ function getFilteredBosses() {
 }
 
 function getActiveBoss() {
+  const direct = BOSSES.find(b => b.id === selectedBossId);
+  if (direct) return direct;
   const list = getFilteredBosses();
   if (!list.length) return null;
   return list.find(b => b.id === selectedBossId) || list[0];
 }
 
-function selectBoss(id, skipHash) {
-  if (!BOSSES.some(b => b.id === id)) {
-    const fallback = getFilteredBosses()[0];
-    if (!fallback) return;
-    id = fallback.id;
-  }
+function syncBossView() {
+  const r = parseHash();
+  if (r?.page === 'bosses' && r.sub) openBossDetail(r.sub, true);
+  else showBossList(true);
+}
+
+function showBossList(skipHash) {
+  const listView = document.getElementById('boss-list-view');
+  const detailView = document.getElementById('boss-detail-view');
+  if (listView) listView.hidden = false;
+  if (detailView) detailView.hidden = true;
+  document.title = `${PAGE_TITLES.bosses} — MR Companion`;
+  renderBossBands();
+  if (!skipHash) setRoute('bosses');
+}
+
+function openBossDetail(id, skipHash) {
+  if (!BOSSES.some(b => b.id === id)) return;
   selectedBossId = id;
-  renderBossing();
+  const listView = document.getElementById('boss-list-view');
+  const detailView = document.getElementById('boss-detail-view');
+  if (listView) listView.hidden = true;
+  if (detailView) detailView.hidden = false;
+  const b = BOSSES.find(x => x.id === id);
+  if (b) document.title = `${b.name} — MR Companion`;
+  renderBossDetailPanel();
   if (!skipHash) {
     const onBosses = document.getElementById('page-bosses')?.classList.contains('active');
     if (!onBosses) showPage('bosses', null, true);
     setRoute('bosses', id);
   }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectBoss(id, skipHash) {
+  openBossDetail(id, skipHash);
 }
 
 function renderBossBands() {
   const el = document.getElementById('boss-bands');
   if (!el) return;
   const list = getFilteredBosses();
-  const active = getActiveBoss();
   if (!list.length) {
-    el.innerHTML = '';
+    el.innerHTML = `<p class="boss-list-empty">No bosses match — try another filter.</p>`;
     return;
   }
   el.innerHTML = list.map(b => `
-    <button type="button" class="boss-band boss-band--${b.tier} ${b.id === active?.id ? 'active' : ''}"
-      role="tab" aria-selected="${b.id === active?.id}" title="${b.name} · Lv ${b.level}" onclick="selectBoss('${b.id}')">
-      <img class="boss-band-img" src="${b.image}" alt="" width="28" height="28" loading="lazy"
-        onerror="this.classList.add('boss-band-img--missing')">
-      <span class="boss-band-meta">
-        <span class="boss-band-name">${b.name}</span>
-        <span class="boss-band-lv">${b.level.split(' ')[0]}</span>
-      </span>
+    <button type="button" class="boss-card boss-card--${b.tier}" role="listitem"
+      title="${b.name} · Lv ${b.level}" onclick="selectBoss('${b.id}')">
+      <img class="boss-card-img" src="${b.image}" alt="" width="48" height="48" loading="lazy"
+        onerror="this.classList.add('boss-card-img--missing')">
+      <span class="boss-card-name">${b.name}</span>
+      <span class="boss-card-lv">${b.level.split(' ')[0]}</span>
+      <span class="boss-card-tier badge ${({ early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple', endgame: 'badge-red', demi: 'badge-blue' })[b.tier] || 'badge-yellow'}">${BOSS_TIER_LABELS[b.tier] || b.tier}</span>
     </button>
   `).join('');
-  requestAnimationFrame(() => {
-    el.querySelector('.boss-band.active')?.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
-  });
 }
 
 function renderBossDetailPanel() {
@@ -1258,7 +1344,7 @@ function renderBossDetailPanel() {
   if (!el) return;
   const b = getActiveBoss();
   if (!b) {
-    el.innerHTML = `<p class="boss-detail-empty">No bosses match these filters — try another tier or region.</p>`;
+    el.innerHTML = `<p class="boss-detail-empty">Boss not found.</p>`;
     return;
   }
 
@@ -1268,6 +1354,46 @@ function renderBossDetailPanel() {
   const tierLabel = BOSS_TIER_LABELS[b.tier] || b.tier;
   const tierBadge = { early: 'badge-green', mid: 'badge-yellow', late: 'badge-purple', endgame: 'badge-red', demi: 'badge-blue' }[b.tier] || 'badge-yellow';
   const respawnBanner = renderBossRespawnBanner(b.id);
+
+  const panelTabs = [];
+  if (b.phases?.length) {
+    panelTabs.push({
+      id: 'fight',
+      icon: '⚔️',
+      label: 'Fight',
+      content: renderFlow(b.phases, 'phase'),
+    });
+  }
+  panelTabs.push({
+    id: 'loot',
+    icon: '💎',
+    label: 'Loot',
+    content: `
+      <div class="boss-drop-pills">${b.drops.map(d => `<span class="level-mob-pill">${itemLink(d)}</span>`).join('')}</div>
+      ${renderBossDropTable(b.id)}
+    `,
+  });
+  panelTabs.push({
+    id: 'unlock',
+    icon: '🔓',
+    label: 'Unlock',
+    content: `
+      ${pq ? renderBossPrequestProgress(b.id) : ''}
+      <p class="boss-detail-text">${b.prequest}</p>
+      ${pq ? `<button type="button" class="btn btn-sm" style="margin-top:8px;" onclick="openPrequest('${prequestId}')">Full prequest →</button>` : ''}
+    `,
+  });
+  if (b.tips?.length) {
+    panelTabs.push({
+      id: 'tips',
+      icon: '💡',
+      label: 'Tips',
+      content: `
+        ${renderTipCards(b.tips)}
+        ${b.forumGuide ? `<a href="${b.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost" style="margin-top:10px;">Forum ↗</a>` : ''}
+      `,
+    });
+  }
 
   el.innerHTML = `
     <div class="boss-detail-panel boss-detail-panel--${b.tier}">
@@ -1290,71 +1416,41 @@ function renderBossDetailPanel() {
 
       ${respawnBanner ? `<div class="boss-detail-status">${respawnBanner}</div>` : ''}
 
-      <div class="boss-detail-main">
-        ${b.phases?.length ? `
-          <section class="boss-detail-section boss-detail-section--flow">
-            <h3 class="level-section-title">Boss flow</h3>
-            ${renderFlow(b.phases, 'phase')}
-          </section>
-        ` : ''}
+      ${renderPanelTabs(panelTabs, b.phases?.length ? 'fight' : 'loot')}
 
-        ${pq ? renderBossPrequestProgress(b.id) : ''}
-
-        <section class="boss-detail-section">
-          <h3 class="level-section-title">${pq ? 'Prequest' : 'How to access'}</h3>
-          <p class="boss-detail-text">${b.prequest}</p>
-          ${pq ? `<button type="button" class="btn btn-sm" style="margin-top:8px;" onclick="openPrequest('${prequestId}')">Full prequest guide →</button>` : ''}
-        </section>
-
-        <section class="boss-detail-section">
-          <h3 class="level-section-title">Drops</h3>
-          <ul class="boss-drop-list">${b.drops.map(d => `<li>${itemLink(d)}</li>`).join('')}</ul>
-          ${renderBossDropTable(b.id)}
-        </section>
-
-        <section class="boss-detail-section boss-detail-section--tips">
-          <h3 class="level-section-title">Tips</h3>
-          <ul class="level-tips-list">${b.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-          ${b.forumGuide ? `<a href="${b.forumGuide}" target="_blank" rel="noopener" class="btn btn-sm btn-ghost" style="margin-top:10px;">Forum guide ↗</a>` : ''}
-        </section>
-
-        ${nextBoss ? `
-          <button type="button" class="level-next-milestone" onclick="selectBoss('${nextBoss.id}')">
-            <span class="level-next-label">Up next</span>
-            <span class="level-next-text">${nextBoss.name} · Lv ${nextBoss.level}</span>
-            <span class="level-next-arrow">→</span>
-          </button>
-        ` : ''}
-      </div>
+      ${nextBoss ? `
+        <button type="button" class="level-next-milestone" onclick="selectBoss('${nextBoss.id}')">
+          <span class="level-next-label">Up next</span>
+          <span class="level-next-text">${nextBoss.name} · Lv ${nextBoss.level}</span>
+          <span class="level-next-arrow">→</span>
+        </button>
+      ` : ''}
     </div>
   `;
-}
-
-function renderBossing() {
-  const active = getActiveBoss();
-  if (active && active.id !== selectedBossId) selectedBossId = active.id;
-  renderBossBands();
-  renderBossDetailPanel();
+  initPanelTabs(el.querySelector('[data-panel-tabs]'));
 }
 
 function renderBosses() {
-  renderBossing();
+  initBossRegionFilters();
+  syncBossView();
 }
 
 function closeBossDetail() {
-  /* legacy — bosses use inline panel */
+  if (document.getElementById('page-bosses')?.classList.contains('active')
+    && !document.getElementById('boss-detail-view')?.hidden) {
+    showBossList();
+  }
 }
 
 function showBoss(id, skipHash) {
   if (!skipHash) showPage('bosses', null, true);
-  selectBoss(id, skipHash);
+  openBossDetail(id, skipHash);
 }
 
 function renderBossDropTable(bossId) {
   const table = BOSS_DROP_TABLES?.[bossId];
   if (!table?.length) return '';
   return `
-    <p class="section-hint" style="margin:12px 0 8px;">Detailed drop rates — tap an item for keep/vendor advice.</p>
     <div class="drop-table-wrap">
       <table class="drop-table">
         <thead><tr><th>Drop</th><th>Rate</th><th>Notes</th></tr></thead>
@@ -1406,14 +1502,16 @@ function filterBoss(tier, btn) {
   document.querySelectorAll('#boss-tier-filters .filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   bossTierFilter = tier;
-  renderBossing();
+  if (!document.getElementById('boss-detail-view')?.hidden) return;
+  renderBossBands();
 }
 
 function filterBossRegion(region) {
   bossRegionFilter = region;
   const sel = document.getElementById('boss-region-filters');
   if (sel) sel.value = region;
-  renderBossing();
+  if (!document.getElementById('boss-detail-view')?.hidden) return;
+  renderBossBands();
 }
 
 // ══════════════════════════════════════════════
@@ -1496,7 +1594,6 @@ function renderLevelSpots(spots) {
         </div>
       ` : ''}
       ${s.tip ? `<p class="level-spot-tip">${s.tip}</p>` : ''}
-      ${s.detail ? `<p class="level-spot-detail">${s.detail}</p>` : ''}
     </article>
   `).join('');
 }
@@ -1540,6 +1637,45 @@ function renderLevelDetail() {
     : null;
   const priorityLabel = { quests: 'Quests first', party: 'Party / PQ', solo: 'Solo grind' }[l.priority] || 'Train here';
   const bandMobs = typeof collectSpotsMobSprites === 'function' ? collectSpotsMobSprites(spots) : [];
+  const panelTabs = [
+    {
+      id: 'spots',
+      icon: '📍',
+      label: 'Spots',
+      content: `
+        <div class="level-detail-body${bandMobs.length ? '' : ' level-detail-body--no-rail'}">
+          <div class="level-spots">${renderLevelSpots(spots)}</div>
+          ${renderMobSpriteRail(bandMobs)}
+        </div>
+      `,
+    },
+  ];
+  if (pqs.length) {
+    panelTabs.push({
+      id: 'pq',
+      icon: '👥',
+      label: 'PQ',
+      content: `
+        <div class="level-pq-row">
+          ${pqs.map(pq => `
+            <button type="button" class="level-pq-chip" onclick="openPQ('${pq.id}')">
+              <span class="level-pq-short">${pq.short}</span>
+              <span class="level-pq-lv">Lv ${pq.level}</span>
+              <span class="level-pq-party">${pq.party}</span>
+            </button>
+          `).join('')}
+        </div>
+      `,
+    });
+  }
+  if (l.tips?.length) {
+    panelTabs.push({
+      id: 'tips',
+      icon: '💡',
+      label: 'Tips',
+      content: renderTipCards(l.tips),
+    });
+  }
 
   el.innerHTML = `
     <div class="level-detail-panel level-detail-panel--${l.theme || 'field'}">
@@ -1552,21 +1688,19 @@ function renderLevelDetail() {
         <span class="level-detail-priority badge badge-yellow">${priorityLabel}</span>
       </header>
 
-      ${l.goal ? `<p class="level-detail-goal">${l.goal}</p>` : ''}
-
       ${l.unlocks?.length ? `
-        <section class="level-detail-section level-detail-section--unlocks">
-          <div class="level-unlock-row">
-            ${l.unlocks.map(u => `
-              <button type="button" class="level-unlock-chip" onclick="${levelUnlockAction(u)}">
-                <span class="level-unlock-lv">Lv ${u.lv}</span>
-                <span class="level-unlock-icon">${u.icon}</span>
-                <span class="level-unlock-text">${u.title}</span>
-              </button>
-            `).join('')}
-          </div>
-        </section>
+        <div class="level-unlock-row level-unlock-row--compact">
+          ${l.unlocks.map(u => `
+            <button type="button" class="level-unlock-chip" onclick="${levelUnlockAction(u)}">
+              <span class="level-unlock-lv">Lv ${u.lv}</span>
+              <span class="level-unlock-icon">${u.icon}</span>
+              <span class="level-unlock-text">${u.title}</span>
+            </button>
+          `).join('')}
+        </div>
       ` : ''}
+
+      ${renderPanelTabs(panelTabs)}
 
       ${nextMilestone ? `
         <button type="button" class="level-next-milestone" onclick="${levelUnlockAction(nextMilestone)}">
@@ -1575,38 +1709,9 @@ function renderLevelDetail() {
           <span class="level-next-arrow">→</span>
         </button>
       ` : ''}
-
-      <div class="level-detail-body${bandMobs.length ? '' : ' level-detail-body--no-rail'}">
-        <div class="level-detail-main">
-          <section class="level-detail-section level-detail-section--spots">
-            <div class="level-spots">${renderLevelSpots(spots)}</div>
-          </section>
-
-          ${pqs.length ? `
-            <section class="level-detail-section level-detail-section--pqs">
-              <div class="level-pq-row">
-                ${pqs.map(pq => `
-                  <button type="button" class="level-pq-chip" onclick="openPQ('${pq.id}')">
-                    <span class="level-pq-short">${pq.short}</span>
-                    <span class="level-pq-lv">Lv ${pq.level}</span>
-                    <span class="level-pq-party">${pq.party}</span>
-                  </button>
-                `).join('')}
-              </div>
-            </section>
-          ` : ''}
-
-          ${l.tips?.length ? `
-            <section class="level-detail-section level-detail-section--tips">
-              <h3 class="level-section-title">Tips</h3>
-              <ul class="level-tips-list">${l.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-            </section>
-          ` : ''}
-        </div>
-        ${renderMobSpriteRail(bandMobs)}
-      </div>
     </div>
   `;
+  initPanelTabs(el.querySelector('[data-panel-tabs]'));
 }
 
 function renderLeveling() {
@@ -1691,18 +1796,11 @@ function getNextLeechKey(key) {
 function renderLeechGobySection(gb) {
   if (!gb) return '';
   return `
-    <section class="leech-detail-section leech-detail-section--goby">
-      <div class="leech-detail-section-head">
-        <h3 class="level-section-title">${gb.title}</h3>
-        <span class="badge badge-yellow">Premium</span>
-      </div>
-      <p class="leech-detail-mapline"><strong>${gb.map}</strong> · ${gb.mobs.join(', ')}</p>
-      <p class="leech-detail-summary">${gb.summary}</p>
-      <h4 class="leech-detail-subtitle">Seller setup</h4>
-      <ul class="level-tips-list">${gb.requirements.map(r => `<li>${r}</li>`).join('')}</ul>
-      <h4 class="leech-detail-subtitle">As the buyer</h4>
-      <ul class="level-tips-list">${gb.buyerNotes.map(r => `<li>${r}</li>`).join('')}</ul>
-    </section>
+    <p class="leech-detail-mapline"><strong>${gb.map}</strong> · ${gb.mobs.join(', ')}</p>
+    <div class="tip-group-label">Seller</div>
+    ${renderTipCards(gb.requirements)}
+    <div class="tip-group-label">Buyer</div>
+    ${renderTipCards(gb.buyerNotes)}
   `;
 }
 
@@ -1762,18 +1860,17 @@ function renderLeechDetailPanel() {
         <header class="leech-detail-header">
           <div class="leech-detail-titles">
             <div class="leech-detail-name">Area boss leech</div>
-            <div class="leech-detail-loc">Camp channels — seller kills, buyer stays in range</div>
+            <div class="leech-detail-loc">105+ · camp channels</div>
           </div>
         </header>
-        <div class="leech-detail-main">
-          <section class="leech-detail-section">
-            <div class="leech-boss-list">${renderLeechBossRows(g.areaBosses, true)}</div>
-          </section>
-          ${renderLeechTipsSection(g)}
-          ${nextKey ? renderLeechNextButton(nextKey, g) : ''}
-        </div>
+        ${renderPanelTabs([
+          { id: 'list', icon: '💀', label: 'Bosses', content: `<div class="leech-boss-list">${renderLeechBossRows(g.areaBosses, true)}</div>` },
+          { id: 'tips', icon: '💡', label: 'Tips', content: renderTipCards(g.tips) },
+        ])}
+        ${nextKey ? renderLeechNextButton(nextKey, g) : ''}
       </div>
     `;
+    initPanelTabs(el.querySelector('[data-panel-tabs]'));
     return;
   }
 
@@ -1783,17 +1880,16 @@ function renderLeechDetailPanel() {
         <header class="leech-detail-header">
           <div class="leech-detail-titles">
             <div class="leech-detail-name">Boss expedition leech</div>
-            <div class="leech-detail-loc">Daily bosses and expeditions · 135 to 200</div>
+            <div class="leech-detail-loc">135–200 · daily bosses</div>
           </div>
         </header>
-        <div class="leech-detail-main">
-          <section class="leech-detail-section">
-            <div class="leech-boss-list">${renderLeechBossRows(g.bossLeech, false)}</div>
-          </section>
-          ${renderLeechTipsSection(g)}
-        </div>
+        ${renderPanelTabs([
+          { id: 'list', icon: '💀', label: 'Bosses', content: `<div class="leech-boss-list">${renderLeechBossRows(g.bossLeech, false)}</div>` },
+          { id: 'tips', icon: '💡', label: 'Tips', content: renderTipCards(g.tips) },
+        ])}
       </div>
     `;
+    initPanelTabs(el.querySelector('[data-panel-tabs]'));
     return;
   }
 
@@ -1807,6 +1903,23 @@ function renderLeechDetailPanel() {
   const theme = getLeechTheme(r);
   const inRange = isLevelInRange(r.level, level);
   const showGoby = leechRangeOverlapsGoby(r.level) && g.goby;
+  const panelTabs = [
+    {
+      id: 'map',
+      icon: '🗺️',
+      label: 'Map',
+      content: spot ? `
+        <div class="leech-spot-card">
+          <div class="leech-spot-mobs">${spot.mobs}</div>
+          ${spot.notes ? `<p class="leech-spot-note">${spot.notes}</p>` : ''}
+        </div>
+      ` : '<p class="panel-empty">No spot data.</p>',
+    },
+  ];
+  if (showGoby) {
+    panelTabs.push({ id: 'goby', icon: '🐟', label: 'Goby', content: renderLeechGobySection(g.goby) });
+  }
+  panelTabs.push({ id: 'tips', icon: '💡', label: 'Tips', content: renderTipCards(g.tips) });
 
   el.innerHTML = `
     <div class="leech-detail-panel leech-detail-panel--${theme}">
@@ -1816,30 +1929,12 @@ function renderLeechDetailPanel() {
           ${spot ? `<div class="leech-detail-loc">📍 ${spot.map}</div>` : ''}
         </div>
       </header>
-      ${inRange ? `<p class="leech-detail-rec">★ Best mob leech range for your current level band</p>` : ''}
-      <div class="leech-detail-main">
-        ${spot ? `
-          <section class="leech-detail-section">
-            <h3 class="level-section-title">Mob leech spot</h3>
-            <div class="leech-spot-mobs">${spot.mobs}</div>
-            ${spot.notes ? `<p class="leech-spot-note">${spot.notes}</p>` : ''}
-          </section>
-        ` : ''}
-        ${showGoby ? renderLeechGobySection(g.goby) : ''}
-        ${renderLeechTipsSection(g)}
-        ${nextKey !== null ? renderLeechNextButton(nextKey, g) : ''}
-      </div>
+      ${inRange ? `<p class="leech-detail-rec">★ Best range for your level</p>` : ''}
+      ${renderPanelTabs(panelTabs)}
+      ${nextKey !== null ? renderLeechNextButton(nextKey, g) : ''}
     </div>
   `;
-}
-
-function renderLeechTipsSection(g) {
-  return `
-    <section class="leech-detail-section leech-detail-section--tips">
-      <h3 class="level-section-title">Tips</h3>
-      <ul class="level-tips-list">${g.tips.map(t => `<li>${t}</li>`).join('')}</ul>
-    </section>
-  `;
+  initPanelTabs(el.querySelector('[data-panel-tabs]'));
 }
 
 function renderLeechNextButton(nextKey, g) {
@@ -1873,20 +1968,7 @@ function renderLeeching() {
 
   const methods = document.getElementById('leech-methods');
   if (methods) {
-    methods.innerHTML = `
-      <p class="leech-intro">${g.intro}</p>
-      <div class="leech-methods-grid">
-        ${g.methods.map(m => `
-          <div class="leech-method">
-            <span class="leech-method-icon" aria-hidden="true">${m.icon}</span>
-            <div>
-              <div class="leech-method-label">${m.label}</div>
-              <div class="leech-method-detail">${m.detail}</div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
+    methods.innerHTML = renderMethodLegend(g.methods);
   }
 
   if (typeof selectedLeechKey === 'number' && selectedLeechKey >= g.ranges.length) {
@@ -2966,7 +3048,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTools();
   renderForumGuides();
   renderPQs();
-  initBossRegionFilters();
   renderBosses();
   renderLevels();
   renderLeeching();

@@ -112,7 +112,7 @@
   </div>
 </div>
 
-<div id="page-pqs" class="page page--pqs">
+<div id="page-pqs" class="page page--pqs page--guide">
   <header class="page-intro page-intro--compact">
     <h1>Party Quests</h1>
   </header>
@@ -225,26 +225,37 @@
   </details>
 </div>
 
-<div id="page-bosses" class="page page--bosses">
-  <header class="page-intro page-intro--compact">
-    <h1>Bosses</h1>
-  </header>
-  <div class="boss-toolbar">
-    <div class="filter-bar filter-bar--compact" id="boss-tier-filters">
-      <button class="filter-btn active" onclick="filterBoss('all', this)">All</button>
-      <button class="filter-btn" onclick="filterBoss('early', this)">Early</button>
-      <button class="filter-btn" onclick="filterBoss('mid', this)">Mid</button>
-      <button class="filter-btn" onclick="filterBoss('late', this)">Late</button>
-      <button class="filter-btn" onclick="filterBoss('endgame', this)">Endgame</button>
-      <button class="filter-btn" onclick="filterBoss('demi', this)">Demi</button>
+<div id="page-bosses" class="page page--bosses page--guide">
+  <div id="boss-list-view" class="boss-list-view">
+    <header class="page-intro page-intro--compact">
+      <h1>Bosses</h1>
+      <p class="page-intro-hint">Pick a boss to open its guide.</p>
+    </header>
+    <div class="boss-toolbar">
+      <div class="filter-bar filter-bar--compact" id="boss-tier-filters">
+        <button class="filter-btn active" onclick="filterBoss('all', this)">All</button>
+        <button class="filter-btn" onclick="filterBoss('early', this)">Early</button>
+        <button class="filter-btn" onclick="filterBoss('mid', this)">Mid</button>
+        <button class="filter-btn" onclick="filterBoss('late', this)">Late</button>
+        <button class="filter-btn" onclick="filterBoss('endgame', this)">Endgame</button>
+        <button class="filter-btn" onclick="filterBoss('demi', this)">Demi</button>
+      </div>
+      <select id="boss-region-filters" class="filter-select boss-region-select" aria-label="Filter by region"></select>
     </div>
-    <select id="boss-region-filters" class="filter-select boss-region-select" aria-label="Filter by region"></select>
+    <div id="boss-bands" class="boss-bands boss-bands--grid" role="list" aria-label="Bosses"></div>
   </div>
-  <div id="boss-bands" class="boss-bands" role="tablist" aria-label="Bosses"></div>
-  <div id="boss-detail" class="boss-detail-host" role="tabpanel"></div>
+
+  <div id="boss-detail-view" class="boss-detail-view" hidden>
+    <div class="boss-detail-topbar">
+      <button type="button" class="boss-back-btn" onclick="showBossList()">
+        <span aria-hidden="true">←</span> All bosses
+      </button>
+    </div>
+    <div id="boss-detail" class="boss-detail-page"></div>
+  </div>
 </div>
 
-<div id="page-leveling" class="page page--leveling">
+<div id="page-leveling" class="page page--leveling page--guide">
   <header class="page-intro page-intro--compact">
     <h1>Leveling</h1>
   </header>
@@ -259,7 +270,7 @@
   <div id="level-detail" class="level-detail" role="tabpanel"></div>
 </div>
 
-<div id="page-leeching" class="page page--leeching">
+<div id="page-leeching" class="page page--leeching page--guide">
   <header class="page-intro page-intro--compact">
     <h1>Leeching Guide</h1>
   </header>
